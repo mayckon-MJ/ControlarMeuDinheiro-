@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -764,6 +765,17 @@
             <h2 class="lista-titulo">Controle de Faturas</h2>
             <div id="lista-lancamentos" class="grid-lancamentos"></div>
         </main>
+
+        <div style="margin-top: 30px; background: var(--card-bg); padding: 20px; border-radius: var(--border-radius); box-shadow: 0 4px 6px rgba(0,0,0,0.02); text-align: center;">
+            <h3 style="font-size: 1rem; color: var(--text-color); margin-bottom: 15px; font-weight: 600;">Backup do Sistema</h3>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button class="btn-card-acao" style="font-size: 0.8rem;" onclick="fazerDownloadBackup()">💾 Baixar Salvar Tudo</button>
+                <button class="btn-card-acao" style="font-size: 0.8rem; background-color: #74b9ff;" onclick="document.getElementById('input-upload-backup').click()">📂 Restaurar Tudo</button>
+            </div>
+            <input type="file" id="input-upload-backup" style="display: none;" accept=".json" onchange="fazerUploadBackup(event)">
+        </div>
+        </div>
+
     </div>
 
     <button class="btn-flutuante" onclick="abrirModal()">+</button>
@@ -1451,9 +1463,54 @@
                     alerta.classList.remove('mostrar');
                 }, 2500);
 
-            }, 1200);
+                       }, 1200);
+        }
+
+        /* --- FUNÇÕES DE DOWNLOAD E UPLOAD DO BACKUP --- */
+        function fazerDownloadBackup() {
+            const dadosSessao = {
+                saldo: localStorage.getItem('financas_saldo') || "0",
+                lancamentos: localStorage.getItem('financas_lancamentos') || "[]"
+            };
+            
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dadosSessao));
+            const downloadAnchor = document.createElement('a');
+            
+            // Define o nome do arquivo com a data atual formatada
+            const dataAtual = new Date().toLocaleDateString('pt-BR').replace(/\//g, '-');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `backup_financas_${dataAtual}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function fazerUploadBackup(event) {
+            const arquivo = event.target.files[0];
+            if (!arquivo) return;
+
+            const leitor = new FileReader();
+            leitor.onload = function(e) {
+                try {
+                    const dadosRestaurados = JSON.parse(e.target.result);
+                    
+                    if (dadosRestaurados.saldo !== undefined && dadosRestaurados.lancamentos !== undefined) {
+                        localStorage.setItem('financas_saldo', dadosRestaurados.saldo);
+                        localStorage.setItem('financas_lancamentos', dadosRestaurados.lancamentos);
+                        
+                        alert("🎉 Tudo foi restaurado com sucesso! A página será atualizada.");
+                        window.location.reload();
+                    } else {
+                        alert("❌ Arquivo inválido! Certifique-se de usar um arquivo gerado pelo sistema.");
+                    }
+                } catch (erro) {
+                    alert("❌ Erro ao ler o arquivo. Ele pode estar corrompido.");
+                }
+            };
+            leitor.readAsText(arquivo);
         }
 
     </script>
 </body>
+
 </html>
