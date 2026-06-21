@@ -1,0 +1,1459 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finanças Pessoais</title>
+    <style>
+        /* ==========================================
+           1. VARIÁVEIS E ESTILOS GERAIS
+           ========================================== */
+        :root {
+            --primary-color: #4a90e2;
+            --success-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --danger-pulse: rgba(231, 76, 60, 0.3);
+            --text-color: #2c3e50;
+            --bg-color: #f5f7fa;
+            --card-bg: #ffffff;
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            padding-bottom: 100px;
+        }
+
+                /* ==========================================
+           2. TELA PRINCIPAL (HEADER CONFIGURADO)
+           ========================================== */
+        header {
+            background: var(--card-bg);
+            padding: 20px 25px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* Logo na esquerda, Saldo na direita */
+            gap: 15px;
+            border-bottom: 4px solid var(--primary-color); /* Linha sutil com a cor do sistema */
+        }
+
+        .header-logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-logo-area img {
+            height: 45px; /* Tamanho ideal para a logo */
+            width: auto;
+            object-fit: contain;
+        }
+
+        header h1 {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 2px;
+            text-align: left;
+        }
+
+        .header-saldo-area {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end; /* Alinha o texto do saldo à direita */
+        }
+
+        .saldo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .saldo-valor {
+            font-size: 1.8rem; /* Reduzido levemente para melhor equilíbrio visual */
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .btn-edit {
+            background: #f1f5f9;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            transition: var(--transition);
+            width: 32px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .btn-edit:hover {
+            transform: scale(1.1);
+            background-color: #e2e8f0;
+        }
+
+        /* RESPONSIVIDADE PARA CELULARES PEQUENOS */
+        @media (max-width: 480px) {
+            header {
+                flex-direction: column; /* Empilha os elementos no celular */
+                text-align: center;
+                padding: 20px;
+            }
+            .header-logo-area {
+                flex-direction: column;
+                gap: 5px;
+            }
+            .header-saldo-area {
+                align-items: center; /* Centraliza o saldo no celular */
+            }
+            header h1 {
+                text-align: center;
+            }
+        }
+
+
+        .saldo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .saldo-valor {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .btn-edit {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            transition: var(--transition);
+        }
+
+        .btn-edit:hover {
+            transform: scale(1.1);
+        }
+
+        .saldo-input {
+            font-size: 2rem;
+            font-weight: bold;
+            width: 200px;
+            text-align: center;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            outline: none;
+        }
+
+        .lista-titulo {
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            color: var(--text-color);
+        }
+
+        /* ==========================================
+           3. NOVO GRID RESPONSIVO (SÓ IMAGEM E NOME)
+           Alterado para exibir até 4 imagens lado a lado
+           ========================================== */
+        .grid-lancamentos {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+
+        @media (max-width: 480px) {
+            .grid-lancamentos {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+            }
+        }
+
+        .banco-item-compacto {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .banco-item-compacto:hover {
+            transform: translateY(-5px);
+        }
+
+        .banco-grid-img {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            object-fit: cover;
+            background-color: #eee;
+            border: 3px solid #e2e8f0;
+            transition: var(--transition);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .banco-item-compacto h3 {
+            font-size: 0.85rem;
+            margin-top: 8px;
+            color: var(--text-color);
+            font-weight: 600;
+            width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Animação Pulsar para faturas Urgentes */
+        .urgente .banco-grid-img {
+            border-color: var(--danger-color) !important;
+            animation: pulsarTridimensional 1.6s infinite ease-in-out;
+        }
+
+        @keyframes pulsarTridimensional {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 4px 6px rgba(0,0,0,0.05), 0 0 0 0 var(--danger-pulse);
+            }
+            50% {
+                transform: scale(1.08);
+                box-shadow: 0 8px 15px rgba(231, 76, 60, 0.2), 0 0 0 12px rgba(231, 76, 60, 0);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 4px 6px rgba(0,0,0,0.05), 0 0 0 0 rgba(231, 76, 60, 0);
+            }
+        }
+
+        /* ==========================================
+           4. VISUALIZAÇÃO DE DETALHES DO BANCO (MODAL NOVO)
+           ========================================== */
+        .detalhe-banco-topo {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .detalhe-banco-topo img {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ddd;
+        }
+
+        .detalhe-info-valores {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .detalhe-info-valores .label-total {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            text-transform: uppercase;
+        }
+
+        .detalhe-info-valores .valor-total {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .detalhe-fatura-atual {
+            background: #fffdf5;
+            border: 1px solid #fef08a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .detalhe-fatura-atual .vencimento-txt {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+        }
+
+        .detalhe-fatura-atual .valor-txt {
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: block;
+            margin-top: 2px;
+        }
+
+        .acoes-alinhadas-direita {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: flex-end;
+            background: #f1f5f9;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        /* Estilos das Novas Abas Organizadas do Histórico */
+        .abas-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 5px;
+        }
+
+        .aba-item {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #94a3b8;
+            cursor: pointer;
+            padding: 5px 10px;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .aba-item.active {
+            color: var(--primary-color);
+        }
+
+        .aba-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -7px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--primary-color);
+            border-radius: 2px;
+        }
+
+        /* Lista de subfaturas no Modal */
+        .subfaturas-lista-modal {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            border: 1px solid #e2e8f0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .subfatura-linha {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            padding: 6px 0;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        .subfatura-linha:last-child {
+            border-bottom: none;
+        }
+
+        .subfatura-linha.paga {
+            color: var(--success-color);
+            text-decoration: line-through;
+        }
+
+        .subfatura-acoes {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .btn-linha-acao {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 2px;
+            transition: var(--transition);
+        }
+
+        .btn-linha-acao:hover {
+            transform: scale(1.2);
+        }
+
+        /* Botões de Status */
+        .btn-status {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-pagar {
+            background-color: #0d5dfc;
+            color: white;
+        }
+
+        .btn-pagar:hover {
+            opacity: 0.9;
+        }
+
+         .btn-card-acao {
+    background: var(--primary-color); /* Usa o azul padrão do seu sistema */
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 0.55rem;
+    font-weight: 600;
+    transition: var(--transition);
+    padding: 10px 18px;
+    border-radius: 8px; /* Cantos mais suaves e modernos */
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 6px rgba(74, 144, 226, 0.2); /* Sombra leve azulada */
+}
+
+.btn-card-acao:hover {
+    background-color: #357abd; /* Escurece levemente ao passar o mouse */
+    transform: translateY(-2px); /* Efeito flutuante ao passar o mouse */
+    box-shadow: 0 6px 12px rgba(74, 144, 226, 0.3);
+}
+
+    
+        .lista-vazia {
+            text-align: center;
+            color: #95a5a6;
+            padding: 40px;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            grid-column: 1 / -1;
+        }
+
+        /* ==========================================
+           5. BOTÃO FLUTUANTE ADICIONAR (+)
+           ========================================== */
+        .btn-flutuante {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            border: none;
+            font-size: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            z-index: 10;
+        }
+
+        .btn-flutuante:hover {
+            transform: scale(1.1) rotate(90deg);
+            background-color: #357abd;
+        }
+
+        /* ==========================================
+           6. MODAIS CONFIGURAÇÕES
+           ========================================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+            z-index: 100;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            position: relative;
+            transform: translateY(-20px);
+            transition: var(--transition);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-fechar-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #95a5a6;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+        }
+
+        .link-hospedar {
+            display: inline-block;
+            margin-top: 5px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .link-hospedar:hover {
+            text-decoration: underline;
+        }
+
+        .bloco-repeticao {
+            background-color: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            position: relative;
+        }
+
+        .bloco-repeticao .btn-remover-bloco {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: none;
+            border: none;
+            color: var(--danger-color);
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-repetir-mais {
+            background-color: #e2e8f0;
+            color: #334155;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 10px;
+            transition: var(--transition);
+        }
+
+        .btn-repetir-mais:hover {
+            background-color: #cbd5e1;
+        }
+
+        .btn-salvar {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--success-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: var(--transition);
+        }
+
+        .btn-salvar:hover {
+            opacity: 0.9;
+        }
+    .header-logo-area video {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid var(--primary-color); /* Adiciona uma borda fina charmosa combinando com o sistema */
+}
+
+/* Efeito Pulsar em Vermelho para o botão Pagar Mês */
+.btn-pagar.urgente-btn {
+    background-color: var(--danger-color) !important;
+    animation: pulsarBotaoVermelho 1.6s infinite ease-in-out;
+}
+
+@keyframes pulsarBotaoVermelho {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05), 0 0 0 0 var(--danger-pulse);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 8px 15px rgba(231, 76, 60, 0.4), 0 0 0 10px rgba(231, 76, 60, 0);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05), 0 0 0 0 rgba(231, 76, 60, 0);
+    }
+}
+
+/* Círculo de Carregamento Giratório (Spinner) */
+.spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: girarSpinner 0.8s linear infinite;
+}
+
+@keyframes girarSpinner {
+    to { transform: rotate(360deg); }
+}
+
+/* Alerta Customizado no Meio da Tela */
+.alerta-sucesso-fixo {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    background: #ffffff;
+    padding: 30px 40px;
+    border-radius: 16px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.alerta-sucesso-fixo.mostrar {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    pointer-events: auto;
+}
+
+.alerta-sucesso-fixo .icone-positivo {
+    width: 60px;
+    height: 60px;
+    background-color: var(--success-color);
+    color: white;
+    font-size: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.alerta-sucesso-fixo span {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-color);
+    text-align: center;
+}
+
+    </style>
+</head>
+<body>
+    <div id="alerta-sucesso" class="alerta-sucesso-fixo">
+    <div class="icone-positivo">✓</div>
+    <span>Parabéns, uma fatura a menos</span>
+    </div>
+
+
+    <div class="container">
+          <header>
+            <div class="header-logo-area">
+    <!-- O estilo inline garante o formato redondo perfeito independente do CSS externo -->
+    <video src="Video1.mp4" autoplay loop muted playsinline style="height: 100px; width: 100px; object-fit: cover; border-radius: 50%; border: 2px solid var(--primary-color);"></video>
+           </div>
+
+
+
+            <div class="header-saldo-area">
+                <h1>Dinheiro Disponível</h1>
+                <div class="saldo-container">
+                    <span id="saldo-exibicao" class="saldo-valor">R$ 0,00</span>
+                    <button id="btn-editar-saldo" class="btn-edit" onclick="alternarEdicaoSaldo()">✏️</button>
+                </div>
+            </div>
+        </header>
+
+
+        <main>
+            <h2 class="lista-titulo">Controle de Faturas</h2>
+            <div id="lista-lancamentos" class="grid-lancamentos"></div>
+        </main>
+    </div>
+
+    <button class="btn-flutuante" onclick="abrirModal()">+</button>
+
+    <div id="modal-detalhes-banco" class="modal-overlay" onclick="fecharModalExterno(event, 'modal-detalhes-banco')">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Detalhes da Conta</h2>
+                <button class="btn-fechar-modal" onclick="fecharModalDetalhes()">&times;</button>
+            </div>
+            <div id="conteudo-detalhes-banco"></div>
+        </div>
+    </div>
+
+    <div id="modal-cadastro" class="modal-overlay" onclick="fecharModalExterno(event, 'modal-cadastro')">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-titulo">Novo Lançamento</h2>
+                <button class="btn-fechar-modal" onclick="fecharModal()">&times;</button>
+            </div>
+            <form id="form-lancamento" onsubmit="salvarLancamento(event)">
+                <input type="hidden" id="modo-edicao-banco" value="">
+                
+                <div class="form-group">
+                    <label for="descricao">Banco / Descrição da Dívida</label>
+                    <input type="text" id="descricao" class="form-control" required placeholder="Ex: Banco Itaú, Internet, etc.">
+                </div>
+                
+                <div class="form-group" id="container-imagem-url">
+                    <label for="imagem-url">Link da Imagem</label>
+                    <input type="url" id="imagem-url" class="form-control" placeholder="http://exemplo.com/imagem.jpg">
+                    <a href="Hospedagem.html" target="_blank" class="link-hospedar">🔗 Hospedar Imagem</a>
+                </div>
+
+                <div id="secao-campos-valores-dinamicos">
+                    <div class="form-group secao-original-valores">
+                        <label>Data e Horário de Vencimento</label>
+                        <input type="datetime-local" id="vencimento" class="form-control">
+                    </div>
+
+                    <div class="form-group secao-original-valores">
+                        <label>Valor (R$)</label>
+                        <input type="text" id="valor" class="form-control" placeholder="0,00" oninput="mascaraMoeda(this)">
+                    </div>
+                </div>
+
+                <div id="container-repeticoes"></div>
+
+                <button type="button" id="btn-adicionar-parcela-manual" class="btn-repetir-mais" onclick="adicionarCampoRepeticao()">
+                    ➕ Adicionar Nova Parcela (Próximo Mês)
+                </button>
+
+                <button type="submit" class="btn-salvar">Salvar Lançamento</button>
+            </form>
+        </div>
+    </div>
+
+    
+        <div id="modal-compra" class="modal-overlay" onclick="fecharModalExterno(event, 'modal-compra')">
+        <div class="modal-content">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <h3>Lançar Novos Valores a Fatura</h3>
+            <button class="btn-fechar-modal" onclick="fecharModalCompra()">&times;</button>
+            </div>
+
+            <div id="container-ajuste-fixo" class="form-group" style="display: none; background: #f1f5f9; padding: 10px; border-radius: 6px; margin-top: 10px;">
+                <label style="color: var(--primary-color);">Acrecentar ou Retirar valor em todas as faturas:</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="compra-ajuste-valor" class="form-control" placeholder="0,00">
+                    <button type="button" class="btn-salvar" style="margin: 0; width: auto; padding: 0 15px;" onclick="aplicarAjusteFixoEmTodasFaturas()">Aplicar</button>
+                </div>
+                <label style="color: red; font-size: 10px;">Use o sinal de mais: + para Acresentar por Ex.: <strong style="color: var(--primary-color);">+1,00</strong></label> 
+                <label style="color: red; font-size: 10px;">Use o sinal de menos: - para Retirar por Ex.: <strong style="color: var(--primary-color);">-1,00</strong></label>                  
+            </div>
+            
+            <form id="form-compra" onsubmit="salvarNovaCompraParcelada(event)">
+                <input type="hidden" id="compra-banco-alvo" value="">
+                
+                <div class="form-group">
+                     <button type="button" class="btn-card-acao" style="font-size: 1.2rem; padding: 2px 10px; text-align: center;" onclick="alternarCampoAjusteFixo()">+</button>     
+                   
+ <div style="text-align: center; margin: 20px 0; position: relative;">
+    <hr style="border: 0; border-top: 1px solid #b2bec3; margin: 0;">
+    <span style="display: inline-block; position: absolute; top: -5px; left: 50%; transform: translateX(-50%) rotate(45deg); width: 10px; height: 10px; background-color: #4a90e2;"></span>
+</div>
+                    
+                   <h3 style="text-align: center; color: var(--text-color); font-size: 1.4rem; font-weight: 600; margin: 10px 0; width: 100%;">Lançar Nova Compra</h3>
+                   <label style="font-size: 16px;">Valor Total da Compra (R$)</label>                   
+                    <input type="text" id="compra-valor-total" class="form-control" required placeholder="0,00" oninput="mascaraMoeda(this)">
+                </div>
+                
+                <div class="form-group">
+                    <label for="compra-parcelas">Quantidade de Parcelas</label>
+                    <input type="number" id="compra-parcelas" class="form-control" required min="1" max="120" value="1">
+                </div>
+
+                <button type="submit" class="btn-salvar">Aplicar na Fatura</button>
+            </form>
+        </div>
+    </div>
+
+
+    <script>
+        let estado = {
+            saldo: parseFloat(localStorage.getItem('financas_saldo')) || 0,
+            lancamentos: JSON.parse(localStorage.getItem('financas_lancamentos')) || [],
+            abaAtualModal: 'faturas' // Controla se o modal mostra faturas ou extrato
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderizarSaldo();
+            renderizarLancamentos();
+            resetarDataInputPrincipal();
+        });
+
+        function resetarDataInputPrincipal() {
+            const agora = new Date();
+            agora.setMinutes(agora.getMinutes() - agora.getTimezoneOffset());
+            document.getElementById('vencimento').value = agora.toISOString().slice(0, 16);
+        }
+
+        /* --- MÁSCARA DE MOEDA EM TEMPO REAL --- */
+        function mascaraMoeda(input) {
+            let valor = input.value.replace(/\D/g, "");
+            if(valor === "") {
+                input.value = "";
+                return;
+            }
+            valor = (parseFloat(valor) / 100).toFixed(2);
+            input.value = formatarNumeroBr(parseFloat(valor));
+        }
+
+        function formatarNumeroBr(numero) {
+            return numero.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function converterParaFloat(stringBr) {
+            if(!stringBr) return 0;
+            let limpo = stringBr.replace(/\./g, "").replace(",", ".");
+            return parseFloat(limpo) || 0;
+        }
+
+        /* --- GERENCIAMENTO DE SALDO --- */
+        function renderizarSaldo() {
+            document.getElementById('saldo-exibicao').textContent = estado.saldo.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+    function alternarEdicaoSaldo() {
+            const container = document.querySelector('.saldo-container');
+            const btn = document.getElementById('btn-editar-saldo');
+            const span = document.getElementById('saldo-exibicao');
+
+            if (container.querySelector('input')) {
+                const input = container.querySelector('input');
+                estado.saldo = converterParaFloat(input.value);
+                localStorage.setItem('financas_saldo', estado.saldo);
+                
+                span.style.display = 'block';
+                input.remove();
+                
+                // O QUE MEXER: VOLTA A IMAGEM DO LÁPIS AO SALVAR
+                btn.innerHTML = `<img src="https://i.ibb.co/vCxBq9LN/107483-removebg-preview.png" alt="Editar" style="width: 100%; height: 100%; object-fit: contain;">`;
+                
+                renderizarSaldo();
+            } else {
+                const audioLapis = new Audio('audio1.mp3');
+                audioLapis.currentTime = 0;
+                audioLapis.play().catch(e => console.log("Aguardando interação do usuário para reproduzir o som."));
+
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'saldo-input';
+                input.value = formatarNumeroBr(estado.saldo);
+                input.setAttribute("oninput", "mascaraMoeda(this)");
+                
+                span.style.display = 'none';
+                container.insertBefore(input, btn);
+                input.focus();
+                
+                // O QUE MEXER: COLOCA A IMAGEM DO DISQUETE/SALVAR ENQUANTO EDITA
+                btn.innerHTML = `<img src="https://i.ibb.co/RTv8Bvfx/107484-removebg-preview.png" alt="Salvar" style="width: 100%; height: 100%; object-fit: contain;">`;
+            }
+        }
+
+
+        /* --- GERAÇÃO DINÂMICA DE CAMPOS DE REPETIÇÃO --- */
+        function obterUltimaDataValida() {
+            const repeticoes = document.querySelectorAll('.vencimento-repetido');
+            if(repeticoes.length > 0) {
+                return new Date(repeticoes[repeticoes.length - 1].value);
+            }
+            return new Date(document.getElementById('vencimento').value);
+        }
+
+          function adicionarCampoRepeticao(valorPadrao = "", dataPadrao = null, idLancamento = "") {
+            const container = document.getElementById('container-repeticoes');
+            
+            // SE NÃO FOI PASSADO UM VALOR PADRÃO (CLIQUE NO BOTÃO +), PEGA O VALOR DO PRIMEIRO CAMPO
+            if (valorPadrao === "") {
+                const valorPrimeiraParcela = document.getElementById('valor').value;
+                if (valorPrimeiraParcela) {
+                    valorPadrao = valorPrimeiraParcela;
+                }
+            }
+            
+            let novaData = dataPadrao ? new Date(dataPadrao) : obterUltimaDataValida();
+            if(!dataPadrao) {
+                novaData.setMonth(novaData.getMonth() + 1);
+            }
+            
+            novaData.setMinutes(novaData.getMinutes() - novaData.getTimezoneOffset());
+            const dataString = novaData.toISOString().slice(0, 16);
+            const numParcela = container.children.length + 1;
+
+            const bloco = document.createElement('div');
+            bloco.className = 'bloco-repeticao';
+            bloco.innerHTML = `
+                <input type="hidden" class="id-repetido" value="${idLancamento}">
+                <div class="form-group">
+                    <label>Data de Vencimento (Fatura ${numParcela})</label>
+                    <input type="datetime-local" class="form-control vencimento-repetido" value="${dataString}" required>
+                </div>
+                <div class="form-group">
+                    <label>Valor da Fatura ${numParcela} (R$)</label>
+                    <input type="text" class="form-control valor-repetido" required placeholder="0,00" value="${valorPadrao}" oninput="mascaraMoeda(this)">
+                </div>
+            `;
+            container.appendChild(bloco);
+        }
+
+        /* --- MODAL CONTROLES GERAIS --- */
+        function abrirModal() {
+            document.getElementById('modal-titulo').textContent = "Novo Lançamento";
+            document.getElementById('descricao').disabled = false;
+            document.getElementById('modo-edicao-banco').value = "";
+            document.getElementById('container-imagem-url').style.display = "block";
+            document.querySelector('.secao-original-valores').style.display = "block";
+            document.getElementById('valor').parentElement.style.display = "block";
+            document.getElementById('btn-adicionar-parcela-manual').style.display = "flex";
+            document.getElementById('modal-cadastro').classList.add('active');
+        }
+
+        function fecharModal() {
+            document.getElementById('modal-cadastro').classList.remove('active');
+            document.getElementById('form-lancamento').reset();
+            document.getElementById('container-repeticoes').innerHTML = '';
+            resetarDataInputPrincipal();
+        }
+
+        function fecharModalExterno(e, idModal) {
+            if(e.target.id === idModal) {
+                if(idModal === 'modal-cadastro') fecharModal();
+                if(idModal === 'modal-compra') fecharModalCompra();
+                if(idModal === 'modal-detalhes-banco') fecharModalDetalhes();
+            }
+        }
+
+        /* --- ALTERNAR ENTRE AS ABAS DENTRO DO MODAL --- */
+        function alternarAbaModal(banco, aba) {
+            estado.abaAtualModal = aba;
+            atualizarListaSubfaturasModal(banco);
+        }
+
+        /* --- EXCLUIR LANÇAMENTO INDIVIDUALMENTE --- */
+        function excluirLancamentoIndividual(id, bancoAlvo) {
+            if(confirm("Tem certeza que deseja apagar permanentemente este registro?")) {
+                estado.lancamentos = estado.lancamentos.filter(item => item.id !== id);
+                atualizarLocalStorageLancamentos();
+                renderizarLancamentos();
+                
+                const restamRegistros = estado.lancamentos.some(item => item.descricao === bancoAlvo);
+                if (restamRegistros) {
+                    atualizarListaSubfaturasModal(bancoAlvo);
+                } else {
+                    fecharModalDetalhes();
+                }
+            }
+        }
+
+        /* --- EDITAR LANÇAMENTO INDIVIDUAL --- */
+        function abrirEdicaoIndividual(id) {
+            fecharModalDetalhes();
+            abrirModal();
+            
+            const lancamento = estado.lancamentos.find(item => item.id === id);
+            if(!lancamento) return;
+
+            document.getElementById('modal-titulo').textContent = `Editar Parcela Unica`;
+            document.getElementById('modo-edicao-banco').value = lancamento.descricao;
+            document.getElementById('descricao').value = lancamento.descricao;
+            document.getElementById('descricao').disabled = true;
+            document.getElementById('container-imagem-url').style.display = "none";
+            
+            document.getElementById('vencimento').parentElement.style.display = "none";
+            document.getElementById('valor').parentElement.style.display = "none";
+            document.getElementById('btn-adicionar-parcela-manual').style.display = "none";
+
+            adicionarCampoRepeticao(formatarNumeroBr(lancamento.valor), lancamento.vencimento, lancamento.id);
+        }
+
+        /* --- RE-RENDERIZAR A LISTAGEM DO HISTÓRICO CONFORME A ABA --- */
+        function atualizarListaSubfaturasModal(banco) {
+            const faturasDoGrupo = estado.lancamentos.filter(item => item.descricao === banco);
+            const containerLista = document.querySelector('.subfaturas-lista-modal');
+            
+            if(!containerLista) return;
+            containerLista.innerHTML = '';
+
+            let faturasFiltradas = [];
+
+            if (estado.abaAtualModal === 'faturas') {
+                // Filtra as abertas por ordem, a primeira no topo
+                faturasFiltradas = faturasDoGrupo.filter(f => !f.pago).sort((a, b) => new Date(a.vencimento) - new Date(b.vencimento));
+            } else {
+                // Mostra as pagas (Extrato)
+                faturasFiltradas = faturasDoGrupo.filter(f => f.pago).sort((a, b) => new Date(a.vencimento) - new Date(b.vencimento));
+            }
+
+            if (faturasFiltradas.length === 0) {
+                containerLista.innerHTML = '<div style="text-align:center; color:#94a3b8; font-size:0.85rem; padding:10px;">Nenhum registro encontrado.</div>';
+                return;
+            }
+
+            faturasFiltradas.forEach(f => {
+                const dt = new Date(f.vencimento).toLocaleDateString('pt-BR');
+                const vl = f.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                
+                let acoesHTML = '';
+                if (!f.pago) {
+                    // Aba Faturas Aberta: Possui Lápis e Lixeira
+                    acoesHTML = `
+                        <div class="subfatura-acoes">
+                            <button class="btn-linha-acao" title="Editar Parcela" onclick="abrirEdicaoIndividual('${f.id}')">✏️</button>
+                            <button class="btn-linha-acao" title="Excluir Parcela" onclick="excluirLancamentoIndividual('${f.id}', '${banco.replace(/'/g, "\\'")}')">🗑️</button>
+                        </div>
+                    `;
+                } else {
+                    // Aba Extrato: Possui apenas Lixeira
+                    acoesHTML = `
+                        <div class="subfatura-acoes">
+                            <button class="btn-linha-acao" title="Excluir do Histórico" onclick="excluirLancamentoIndividual('${f.id}', '${banco.replace(/'/g, "\\'")}')">🗑️</button>
+                        </div>
+                    `;
+                }
+
+                containerLista.insertAdjacentHTML('beforeend', `
+                    <div class="subfatura-linha ${f.pago ? 'paga' : ''}">
+                        <span>🗓️ Vencimento: ${dt} - <strong>${vl}</strong></span>
+                        ${acoesHTML}
+                    </div>
+                `);
+            });
+        }
+
+        /* --- MODAL DE DETALHES COMPACTO (AO CLICAR NA IMAGEM) --- */
+                /* --- MODAL DE DETALHES COMPACTO (AO CLICAR NA IMAGEM) --- */
+        function abrirModalDetalhes(banco) {
+            estado.abaAtualModal = 'faturas'; // Reseta padrão para abrir sempre na aba Faturas
+            const faturasDoGrupo = estado.lancamentos.filter(item => item.descricao === banco);
+            const pendentes = faturasDoGrupo.filter(f => !f.pago).sort((a, b) => new Date(a.vencimento) - new Date(b.vencimento));
+
+            // Caso existam apenas itens pagos no banco selecionado, joga para aba Extrato direto
+            if(pendentes.length === 0) {
+                estado.abaAtualModal = 'extrato';
+            }
+
+            const faturaExibicaoBase = faturasDoGrupo[0];
+            const valorTotalPendenteGrupo = faturasDoGrupo.filter(f => !f.pago).reduce((acc, curr) => acc + curr.valor, 0);
+
+            let informacoesFaturaAtualHTML = '';
+            if (pendentes.length > 0) {
+                const faturaAtual = pendentes[0];
+                const dataVencimento = new Date(faturaAtual.vencimento);
+                const agora = new Date();
+                const diferencaDias = (dataVencimento - agora) / (1000 * 60 * 60 * 24);
+                
+                // DEFINE SE O BOTÃO DEVE PULSAR EM VERMELHO (1 dia ou menos para vencer)
+                let classeBotaoUrgente = '';
+                if (diferencaDias <= 1) {
+                    classeBotaoUrgente = 'urgente-btn';
+                }
+
+                const dataFormatada = dataVencimento.toLocaleDateString('pt-BR') + ' às ' + 
+                                      dataVencimento.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+                const valorAtualFormatado = faturaAtual.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+                informacoesFaturaAtualHTML = `
+                    <div class="detalhe-fatura-atual">
+                        <div>
+                            <span class="vencimento-txt">Próximo Vencimento: ${dataFormatada}</span>
+                            <span class="valor-txt">${valorAtualFormatado}</span>
+                        </div>
+                        <!-- REMOVIDO O FECHAR MODAL DO CLICK PARA DEIXAR O CARREGAMENTO GIRAR -->
+                        <button id="btn-pagar-fatura-acao" class="btn-status btn-pagar ${classeBotaoUrgente}" onclick="pagarLancamento('${faturaAtual.id}')">Pagar Mês</button>
+                    </div>
+                `;
+            } else {
+                informacoesFaturaAtualHTML = `
+                    <div class="detalhe-fatura-atual" style="background:#f0fdf4; border-color:#bbf7d0; text-align:center; justify-content:center; color:#16a34a; font-weight:bold;">
+                        🎉 Todas as parcelas deste banco estão quitadas!
+                    </div>
+                `;
+            }
+
+            const valorTotalGrupoFormatado = valorTotalPendenteGrupo.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+            const containerDetalhes = document.getElementById('conteudo-detalhes-banco');
+            containerDetalhes.innerHTML = `
+                <div class="detalhe-banco-topo">
+                    <img src="${faturaExibicaoBase.imagem}" onerror="this.src='https://via.placeholder.com/50?text=Erro'">
+                    <div class="detalhe-info-valores">
+                        <h3>${faturaExibicaoBase.descricao}</h3>
+                        <span class="label-total">Total acumulado pendente:</span>
+                        <span class="valor-total">${valorTotalGrupoFormatado}</span>
+                    </div>
+                </div>
+
+                ${informacoesFaturaAtualHTML}
+
+                <div class="acoes-alinhadas-direita">
+                    <button class="btn-card-acao" title="Gerenciar Grupo" onclick="fecharModalDetalhes(); abrirModalParaEditarGrupo('${faturaExibicaoBase.descricao.replace(/'/g, "\\'")}')">Criar ou Editar Fatura</button>
+                    <button class="btn-card-acao" title="Lançar nova compra parcelada" onclick="fecharModalDetalhes(); abrirModalNovaCompra('${faturaExibicaoBase.descricao.replace(/'/g, "\\'")}')">Cadastrar Nova Comra</button>
+                </div>
+
+                <div class="abas-container">
+                    <div class="aba-item ${estado.abaAtualModal === 'faturas' ? 'active' : ''}" id="aba-faturas" onclick="document.querySelectorAll('.aba-item').forEach(e=>e.classList.remove('active')); this.classList.add('active'); alternarAbaModal('${faturaExibicaoBase.descricao.replace(/'/g, "\\'")}', 'faturas')">Faturas</div>
+                    <div class="aba-item ${estado.abaAtualModal === 'extrato' ? 'active' : ''}" id="aba-extrato" onclick="document.querySelectorAll('.aba-item').forEach(e=>e.classList.remove('active')); this.classList.add('active'); alternarAbaModal('${faturaExibicaoBase.descricao.replace(/'/g, "\\'")}', 'extrato')">Extrato</div>
+                </div>
+
+                <div class="subfaturas-lista-modal"></div>
+            `;
+
+            atualizarListaSubfaturasModal(banco);
+            document.getElementById('modal-detalhes-banco').classList.add('active');
+        }
+            
+                 
+
+        function fecharModalDetalhes() {
+            document.getElementById('modal-detalhes-banco').classList.remove('active');
+        }
+
+        /* --- ABRIR MODAL PARA EDIÇÃO EM MASSA (LÁPIS DO CARD DE FERRAMENTAS ✏️) --- */
+        function abrirModalParaEditarGrupo(banco) {
+            abrirModal();
+            document.getElementById('modal-titulo').textContent = `Editar Faturas: ${banco}`;
+            document.getElementById('modo-edicao-banco').value = banco;
+            document.getElementById('descricao').value = banco;
+            document.getElementById('descricao').disabled = true;
+            document.getElementById('container-imagem-url').style.display = "none";
+            
+            document.getElementById('vencimento').parentElement.style.display = "none";
+            document.getElementById('valor').parentElement.style.display = "none";
+
+            // Mantido o botão e sua inteligência nativa de acrescentar faturas adicionais
+            document.getElementById('btn-adicionar-parcela-manual').style.display = "flex";
+
+            const faturasGrupo = estado.lancamentos.filter(item => item.descricao === banco && !item.pago)
+                                                    .sort((a,b) => new Date(a.vencimento) - new Date(b.vencimento));
+
+            faturasGrupo.forEach(f => {
+                adicionarCampoRepeticao(formatarNumeroBr(f.valor), f.vencimento, f.id);
+            });
+        }
+
+        /* --- CONTROLES DE COMPRAS PARCELADAS (DINHEIRO 💵) --- */
+        function abrirModalNovaCompra(banco) {
+            document.getElementById('compra-banco-alvo').value = banco;
+            document.getElementById('modal-compra').classList.add('active');
+        }
+
+        function fecharModalCompra() {
+            document.getElementById('modal-compra').classList.remove('active');
+            document.getElementById('form-compra').reset();
+        }
+    function alternarCampoAjusteFixo() {
+            const container = document.getElementById('container-ajuste-fixo');
+            container.style.display = container.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function salvarNovaCompraParcelada(e) {
+            e.preventDefault();
+            const banco = document.getElementById('compra-banco-alvo').value;
+            const valorTotal = converterParaFloat(document.getElementById('compra-valor-total').value);
+            const qtdParcelas = parseInt(document.getElementById('compra-parcelas').value);
+
+            if(valorTotal <= 0 || qtdParcelas <= 0) return;
+
+            const valorDaParcela = parseFloat((valorTotal / qtdParcelas).toFixed(2));
+
+            let faturasExistentes = estado.lancamentos.filter(f => f.descricao === banco && !f.pago)
+                                                      .sort((a, b) => new Date(a.vencimento) - new Date(b.vencimento));
+
+            let imagemGrupo = faturasExistentes.length > 0 ? faturasExistentes[0].imagem : 'https://via.placeholder.com/50?text=S/I';
+            let ultimaDataBase = faturasExistentes.length > 0 ? new Date(faturasExistentes[faturasExistentes.length - 1].vencimento) : new Date();
+
+            for (let i = 0; i < qtdParcelas; i++) {
+                if (i < faturasExistentes.length) {
+                    faturasExistentes[i].valor += valorDaParcela;
+                } else {
+                    let novaDataVencimento = new Date(ultimaDataBase);
+                    novaDataVencimento.setMonth(novaDataVencimento.getMonth() + (i - faturasExistentes.length + 1));
+                    
+                    const novaFaturaAdicional = {
+                        id: Date.now().toString() + "-compra-" + i,
+                        descricao: banco,
+                        imagem: imagemGrupo,
+                        vencimento: novaDataVencimento.toISOString().slice(0, 16),
+                        valor: valorDaParcela,
+                        pago: false
+                    };
+                    estado.lancamentos.push(novaFaturaAdicional);
+                }
+            }
+
+            atualizarLocalStorageLancamentos();
+            renderizarLancamentos();
+            fecharModalCompra();
+        }
+
+        /* --- OPERAÇÃO DE SALVAMENTO --- */
+        function salvarLancamento(event) {
+            event.preventDefault();
+            const modoEdicaoBanco = document.getElementById('modo-edicao-banco').value;
+
+            if (modoEdicaoBanco !== "") {
+                const idsRepetidos = document.querySelectorAll('.id-repetido');
+                const vencimentosRepetidos = document.querySelectorAll('.vencimento-repetido');
+                const valoresRepetidos = document.querySelectorAll('.valor-repetido');
+
+                idsRepetidos.forEach((elId, idx) => {
+                    const idLancamento = elId.value;
+                    
+                    if(idLancamento !== "") {
+                        const indexNoEstado = estado.lancamentos.findIndex(item => item.id === idLancamento);
+                        if (indexNoEstado !== -1) {
+                            estado.lancamentos[indexNoEstado].vencimento = vencimentosRepetidos[idx].value;
+                            estado.lancamentos[indexNoEstado].valor = converterParaFloat(valoresRepetidos[idx].value);
+                        }
+                    } else {
+                        const faturasAtuaisDoGrupo = estado.lancamentos.filter(item => item.descricao === modoEdicaoBanco);
+                        const imagemGrupo = faturasAtuaisDoGrupo.length > 0 ? faturasAtuaisDoGrupo[0].imagem : 'https://via.placeholder.com/50?text=S/I';
+                        
+                        const novaFaturaAdicionadaPeloLapis = {
+                            id: Date.now().toString() + "-lapis-add-" + idx,
+                            descricao: modoEdicaoBanco,
+                            imagem: imagemGrupo,
+                            vencimento: vencimentosRepetidos[idx].value,
+                            valor: converterParaFloat(valoresRepetidos[idx].value),
+                            pago: false
+                        };
+                        estado.lancamentos.push(novaFaturaAdicionadaPeloLapis);
+                    }
+                });
+            } else {
+                const descricao = document.getElementById('descricao').value;
+                const imagem = document.getElementById('imagem-url').value || 'https://via.placeholder.com/50?text=S/I';
+                const vencimentoInicial = document.getElementById('vencimento').value;
+                const valorInicial = converterParaFloat(document.getElementById('valor').value);
+
+                const primeiroLancamento = {
+                    id: Date.now().toString() + "-0",
+                    descricao: descricao,
+                    imagem: imagem,
+                    vencimento: vencimentoInicial,
+                    valor: valorInicial,
+                    pago: false
+                };
+                estado.lancamentos.push(primeiroLancamento);
+
+                const vencimentosRepetidos = document.querySelectorAll('.vencimento-repetido');
+                const valoresRepetidos = document.querySelectorAll('.valor-repetido');
+
+                vencimentosRepetidos.forEach((elementoData, index) => {
+                    const valorRep = converterParaFloat(valoresRepetidos[index].value);
+                    const faturaAdicional = {
+                        id: Date.now().toString() + "-" + (index + 1),
+                        descricao: descricao,
+                        imagem: imagem,
+                        vencimento: elementoData.value,
+                        valor: valorRep,
+                        pago: false
+                    };
+                    estado.lancamentos.push(faturaAdicional);
+                });
+            }
+
+            atualizarLocalStorageLancamentos();
+            renderizarLancamentos();
+            fecharModal();
+        }
+
+        function atualizarLocalStorageLancamentos() {
+            localStorage.setItem('financas_lancamentos', JSON.stringify(estado.lancamentos));
+        }
+
+        /* --- RENDERIZAÇÃO COMPACTA DO GRID PRINCIPAL --- */
+        function renderizarLancamentos() {
+            const container = document.getElementById('lista-lancamentos');
+            container.innerHTML = '';
+
+            if (estado.lancamentos.length === 0) {
+                container.innerHTML = `<div class="lista-vazia">Nenhum lançamento cadastrado.</div>`;
+                return;
+            }
+
+            const grupos = {};
+            estado.lancamentos.forEach(item => {
+                if (!grupos[item.descricao]) {
+                    grupos[item.descricao] = [];
+                }
+                grupos[item.descricao].push(item);
+            });
+
+            let temFaturaAtivaExibida = false;
+
+            for (let banco in grupos) {
+                const faturasDoGrupo = grupos[banco];
+                const pendentes = faturasDoGrupo.filter(f => !f.pago).sort((a, b) => new Date(a.vencimento) - new Date(b.vencimento));
+
+                // Se houverem registros mas todos foram pagos, mostramos a logo do banco limpa sem pulsar
+                const possuiItensNoHistoricoGeral = faturasDoGrupo.length > 0;
+                if(!possuiItensNoHistoricoGeral) continue;
+                
+                temFaturaAtivaExibida = true;
+                const faturaReferencia = faturasDoGrupo[0];
+
+                let classeUrgente = '';
+                if(pendentes.length > 0) {
+                    const faturaAtual = pendentes[0];
+                    const dataVencimento = new Date(faturaAtual.vencimento);
+                    const agora = new Date();
+                    const diferencaDias = (dataVencimento - agora) / (1000 * 60 * 60 * 24);
+                    if (diferencaDias <= 1) {
+                        classeUrgente = 'urgente';
+                    }
+                }
+
+                const blocoGridHTML = `
+                    <div class="banco-item-compacto ${classeUrgente}" onclick="abrirModalDetalhes('${banco.replace(/'/g, "\\'")}')">
+                        <img src="${faturaReferencia.imagem}" alt="${banco}" class="banco-grid-img" onerror="this.src='https://via.placeholder.com/50?text=Erro'">
+                        <h3>${banco}</h3>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', blocoGridHTML);
+            }
+
+            if(!temFaturaAtivaExibida) {
+                container.innerHTML = `<div class="lista-vazia">🎉 Tudo em dia! Nenhuma fatura pendente.</div>`;
+            }
+        }
+
+        /* --- PROCESSO DE PAGAMENTO --- */
+                function pagarLancamento(id) {
+            const index = estado.lancamentos.findIndex(item => item.id === id);
+            if (index === -1) return;
+
+            const botao = document.getElementById('btn-pagar-fatura-acao');
+            if (botao) {
+                botao.disabled = true;
+                botao.classList.remove('urgente-btn'); // Para a animação do botão durante o loading
+                botao.innerHTML = '<div class="spinner"></div>';
+            }
+
+            // Simula o tempo de carregamento de 1.2 segundos
+            setTimeout(() => {
+                const lancamento = estado.lancamentos[index];
+                
+                estado.saldo -= lancamento.valor;
+                localStorage.setItem('financas_saldo', estado.saldo);
+                renderizarSaldo();
+
+                lancamento.pago = true;
+
+                atualizarLocalStorageLancamentos();
+                renderizarLancamentos();
+                fecharModalDetalhes();
+
+                // Dispara o alerta customizado no centro da tela
+                const alerta = document.getElementById('alerta-sucesso');
+                alerta.classList.add('mostrar');
+
+                // Faz o alerta sumir após 2.5 segundos
+                setTimeout(() => {
+                    alerta.classList.remove('mostrar');
+                }, 2500);
+
+            }, 1200);
+        }
+
+    </script>
+</body>
+</html>

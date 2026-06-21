@@ -1,0 +1,532 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospedagem-img</title>
+    <style>
+        /* --- ESTILIZAÇÃO IDENTIDADE BRASIL (PREDOMINÂNCIA AZUL) --- */
+        :root {
+            --primary-blue: #002776;       /* Azul Escuro da Bandeira */
+            --accent-yellow: #ffdf00;     /* Amarelo Ouro */
+            --accent-yellow-hover: #e5c700;
+            --national-green: #009c3b;    /* Verde Amazônico */
+            --bg-gradient: linear-gradient(135deg, #050b14 0%, #0a1931 50%, #002776 100%);
+            --card-bg: rgba(10, 25, 49, 0.7);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --error: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            scroll-behavior: smooth;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px; /* Reduzido o tamanho máximo para combinar com as imagens menores */
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(to right, var(--accent-yellow), #38bdf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+            letter-spacing: -0.05em;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Seção União de Instruções e Upload */
+        .main-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(16px);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            margin-bottom: 50px;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        /* Passos Instrucionais */
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 30px;
+        }
+
+        .step-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            padding: 20px;
+            border-radius: 16px;
+            position: relative;
+        }
+
+        .step-number {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 2rem;
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.04);
+        }
+
+        .step-card h3 {
+            font-size: 1.1rem;
+            color: var(--accent-yellow);
+            margin-bottom: 8px;
+        }
+
+        .step-card p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Área de Upload Interativa */
+        .drop-zone {
+            border: 2px dashed rgba(56, 189, 248, 0.4);
+            background: rgba(56, 189, 248, 0.02);
+            border-radius: 20px;
+            padding: 50px 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .drop-zone:hover, .drop-zone.drag-over {
+            border-color: #38bdf8;
+            background: rgba(56, 189, 248, 0.06);
+            transform: scale(1.01);
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            display: inline-block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* Botão de Upload Principal */
+        .upload-btn {
+            background: var(--accent-yellow);
+            color: #050b14;
+            border: none;
+            padding: 14px 32px;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-top: 15px;
+            box-shadow: 0 4px 14px rgba(255, 223, 0, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .upload-btn:hover {
+            background: var(--accent-yellow-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 223, 0, 0.5);
+        }
+
+        .drop-zone input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* Feedback de Status */
+        #status {
+            margin-top: 20px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: none;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .status-loading { background: rgba(243, 156, 18, 0.15); color: #f39c12; display: block !important; }
+        .status-success { background: rgba(0, 156, 59, 0.2); color: #00ff62; display: block !important; }
+        .status-error { background: rgba(239, 68, 68, 0.15); color: var(--error); display: block !important; }
+
+        /* Grid da Galeria - FIXO EM DUAS IMAGENS POR FILEIRA */
+        .gallery-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* Força exatamente duas colunas por fileira */
+            gap: 20px;
+        }
+
+        @media (max-width: 550px) {
+            .gallery-grid {
+                gap: 12px; /* Diminui o espaçamento em telas muito pequenas para não espremer o conteúdo */
+            }
+            .item-actions {
+                padding: 12px !important;
+            }
+        }
+
+        .gallery-item {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: fadeIn 0.5s ease-out;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            border-color: rgba(56, 189, 248, 0.3);
+            box-shadow: 0 15px 30px rgba(56, 189, 248, 0.15);
+        }
+
+        /* Container de Imagem Bem Menor */
+        .image-container {
+            width: 100%;
+            height: 130px; /* Reduzido de 180px para 130px para tornar as miniaturas bem menores */
+            overflow: hidden;
+            background: #040810;
+            position: relative;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .item-actions {
+            padding: 16px;
+            background: rgba(4, 12, 24, 0.5);
+            margin-top: auto;
+        }
+
+        .url-input {
+            width: 100%;
+            background: rgba(5, 11, 20, 0.6);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 8px 10px;
+            border-radius: 6px;
+            color: #e2e8f0;
+            font-size: 0.8rem;
+            outline: none;
+            text-overflow: ellipsis;
+            margin-bottom: 10px;
+        }
+
+        /* Grupo de botões ajustados lado a lado */
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .copy-btn:hover {
+            background: var(--national-green);
+            border-color: var(--national-green);
+        }
+
+        .delete-btn {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #f87171;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .delete-btn:hover {
+            background: var(--error);
+            border-color: var(--error);
+            color: white;
+        }
+
+        /* Animações */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Link de Imagem/Foto</h1>
+            <p>Para obeter o link de sua imagem, siga as instruções a baixo:</p>
+        </header>
+
+        <div class="main-card">
+            <div class="steps-container">
+                <div class="step-card">
+                    <span class="step-number">01</span>
+                    <h3>Selecione a Imagem</h3>
+                    <p>Clique abaixo ou arraste para abrir os arquivos do seu dispositivo.</p>
+                </div>
+                <div class="step-card">
+                    <span class="step-number">02</span>
+                    <h3>Aguarde o Envio</h3>
+                    <p>A imagem será processada e salva com total segurança em nuvem.</p>
+                </div>
+                <div class="step-card">
+                    <span class="step-number">03</span>
+                    <h3>Veja e Copie</h3>
+                    <p>O site focará na imagem nova automaticamente. Copie o link e use!</p>
+                </div>
+            </div>
+
+            <div class="drop-zone" id="dropZone">
+                <span class="upload-icon">🤖</span>
+                <h2 style="font-size: 1.3rem; font-weight: 600; margin-bottom: 8px;">Arraste sua imagem aqui</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 10px;">ou se preferir...</p>
+                <button class="upload-btn">Escolher da Galeria</button>
+                <input type="file" id="imageInput" accept="image/*">
+            </div>
+
+            <div id="status"></div>
+        </div>
+
+        <div class="gallery-title" id="galleryTitle">
+            <span style="color: var(--accent-yellow)">✨</span> Suas Imagens Recentes
+        </div>
+        <div class="gallery-grid" id="galleryGrid">
+            </div>
+    </div>
+
+    <script>
+        const IMGBB_API_KEY = 'b2f2d2c7f96736dadf9fd17f82c72fb3'; 
+
+        const imageInput = document.getElementById('imageInput');
+        const dropZone = document.getElementById('dropZone');
+        const statusDiv = document.getElementById('status');
+        const galleryGrid = document.getElementById('galleryGrid');
+
+        // Banco de dados local persistente
+        let localGallery = JSON.parse(localStorage.getItem('cloud_studio_gallery_br')) || [];
+
+        // Inicializar galeria salvando a ordem
+        window.addEventListener('DOMContentLoaded', () => {
+            localGallery.forEach(url => addImageToUI(url, false));
+        });
+
+        // Efeitos de Arrastar e Soltar (Drag and Drop)
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropZone.classList.add('drag-over');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('drag-over');
+            }, false);
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            const files = e.dataTransfer.files;
+            if (files.length > 0) handleUpload(files[0]);
+        });
+
+        imageInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) handleUpload(e.target.files[0]);
+        });
+
+        // Executa o envio para o ImgBB
+        async function handleUpload(file) {
+            if (!file.type.startsWith('image/')) {
+                updateStatus('Por favor, selecione apenas arquivos de imagem!', 'status-error');
+                return;
+            }
+
+            updateStatus('🚀 Enviando para o servidor do ImgBB...', 'status-loading');
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            try {
+                const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const json = await response.json();
+
+                if (json.success) {
+                    const directUrl = json.data.url;
+                    
+                    // Adiciona na UI marcando como "novo" para ativar o scroll imediato
+                    addImageToUI(directUrl, true);
+                    
+                    localGallery.push(directUrl);
+                    localStorage.setItem('cloud_studio_gallery_br', JSON.stringify(localGallery));
+
+                    updateStatus('✨ Upload concluído com sucesso!', 'status-success');
+                } else {
+                    updateStatus('Erro no servidor ImgBB: ' + json.error.message, 'status-error');
+                }
+            } catch (err) {
+                console.error(err);
+                updateStatus('Falha de conexão. Verifique sua rede.', 'status-error');
+            }
+
+            imageInput.value = '';
+        }
+
+        function updateStatus(text, className) {
+            statusDiv.innerText = text;
+            statusDiv.className = '';
+            if (className) statusDiv.classList.add(className);
+        }
+
+        // Adiciona o elemento visual do Card da Imagem
+        function addImageToUI(url, isNew = false) {
+            const card = document.createElement('div');
+            card.className = 'gallery-item';
+            card.setAttribute('data-url', url);
+            
+            card.innerHTML = `
+                <div class="image-container">
+                    <img src="${url}" alt="Item da Galeria" loading="lazy">
+                </div>
+                <div class="item-actions">
+                    <input type="text" class="url-input" value="${url}" readonly onclick="this.select();">
+                    <div class="btn-group">
+                        <button class="copy-btn" onclick="copyUrl(this, '${url}')">Copiar</button>
+                        <button class="delete-btn" onclick="deleteImage('${url}')">Excluir</button>
+                    </div>
+                </div>
+            `;
+            
+            // Insere sempre no topo da lista (primeira carreira)
+            galleryGrid.insertBefore(card, galleryGrid.firstChild);
+
+            // Rola a tela perfeitamente até a imagem recém-hospedada
+            if (isNew) {
+                setTimeout(() => {
+                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 100);
+            }
+        }
+
+        // Copiar Link para a Área de Transferência
+        function copyUrl(buttonElement, url) {
+            navigator.clipboard.writeText(url).then(() => {
+                const originalText = buttonElement.innerText;
+                buttonElement.innerText = 'Copiado!';
+                buttonElement.style.background = 'var(--national-green)';
+                
+                setTimeout(() => {
+                    buttonElement.innerText = originalText;
+                    buttonElement.style.background = '';
+                }, 1500);
+            }).catch(err => console.error('Erro ao copiar', err));
+        }
+
+        // Função para Excluir a imagem da Galeria Local
+        function deleteImage(url) {
+            if (confirm('Deseja mesmo remover esta imagem da sua galeria?')) {
+                // Filtra e remove do array principal
+                localGallery = localGallery.filter(item => item !== url);
+                localStorage.setItem('cloud_studio_gallery_br', JSON.stringify(localGallery));
+                
+                // Remove visualmente do HTML com efeito suave
+                const itemToRemove = galleryGrid.querySelector(`[data-url="${url}"]`);
+                if (itemToRemove) {
+                    itemToRemove.style.opacity = '0';
+                    itemToRemove.style.transform = 'scale(0.8)';
+                    setTimeout(() => itemToRemove.remove(), 300);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
