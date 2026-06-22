@@ -1642,9 +1642,22 @@
             // 2. Total de Parcelas Pendentes no sistema todo
             const totalParcelasPendentes = estado.lancamentos.filter(item => !item.pago).length;
 
-            // 3. Valores do Mês Atual (A pagar e Pago)
-            let totalDevidoMes = 0;
-            let totalPagoMes = 0;
+        // 3. Valores do Mês Atual (A pagar e Pago)
+let totalDevidoMes = 0;
+let totalPagoMes = 0;
+let faturasAbertasMesAtual = 0; // <-- ADICIONE ESTA LINHA
+
+estado.lancamentos.forEach(item => {
+    const dataVencimento = new Date(item.vencimento);
+    if (dataVencimento.getMonth() === mesAtual && dataVencimento.getFullYear() === anoAtual) {
+        if (item.pago) {
+            totalPagoMes += item.valor;
+        } else {
+            totalDevidoMes += item.valor;
+            faturasAbertasMesAtual++; // <-- ADICIONE ESTA LINHA
+        }
+    }
+});
 
             estado.lancamentos.forEach(item => {
                 const dataVencimento = new Date(item.vencimento);
@@ -1658,8 +1671,8 @@
             });
 
                         // Injeta e mantém o texto centralizado dinamicamente
-            document.getElementById('info-contas-parcelas').innerHTML = `Minnhas Dívidas: <span style="color: var(--primary-color);">${totalContas}</span><br>Faturas Em Aberto: <span style="color: #334155;">${totalParcelasPendentes}</span>`;
-            document.getElementById('info-valores-mes').innerHTML = `
+               document.getElementById('info-contas-parcelas').innerHTML = `Minhas Dívidas: <span style="color: var(--primary-color);">${totalContas}</span><br>Toral de Faturas: <span style="color: #334155;">${totalParcelasPendentes}</span><br>Faturas Deste Mês: <span style="color: var(--danger-color);">${faturasAbertasMesAtual}</span>`;
+                document.getElementById('info-valores-mes').innerHTML = `
   Dívida Deste Mês: <span style="color: var(--danger-color); font-weight: bold;">${totalDevidoMes.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span><br>
   Total Pago: <span style="color: var(--success-color); font-weight: bold;">${totalPagoMes.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span><br>
   <div style="margin-top: 1px;">
