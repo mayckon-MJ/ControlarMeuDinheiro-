@@ -788,7 +788,7 @@
     align-items: center;
     text-align: center;
     cursor: pointer;
-    font-size: 11px;
+    font-size: 6px;
     font-weight: 600;
     color: var(--text-color);
     transition: var(--transition);
@@ -905,8 +905,10 @@
         
            <a href="Hospedagem.html" target="_blank" class="link-hospedar">🔗 Hospedar Imagem</a>
           <p style="font-size: 10px;">Ou Escolha uma do Sistema abaixo</p>   
-        <div class="galeria-grid" id="container-fotos-galeria">
-            </div>
+        <div class="galeria-grid" id="container-fotos-galeria"></div>
+         <p style="font-size: 8px; margin: 6px; padding: 10px;">Caso não encontre a logo desejada, você pode hospedar sua imagem clicando em        
+         <a style="font-size: 8px;" href="Hospedagem.html" target="_blank" class="link-hospedar">🔗 Hospedar Imagem</a><br> 
+             Pegue o link da imagem que hospedou e cole no campo acima</p>
           </div>    
     </div>
 </div>
@@ -1618,16 +1620,48 @@ const galeriaFotos = [
     { nome: "Pacela do Carro", url: "https://i.ibb.co/8kHPxHf/107496.jpg" },
     { nome: "Pacela da Casa", url: "https://i.ibb.co/847vYy8S/107495.jpg" },
     { nome: "Aluguel", url: "https://i.ibb.co/bMfsP77d/107487.jpg" },
+    { nome: "Gás", url: "https://i.ibb.co/bgzBn5tC/107630.png" },
     { nome: "Internet", url: "https://i.ibb.co/0jGjjS7V/107491.jpg" },
     { nome: "Energia", url: "https://i.ibb.co/qMHDwqG2/107594.png" },
     { nome: "Saneago", url: "https://i.ibb.co/b53XzV5N/107595.png" },
+    { nome: "Condominio", url: "https://i.ibb.co/NbxzVqM/107629.png" },
+    { nome: "Academia", url: "https://i.ibb.co/TjDS0BT/107627.jpg" },
+    { nome: "Faculdade", url: "https://i.ibb.co/ZRjp4QsC/107622.jpg" },
+    { nome: "Escola", url: "https://i.ibb.co/08R53Ck/107621.jpg" },
+    { nome: "Creche", url: "https://i.ibb.co/hFxkJD6Z/107620.jpg" },
+    { nome: "Beleto 1", url: "https://i.ibb.co/v6bW5yFx/107616.jpg" },
+    { nome: "Boleto 2", url: "https://i.ibb.co/n8C6mwpF/107615.png" },
+
     { nome: "Habitação da Casa", url: "https://i.ibb.co/C5j6wVd9/107494.jpg" },
     { nome: "Nubank", url: "https://i.ibb.co/0ySTpRQ2/107445.png" },
     { nome: "Mercado Pago", url: "https://i.ibb.co/PG1RZfJ7/107493.png" },
     { nome: "Caixa Econômica", url: "https://i.ibb.co/jYCFDjS/107578.png" },
     { nome: "Itaū", url: "https://i.ibb.co/mC4JWjjJ/107576.png" },
+    { nome: "Inter", url: "https://i.ibb.co/JRkwn6x9/107617.webp" },
     { nome: "Bradesco", url: "https://i.ibb.co/VY37s0Cj/107577.jpg" },
-    { nome: "Banco BV", url: "https://i.ibb.co/gCpBBNs/107593.jpg" }
+    { nome: "Banco BV", url: "https://i.ibb.co/gCpBBNs/107593.jpg" },
+
+    { nome: "Netflex", url: "https://i.ibb.co/wT3yRJJ/107602.jpg" },
+    { nome: "Disney", url: "https://i.ibb.co/yFqG9624/107603.jpg" },
+    { nome: "HBO", url: "https://i.ibb.co/HTt34tNM/107604.jpg" },
+    { nome: "Apple TV", url: "https://i.ibb.co/0pHb6sWw/107614.jpg" },
+
+    { nome: "Claro", url: "https://i.ibb.co/RpnS9mwr/107605.jpg" },
+    { nome: "Tim", url: "https://i.ibb.co/9HZPJwx8/107606.jpg" },
+    { nome: "Vivo", url: "https://i.ibb.co/sJXnpbxf/107611.png" },
+    { nome: "Oi", url: "https://i.ibb.co/gZFDv4JM/107612.jpg" },
+
+    { nome: "Fulano 1", url: "https://i.ibb.co/LDh1NCCG/107607.png" },
+    { nome: "Fulano 2", url: "https://i.ibb.co/sdRMh5Cv/107610.png" },
+    { nome: "Fulana 1", url: "https://i.ibb.co/Q7qyc1Bg/107608.png" },
+    { nome: "Fulana 2", url: "https://i.ibb.co/QjPSL8Fd/107628.png" },
+
+    { nome: "Transporte", url: "https://i.ibb.co/SXT0Y22v/107626.jpg" },
+    { nome: "Combustível", url: "https://i.ibb.co/7NvKcXX7/107625.jpg" },
+    { nome: "Seguro do Carro", url: "https://i.ibb.co/wrcXsMQd/107623.png" },
+    { nome: "Seguro da Moto", url: "https://i.ibb.co/RT8rM452/107624.jpg" }
+
+// { nome: "", url: "" },
 ];
 
 
@@ -1653,8 +1687,35 @@ function abrirGaleria(event) {
     const container = document.getElementById('container-fotos-galeria');
     container.innerHTML = ''; 
 
+    // Define onde cada categoria começa na sua lista (com base no nome do primeiro item)
+    const categorias = {
+        "Contas Fixas e Boletos": "Pacela do Carro",
+        "Bancos e Cartões": "Habitação da Casa", // (Note que você escreveu "Habitação da Casa", ajuste se mudar o nome na lista)
+        "Streamings e TV": "Netflex",
+        "Operadoras de Telefonia": "Claro",
+        "Pessoas": "Fulano 1",
+        "Outos": "Transporte"
+    };
+
     // Renderiza o container com a foto e o nome abaixo dela
     galeriaFotos.forEach(item => {
+        
+        // VERIFICAÇÃO PARA CRIAR A DIVISÃO/LINHA E NOME DA CATEGORIA
+        for (let nomeCategoria in categorias) {
+            if (item.nome === categorias[nomeCategoria]) {
+                const divisor = document.createElement('div');
+                divisor.style.gridColumn = "1 / -1"; // Faz ocupar a largura inteira do grid
+                divisor.style.margin = "15px 0 5px 0";
+                divisor.style.textAlign = "left";
+                
+                divisor.innerHTML = `
+                    <div style="border-top: 1px solid #cbd5e1; margin-bottom: 8px;"></div>
+                    <strong style="color: var(--primary-color); font-size: 13px; text-transform: uppercase;">${nomeCategoria}</strong>
+                `;
+                container.appendChild(divisor);
+            }
+        }
+
         const itemDiv = document.createElement('div');
         itemDiv.className = 'galeria-item-container';
         itemDiv.onclick = () => selecionarFotoGaleria(item.url, item.nome);
@@ -1669,6 +1730,7 @@ function abrirGaleria(event) {
 
     document.getElementById('modal-galeria').classList.add('active');
 }
+
 
 function selecionarFotoGaleria(url, nome) {
     // Insere automaticamente a URL e o Nome nos respectivos inputs do formulário
