@@ -904,6 +904,26 @@
     align-items: center;
     gap: 15px;
 }
+    
+    /* Ícone de positivo no canto esquerdo superior da imagem */
+.banco-item-compacto .check-pago {
+    position: absolute;
+    top: 0;
+    left: calc(50% - 32px); /* Alinha exatamente no canto superior esquerdo da imagem redonda */
+    background: var(--success-color);
+    color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    z-index: 2;
+}
+
 
     </style>
 </head>
@@ -1658,45 +1678,45 @@
             // 2. Total de Parcelas Pendentes no sistema todo
             const totalParcelasPendentes = estado.lancamentos.filter(item => !item.pago).length;
 
-                // 3. Valores do Mês Atual (A pagar e Pago)
-        let totalDevidoMes = 0;
-        let totalPagoMes = 0;
-        let faturasAbertasMesAtual = 0;
+            // 3. Valores do Mês Atual (A pagar e Pago)
+            let totalDevidoMes = 0;
+            let totalPagoMes = 0;
+            let faturasAbertasMesAtual = 0;
 
-        estado.lancamentos.forEach(item => {
-            const dataVencimento = new Date(item.vencimento);
-            if (dataVencimento.getMonth() === mesAtual && dataVencimento.getFullYear() === anoAtual) {
-                if (item.pago) {
-                    totalPagoMes += item.valor;
-                } else {
-                    totalDevidoMes += item.valor;
-                    faturasAbertasMesAtual++;
+            estado.lancamentos.forEach(item => {
+                const dataVencimento = new Date(item.vencimento);
+                if (dataVencimento.getMonth() === mesAtual && dataVencimento.getFullYear() === anoAtual) {
+                    if (item.pago) {
+                        totalPagoMes += item.valor;
+                    } else {
+                        totalDevidoMes += item.valor;
+                        faturasAbertasMesAtual++;
+                    }
                 }
-            }
-        });                    
+            });                    
 
-                        // Injeta e mantém o texto centralizado dinamicamente
-               document.getElementById('info-contas-parcelas').innerHTML = `Minhas Dívidas: <span style="color: var(--primary-color);">${totalContas}</span><br>Toral de Faturas: <span style="color: #334155;">${totalParcelasPendentes}</span><br>Faturas Deste Mês: <span style="color: var(--danger-color);">${faturasAbertasMesAtual}</span>`;
-                document.getElementById('info-valores-mes').innerHTML = `
-  Dívida Deste Mês: <span style="color: var(--danger-color); font-weight: bold;">${totalDevidoMes.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span><br>
-  Total Pago: <span style="color: var(--success-color); font-weight: bold;">${totalPagoMes.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span><br>
-  <div style="margin-top: 1px;">
-        <a href="#" onclick="abrirModalGeral(event)" style="
-      display: inline-block;
-      background-color: #2563eb; 
-      color: white; 
-      padding: 4px 11px; 
-      font-size: 10px; 
-      font-weight: 500; 
-      text-decoration: none; 
-      border-radius: 10px; 
-      cursor: pointer;
-      transition: background 0.2s;
-    " onmouseover="this.style.backgroundColor='#1d4ed8'" onmouseout="this.style.backgroundColor='#2563eb'">
-      Visualizar
-    </a>
-  </div>
-`;
+            // Injeta e mantém o texto centralizado dinamicamente
+            document.getElementById('info-contas-parcelas').innerHTML = `Minhas Dívidas: <span style="color: var(--primary-color);">${totalContas}</span><br>Toral de Faturas: <span style="color: #334155;">${totalParcelasPendentes}</span><br>Faturas Deste Mês: <span style="color: var(--danger-color);">${faturasAbertasMesAtual}</span>`;
+            document.getElementById('info-valores-mes').innerHTML = `
+              Dívida Deste Mês: <span style="color: var(--danger-color); font-weight: bold;">${totalDevidoMes.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span><br>
+              Total Pago: <span style="color: var(--success-color); font-weight: bold;">${totalPagoMes.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span><br>
+              <div style="margin-top: 1px;">
+                    <a href="#" onclick="abrirModalGeral(event)" style="
+                  display: inline-block;
+                  background-color: #2563eb; 
+                  color: white; 
+                  padding: 4px 11px; 
+                  font-size: 10px; 
+                  font-weight: 500; 
+                  text-decoration: none; 
+                  border-radius: 10px; 
+                  cursor: pointer;
+                  transition: background 0.2s;
+                " onmouseover="this.style.backgroundColor='#1d4ed8'" onmouseout="this.style.backgroundColor='#2563eb'">
+                  Visualizar
+                </a>
+              </div>
+            `;
 
             // --- FIM DOS CÁLCULOS ---
 
@@ -1737,8 +1757,18 @@
                     }
                 }
 
+                // Verifica se existe uma fatura do mês atual e se ela já está paga
+                const faturaMesAtual = faturasDoGrupo.find(f => {
+                    const dataVenc = new Date(f.vencimento);
+                    return dataVenc.getMonth() === mesAtual && dataVenc.getFullYear() === anoAtual;
+                });
+
+                // Cria a tag HTML do ícone caso a fatura do mês atual esteja paga
+                const iconePagoHTML = (faturaMesAtual && faturaMesAtual.pago) ? '<div class="check-pago">✓</div>' : '';
+
                 const blocoGridHTML = `
                     <div class="banco-item-compacto ${classeUrgente}" onclick="abrirModalDetalhes('${banco.replace(/'/g, "\\'")}')">
+                        ${iconePagoHTML}
                         <img src="${faturaReferencia.imagem}" alt="${banco}" class="banco-grid-img" onerror="this.src='https://via.placeholder.com/50?text=Erro'">
                         <h3>${banco}</h3>
                     </div>
@@ -1750,6 +1780,8 @@
                 container.innerHTML = `<div class="lista-vazia">🎉 Tudo em dia! Nenhuma fatura pendente.</div>`;
             }
         }
+      
+
 
         /* --- PROCESSO DE PAGAMENTO --- */
    function pagarLancamento(id) {
