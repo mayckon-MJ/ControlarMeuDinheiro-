@@ -208,16 +208,19 @@
 
         .banco-item-compacto h3 {
     margin-top: 8px;
+    margin-left: auto;                /* Força o equilíbrio das margens */
+    margin-right: auto;               /* Força o equilíbrio das margens */
     color: var(--text-color);
     font-weight: 600;
     width: 100%;
-    text-align: center; 
-    /* ALTERAÇÕES AQUI: */
-    font-size: calc(0.65rem + 0.5vw); /* Diminui de tamanho dinamicamente baseado na tela */
-    white-space: normal;              /* Permite que o texto vá para baixo */
-    word-wrap: break-word;            /* Quebra as palavras se necessário */
-    text-overflow: clip;              /* Remove os três pontinhos (...) e mostra tudo */
+    max-width: 100%;                  /* Não deixa o bloco passar do limite do item */
+    text-align: center;               /* Centraliza as linhas do texto */
+    font-size: calc(0.65rem + 0.5vw); 
+    white-space: normal;              
+    word-wrap: break-word;            
+    text-overflow: clip;              
         }
+        
         
         
         .banco-item-compacto:hover {
@@ -235,7 +238,18 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
 
-        
+        .banco-item-compacto {
+    display: flex;
+    flex-direction: column;
+    align-items: center;       /* Alinha a foto e o h3 no centro horizontal */
+    justify-content: center;   /* Garante o alinhamento central */
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+    width: 100%;               /* Garante que o item ocupe o espaço do grid */
+        }
+          
 
         /* Animação Pulsar para faturas Urgentes */
         .urgente .banco-grid-img {
