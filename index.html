@@ -732,6 +732,78 @@
     color: var(--text-color);
     text-align: center;
 }
+    /* MODAL DA GALERIA (ESTILO DO CONTAINER) */
+.modal-full {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8); /* Fundo escuro */
+    display: none; /* Inicia escondido */
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+}
+
+.modal-full.active {
+    display: flex; /* Exibe quando ativo */
+}
+
+/* Caixa interna do modal */
+.modal-full .modal-content-galeria {
+    background: var(--card-bg);
+    padding: 25px;
+    border-radius: var(--border-radius);
+    width: 99%;
+    max-width: 600px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+/* GRID DAS IMAGENS */
+.galeria-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 colunas de imagens */
+    gap: 15px;
+    margin-top: 20px;
+    max-height: 300px;
+    overflow-y: auto; /* Barra de rolagem se houver muitas fotos */
+    padding: 5px;
+}
+
+/* CADA IMAGEM REDONDA E PEQUENA */
+.galeria-item {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%; /* Torna redondo */
+    object-fit: cover;
+    cursor: pointer;
+    border: 2px solid #e2e8f0;
+    transition: var(--transition);
+}
+    /* Adicione esta nova classe para envelopar a imagem e o texto */
+.galeria-item-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-color);
+    transition: var(--transition);
+}
+
+.galeria-item-container:hover {
+    transform: scale(1.05);
+}
+
+
+.galeria-item:hover {
+    transform: scale(1.1);
+    border-color: var(--primary-color);
+}
+
 
     </style>
 </head>
@@ -805,10 +877,41 @@
                 </div>
                 
                 <div class="form-group" id="container-imagem-url">
-                    <label for="imagem-url">Link da Imagem</label>
-                    <input type="url" id="imagem-url" class="form-control" placeholder="http://exemplo.com/imagem.jpg">
-                    <a href="Hospedagem.html" target="_blank" class="link-hospedar">🔗 Hospedar Imagem</a>
-                </div>
+                    
+                    <h4>Escolha uma logo:</h4>
+    <a href="#" onclick="abrirGaleria(event)" style="
+    display: inline-block;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-family: sans-serif;
+    font-weight: 600;
+    text-decoration: none;
+    color: #ffffff;
+    background-color: #007bff;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s, transform 0.1s;
+    " onmouseover="this.style.backgroundColor='#0056b3'" onmouseout="this.style.backgroundColor='#007bff'">
+    Logos</a>
+                    
+<div id="modal-galeria" class="modal-full">
+    <div class="modal-content-galeria">
+        <div class="modal-header">
+            <h2>Escolha uma Logo</h2>
+            <button type="button" class="btn-fechar-modal" style="font-size: 2rem;" onclick="fecharGaleria()">&times;</button>
+        </div>
+        <label for="imagem-url">Link da Imagem</label>
+        <input type="url" id="imagem-url" class="form-control" placeholder="http://exemplo.com/imagem.jpg">
+        
+           <a href="Hospedagem.html" target="_blank" class="link-hospedar">🔗 Hospedar Imagem</a>
+          <p style="font-size: 10px;">Ou Escolha uma do Sistema abaixo</p>   
+        <div class="galeria-grid" id="container-fotos-galeria">
+            </div>
+          </div>    
+    </div>
+</div>
+
+                                                          
 
                 <div id="secao-campos-valores-dinamicos">
                     <div class="form-group secao-original-valores">
@@ -1509,6 +1612,74 @@
             };
             leitor.readAsText(arquivo);
         }
+// LISTA DE IMAGENS DA SUA GALERIA (Substitua os links de exemplo pelos links reais das suas fotos)
+// Substitua a lista antiga por esta estrutura organizada:
+const galeriaFotos = [
+    { nome: "Pacela do Carro", url: "https://i.ibb.co/8kHPxHf/107496.jpg" },
+    { nome: "Pacela da Casa", url: "https://i.ibb.co/847vYy8S/107495.jpg" },
+    { nome: "Aluguel", url: "https://i.ibb.co/bMfsP77d/107487.jpg" },
+    { nome: "Internet", url: "https://i.ibb.co/0jGjjS7V/107491.jpg" },
+    { nome: "Energia", url: "https://i.ibb.co/qMHDwqG2/107594.png" },
+    { nome: "Saneago", url: "https://i.ibb.co/b53XzV5N/107595.png" },
+    { nome: "Habitação da Casa", url: "https://i.ibb.co/C5j6wVd9/107494.jpg" },
+    { nome: "Nubank", url: "https://i.ibb.co/0ySTpRQ2/107445.png" },
+    { nome: "Mercado Pago", url: "https://i.ibb.co/PG1RZfJ7/107493.png" },
+    { nome: "Caixa Econômica", url: "https://i.ibb.co/jYCFDjS/107578.png" },
+    { nome: "Itaū", url: "https://i.ibb.co/mC4JWjjJ/107576.png" },
+    { nome: "Bradesco", url: "https://i.ibb.co/VY37s0Cj/107577.jpg" },
+    { nome: "Banco BV", url: "https://i.ibb.co/gCpBBNs/107593.jpg" }
+];
+
+
+function abrirGaleria(event) {
+    event.preventDefault(); // Evita que a página suba ao clicar na tag <a>
+    const container = document.getElementById('container-fotos-galeria');
+    container.innerHTML = ''; // Limpa a galeria para recarregar
+
+    // Renderiza as fotos redondas na tela
+    galeriaFotos.forEach(url => {
+        const img = document.createElement('img');
+        img.src = url;
+        img.className = 'galeria-item';
+        img.onclick = () => selecionarFotoGaleria(url);
+        container.appendChild(img);
+    });
+
+    document.getElementById('modal-galeria').classList.add('active');
+}
+
+function abrirGaleria(event) {
+    event.preventDefault(); 
+    const container = document.getElementById('container-fotos-galeria');
+    container.innerHTML = ''; 
+
+    // Renderiza o container com a foto e o nome abaixo dela
+    galeriaFotos.forEach(item => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'galeria-item-container';
+        itemDiv.onclick = () => selecionarFotoGaleria(item.url, item.nome);
+
+        itemDiv.innerHTML = `
+            <img src="${item.url}" class="galeria-item" style="margin-bottom: 4px;">
+            <span class="galeria-nome">${item.nome}</span>
+        `;
+        
+        container.appendChild(itemDiv);
+    });
+
+    document.getElementById('modal-galeria').classList.add('active');
+}
+
+function selecionarFotoGaleria(url, nome) {
+    // Insere automaticamente a URL e o Nome nos respectivos inputs do formulário
+    document.getElementById('imagem-url').value = url;
+    document.getElementById('descricao').value = nome;
+    fecharGaleria();
+}
+function fecharGaleria() {
+    document.getElementById('modal-galeria').classList.remove('active');
+}
+
 
     </script>
 </body>
