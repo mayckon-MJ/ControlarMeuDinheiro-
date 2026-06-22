@@ -804,6 +804,90 @@
     border-color: var(--primary-color);
 }
 
+/* NOVO MODAL GRANDE DE VISUALIZAÇÃO GERAL */
+.modal-grande {
+    max-width: 700px !important;
+    width: 95% !important;
+}
+
+.abas-modal-geral {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 10px;
+}
+
+.btn-aba-geral {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    background: #f1f5f9;
+    color: #64748b;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: var(--transition);
+}
+
+.btn-aba-geral.ativa {
+    background: var(--primary-color);
+    color: white;
+}
+
+.lista-modal-geral {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.linha-item-geral {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f8fafc;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.info-item-geral {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.img-item-geral {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.txt-item-geral h4 {
+    font-size: 0.95rem;
+    color: var(--text-color);
+}
+
+.txt-item-geral p {
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+.valor-item-geral {
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.direita-item-geral {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
 
     </style>
 </head>
@@ -815,26 +899,27 @@
 
 
     <div class="container">
-          <header>
-            <div class="header-logo-area">
-    <!-- O estilo inline garante o formato redondo perfeito independente do CSS externo -->
-    <video src="Video1.mp4" autoplay loop muted playsinline style="height: 100px; width: 100px; object-fit: cover; border-radius: 50%; border: 2px solid var(--primary-color);"></video>
-           </div>
-
-
-
-            <div class="header-saldo-area">
+       <header>
+             <div class="header-saldo-area">
                 <h1>Dinheiro Disponível</h1>
                 <div class="saldo-container">
                     <span id="saldo-exibicao" class="saldo-valor">R$ 0,00</span>
                     <button id="btn-editar-saldo" class="btn-edit" onclick="alternarEdicaoSaldo()">✏️</button>
                 </div>
-            </div>
-        </header>
+                <div style="display: flex; flex-direction: column; gap: 6px; align-items: center; margin-top: 10px; width: 100%;">
+                    <div id="info-contas-parcelas" style="background: #f1f5f9; padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; color: #64748b; border: 1px solid #e2e8f0; text-align: center; width: fit-content;">
+                        Minhas Dívidas: 0 | Faturas Em Aberto: 0
+                    </div>
+                    <div id="info-valores-mes" style="background: #f1f5f9; padding: 6px 14px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; color: #64748b; border: 1px solid #e2e8f0; text-align: center; width: fit-content; line-height: 1.4;">
+                        Valor total a pagar esse Mês: R$ 0,00<br>Valor pago esse Mês: R$ 0,00
+                    </div>
+                </div>
+            </div>                                                
+       </header>
 
 
         <main>
-            <h2 class="lista-titulo">Controle de Faturas</h2>
+            <h2 class="lista-titulo">Minhas Dívidas</h2>
             <div id="lista-lancamentos" class="grid-lancamentos"></div>
         </main>
 
@@ -862,20 +947,33 @@
         </div>
     </div>
 
+    <div id="modal-visualizacao-geral" class="modal-overlay" onclick="fecharModalExterno(event, 'modal-visualizacao-geral')">
+        <div class="modal-content modal-grande">
+            <div class="modal-header">
+                <h2 style="font-size: 15px;">Resumo Financeiro do Mês</h2>
+                <button class="btn-fechar-modal" onclick="fecharModalGeral()">&times;</button>
+            </div>
+            
+            <div class="abas-modal-geral">
+                <button id="aba-geral-dividas" class="btn-aba-geral ativa" onclick="alternarAbaGeral('dividas')">Dívidas</button>
+                <button id="aba-geral-pagos" class="btn-aba-geral" onclick="alternarAbaGeral('pagos')">Pagos</button>
+            </div>
+
+            <div id="lista-itens-geral" class="lista-modal-geral"></div>
+        </div>
+    </div>
+
+
     <div id="modal-cadastro" class="modal-overlay" onclick="fecharModalExterno(event, 'modal-cadastro')">
         <div class="modal-content">
             <div class="modal-header">
                 <h2 id="modal-titulo">Novo Lançamento</h2>
                 <button class="btn-fechar-modal" onclick="fecharModal()">&times;</button>
             </div>
+            
             <form id="form-lancamento" onsubmit="salvarLancamento(event)">
                 <input type="hidden" id="modo-edicao-banco" value="">
-                
-                <div class="form-group">
-                    <label for="descricao">Banco / Descrição da Dívida</label>
-                    <input type="text" id="descricao" class="form-control" required placeholder="Ex: Banco Itaú, Internet, etc.">
-                </div>
-                
+                                             
                 <div class="form-group" id="container-imagem-url">
                     
                     <h4>Escolha uma logo:</h4>
@@ -912,8 +1010,11 @@
           </div>    
     </div>
 </div>
-
-                                                          
+                
+                <div class="form-group">
+                    <label for="descricao">Nome do Banco / Descrição da Dívida</label>
+                    <input type="text" id="descricao" class="form-control" required placeholder="Ex: Banco Itaú, Internet, etc.">
+                </div>                                                          
 
                 <div id="secao-campos-valores-dinamicos">
                     <div class="form-group secao-original-valores">
@@ -932,7 +1033,17 @@
                 <button type="button" id="btn-adicionar-parcela-manual" class="btn-repetir-mais" onclick="adicionarCampoRepeticao()">
                     ➕ Adicionar Nova Parcela (Próximo Mês)
                 </button>
+                
+<div class="form-group" style="display: flex; align-items: center; gap: 10px; margin-top: 15px;">
+    <input type="checkbox" id="repetir-mensal" onchange="alternarDataLimiteRepeticao()" style="width: 18px; height: 18px; cursor: pointer;">
+    <label for="repetir-mensal" style="margin-bottom: 0; cursor: pointer;">Repetir esta fatura todos os meses</label>
+</div>
 
+<div id="container-data-limite" class="form-group" style="display: none; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e1; margin-top: 10px;">
+    <label for="data-limite-repeticao">Até quando repetir? (Mês Limite)</label>
+    <input type="month" id="data-limite-repeticao" class="form-control">
+</div>
+   
                 <button type="submit" class="btn-salvar">Salvar Lançamento</button>
             </form>
         </div>
@@ -1127,6 +1238,9 @@
             document.getElementById('modal-cadastro').classList.remove('active');
             document.getElementById('form-lancamento').reset();
             document.getElementById('container-repeticoes').innerHTML = '';
+            document.getElementById('container-data-limite').style.display = 'none';
+            document.getElementById('repetir-mensal').checked = false;
+
             resetarDataInputPrincipal();
         }
 
@@ -1135,9 +1249,10 @@
                 if(idModal === 'modal-cadastro') fecharModal();
                 if(idModal === 'modal-compra') fecharModalCompra();
                 if(idModal === 'modal-detalhes-banco') fecharModalDetalhes();
+                if(idModal === 'modal-visualizacao-geral') fecharModalGeral(); // <-- Linha adicionada
             }
         }
-
+        
         /* --- ALTERNAR ENTRE AS ABAS DENTRO DO MODAL --- */
         function alternarAbaModal(banco, aba) {
             estado.abaAtualModal = aba;
@@ -1302,7 +1417,7 @@
 
                 <div class="acoes-alinhadas-direita">
                     <button class="btn-card-acao" title="Gerenciar Grupo" onclick="fecharModalDetalhes(); abrirModalParaEditarGrupo('${faturaExibicaoBase.descricao.replace(/'/g, "\\'")}')">Criar ou Editar Fatura</button>
-                    <button class="btn-card-acao" title="Lançar nova compra parcelada" onclick="fecharModalDetalhes(); abrirModalNovaCompra('${faturaExibicaoBase.descricao.replace(/'/g, "\\'")}')">Cadastrar Nova Comra</button>
+                    <button class="btn-card-acao" title="Lançar nova compra parcelada" onclick="fecharModalDetalhes(); abrirModalNovaCompra('${faturaExibicaoBase.descricao.replace(/'/g, "\\'")}')">Cadastrar Nova Compra</button>
                 </div>
 
                 <div class="abas-container">
@@ -1435,7 +1550,7 @@
                         estado.lancamentos.push(novaFaturaAdicionadaPeloLapis);
                     }
                 });
-            } else {
+                       } else {
                 const descricao = document.getElementById('descricao').value;
                 const imagem = document.getElementById('imagem-url').value || 'https://via.placeholder.com/50?text=S/I';
                 const vencimentoInicial = document.getElementById('vencimento').value;
@@ -1451,13 +1566,46 @@
                 };
                 estado.lancamentos.push(primeiroLancamento);
 
+                // SE O BOTÃO DE REPETIR ESTIVER SELECIONADO
+                const repetirMensal = document.getElementById('repetir-mensal').checked;
+                const dataLimiteValue = document.getElementById('data-limite-repeticao').value;
+
+                if (repetirMensal && dataLimiteValue) {
+                    let dataAtualLoop = new Date(vencimentoInicial);
+                    const [anoLimite, mesLimite] = dataLimiteValue.split('-').map(Number);
+                    // O mês do objeto Date do JS começa em 0 (Janeiro = 0, Dezembro = 11)
+                    const dataLimite = new Date(anoLimite, mesLimite - 1, 31, 23, 59, 59);
+
+                    let contadorRepeticao = 1;
+                    
+                    while (true) {
+                        // Avança 1 mês de forma consecutiva
+                        dataAtualLoop.setMonth(dataAtualLoop.getMonth() + 1);
+                        
+                        // Se passar da data limite estipulada, encerra o laço
+                        if (dataAtualLoop > dataLimite) break;
+
+                        const faturaAutomatica = {
+                            id: Date.now().toString() + "-auto-" + contadorRepeticao,
+                            descricao: descricao,
+                            imagem: imagem,
+                            vencimento: dataAtualLoop.toISOString().slice(0, 16),
+                            valor: valorInicial,
+                            pago: false
+                        };
+                        estado.lancamentos.push(faturaAutomatica);
+                        contadorRepeticao++;
+                    }
+                }
+
+                // Mantém os vencimentos manuais adicionais, caso existam na tela
                 const vencimentosRepetidos = document.querySelectorAll('.vencimento-repetido');
                 const valoresRepetidos = document.querySelectorAll('.valor-repetido');
 
                 vencimentosRepetidos.forEach((elementoData, index) => {
                     const valorRep = converterParaFloat(valoresRepetidos[index].value);
                     const faturaAdicional = {
-                        id: Date.now().toString() + "-" + (index + 1),
+                        id: Date.now().toString() + "-manual-" + (index + 1),
                         descricao: descricao,
                         imagem: imagem,
                         vencimento: elementoData.value,
@@ -1481,6 +1629,58 @@
         function renderizarLancamentos() {
             const container = document.getElementById('lista-lancamentos');
             container.innerHTML = '';
+
+            // --- CÁLCULOS DOS NOVOS DADOS DA INTERFACE ---
+            const agora = new Date();
+            const mesAtual = agora.getMonth();
+            const anoAtual = agora.getFullYear();
+
+            // 1. Total de Contas Únicas (pelo nome/descrição)
+            const nomesContasUnicas = new Set(estado.lancamentos.map(item => item.descricao));
+            const totalContas = nomesContasUnicas.size;
+
+            // 2. Total de Parcelas Pendentes no sistema todo
+            const totalParcelasPendentes = estado.lancamentos.filter(item => !item.pago).length;
+
+            // 3. Valores do Mês Atual (A pagar e Pago)
+            let totalDevidoMes = 0;
+            let totalPagoMes = 0;
+
+            estado.lancamentos.forEach(item => {
+                const dataVencimento = new Date(item.vencimento);
+                if (dataVencimento.getMonth() === mesAtual && dataVencimento.getFullYear() === anoAtual) {
+                    if (item.pago) {
+                        totalPagoMes += item.valor;
+                    } else {
+                        totalDevidoMes += item.valor;
+                    }
+                }
+            });
+
+                        // Injeta e mantém o texto centralizado dinamicamente
+            document.getElementById('info-contas-parcelas').innerHTML = `Minnhas Dívidas: <span style="color: var(--primary-color);">${totalContas}</span><br>Faturas Em Aberto: <span style="color: #334155;">${totalParcelasPendentes}</span>`;
+            document.getElementById('info-valores-mes').innerHTML = `
+  Dívida Deste Mês: <span style="color: var(--danger-color); font-weight: bold;">${totalDevidoMes.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span><br>
+  Total Pago: <span style="color: var(--success-color); font-weight: bold;">${totalPagoMes.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span><br>
+  <div style="margin-top: 1px;">
+        <a href="#" onclick="abrirModalGeral(event)" style="
+      display: inline-block;
+      background-color: #2563eb; 
+      color: white; 
+      padding: 4px 11px; 
+      font-size: 10px; 
+      font-weight: 500; 
+      text-decoration: none; 
+      border-radius: 10px; 
+      cursor: pointer;
+      transition: background 0.2s;
+    " onmouseover="this.style.backgroundColor='#1d4ed8'" onmouseout="this.style.backgroundColor='#2563eb'">
+      Visualizar
+    </a>
+  </div>
+`;
+
+            // --- FIM DOS CÁLCULOS ---
 
             if (estado.lancamentos.length === 0) {
                 container.innerHTML = `<div class="lista-vazia">Nenhum lançamento cadastrado.</div>`;
@@ -1740,6 +1940,113 @@ function selecionarFotoGaleria(url, nome) {
 }
 function fecharGaleria() {
     document.getElementById('modal-galeria').classList.remove('active');
+}
+        let abaGeralAtiva = 'dividas';
+
+        function abrirModalGeral(event) {
+            if(event) event.preventDefault();
+            abaGeralAtiva = 'dividas';
+            document.getElementById('aba-geral-dividas').classList.add('ativa');
+            document.getElementById('aba-geral-pagos').classList.remove('ativa');
+            document.getElementById('modal-visualizacao-geral').classList.add('active');
+            renderizarConteudoAbaGeral();
+        }
+
+        function fecharModalGeral() {
+            document.getElementById('modal-visualizacao-geral').classList.remove('active');
+        }
+
+        function alternarAbaGeral(aba) {
+            abaGeralAtiva = aba;
+            if (aba === 'dividas') {
+                document.getElementById('aba-geral-dividas').classList.add('ativa');
+                document.getElementById('aba-geral-pagos').classList.remove('ativa');
+            } else {
+                document.getElementById('aba-geral-dividas').classList.remove('ativa');
+                document.getElementById('aba-geral-pagos').classList.add('ativa');
+            }
+            renderizarConteudoAbaGeral();
+        }
+
+        function renderizarConteudoAbaGeral() {
+            const container = document.getElementById('lista-itens-geral');
+            container.innerHTML = '';
+
+            const agora = new Date();
+            const mesAtual = agora.getMonth();
+            const anoAtual = agora.getFullYear();
+
+            // Filtra faturas do mês atual em curso
+            let faturasDoMes = estado.lancamentos.filter(item => {
+                const dataVenc = new Date(item.vencimento);
+                return dataVenc.getMonth() === mesAtual && dataVenc.getFullYear() === anoAtual;
+            });
+
+            if (abaGeralAtiva === 'dividas') {
+                // Faturas em aberto ordenadas por data
+                let dividas = faturasDoMes.filter(f => !f.pago).sort((a, b) => new Date(a.vencimento) - new Date(b.vencimento));
+                
+                if (dividas.length === 0) {
+                    container.innerHTML = '<div style="text-align:center; padding:20px; color:#64748b;">Nenhuma dívida em aberto este mês! 🎉</div>';
+                    return;
+                }
+
+                dividas.forEach(f => {
+                    const dt = new Date(f.vencimento).toLocaleDateString('pt-BR');
+                    const vl = f.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                    
+                    container.insertAdjacentHTML('beforeend', `
+                        <div class="linha-item-generic linha-item-geral">
+                            <div class="info-item-geral">
+                                <img src="${f.imagem}" class="img-item-geral" onerror="this.src='https://via.placeholder.com/50?text=Erro'">
+                                <div class="txt-item-geral">
+                                    <h4>${f.descricao}</h4>
+                                    <p>Vencimento: ${dt}</p>
+                                </div>
+                            </div>
+                            <div class="direita-item-geral">
+                                <span class="valor-item-geral" style="color: var(--danger-color);">${vl}</span>
+                                <button class="btn-status btn-pagar" style="padding: 6px 12px; font-size: 0.8rem;" onclick="fecharModalGeral(); pagarLancamento('${f.id}')">Pagar</button>
+                            </div>
+                        </div>
+                    `);
+                });
+            } else {
+                // Extrato do que já foi pago ordenado por data
+                let pagos = faturasDoMes.filter(f => f.pago).sort((a, b) => new Date(a.vencimento) - new Date(b.vencimento));
+
+                if (pagos.length === 0) {
+                    container.innerHTML = '<div style="text-align:center; padding:20px; color:#64748b;">Nenhum pagamento realizado este mês.</div>';
+                    return;
+                }
+
+                pagos.forEach(f => {
+                    const dt = new Date(f.vencimento).toLocaleDateString('pt-BR');
+                    const vl = f.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                    
+                    container.insertAdjacentHTML('beforeend', `
+                        <div class="linha-item-generic linha-item-geral">
+                            <div class="info-item-geral">
+                                <img src="${f.imagem}" class="img-item-geral" onerror="this.src='https://via.placeholder.com/50?text=Erro'">
+                                <div class="txt-item-geral">
+                                    <h4>${f.descricao}</h4>
+                                    <p>Pago em conta</p>
+                                </div>
+                            </div>
+                            <div>
+                                <span class="valor-item-geral" style="color: var(--success-color);">${vl}</span>
+                            </div>
+                        </div>
+                    `);
+                });
+            }
+        }
+
+// Exibe o campo de data se o botão for marcado
+function alternarDataLimiteRepeticao() {
+    const checkbox = document.getElementById('repetir-mensal');
+    const containerData = document.getElementById('container-data-limite');
+    containerData.style.display = checkbox.checked ? 'block' : 'none';
 }
 
 
