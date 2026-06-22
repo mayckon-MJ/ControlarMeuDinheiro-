@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -1657,33 +1658,22 @@
             // 2. Total de Parcelas Pendentes no sistema todo
             const totalParcelasPendentes = estado.lancamentos.filter(item => !item.pago).length;
 
-        // 3. Valores do Mês Atual (A pagar e Pago)
-let totalDevidoMes = 0;
-let totalPagoMes = 0;
-let faturasAbertasMesAtual = 0; // <-- ADICIONE ESTA LINHA
+                // 3. Valores do Mês Atual (A pagar e Pago)
+        let totalDevidoMes = 0;
+        let totalPagoMes = 0;
+        let faturasAbertasMesAtual = 0;
 
-estado.lancamentos.forEach(item => {
-    const dataVencimento = new Date(item.vencimento);
-    if (dataVencimento.getMonth() === mesAtual && dataVencimento.getFullYear() === anoAtual) {
-        if (item.pago) {
-            totalPagoMes += item.valor;
-        } else {
-            totalDevidoMes += item.valor;
-            faturasAbertasMesAtual++; // <-- ADICIONE ESTA LINHA
-        }
-    }
-});
-
-            estado.lancamentos.forEach(item => {
-                const dataVencimento = new Date(item.vencimento);
-                if (dataVencimento.getMonth() === mesAtual && dataVencimento.getFullYear() === anoAtual) {
-                    if (item.pago) {
-                        totalPagoMes += item.valor;
-                    } else {
-                        totalDevidoMes += item.valor;
-                    }
+        estado.lancamentos.forEach(item => {
+            const dataVencimento = new Date(item.vencimento);
+            if (dataVencimento.getMonth() === mesAtual && dataVencimento.getFullYear() === anoAtual) {
+                if (item.pago) {
+                    totalPagoMes += item.valor;
+                } else {
+                    totalDevidoMes += item.valor;
+                    faturasAbertasMesAtual++;
                 }
-            });
+            }
+        });                    
 
                         // Injeta e mantém o texto centralizado dinamicamente
                document.getElementById('info-contas-parcelas').innerHTML = `Minhas Dívidas: <span style="color: var(--primary-color);">${totalContas}</span><br>Toral de Faturas: <span style="color: #334155;">${totalParcelasPendentes}</span><br>Faturas Deste Mês: <span style="color: var(--danger-color);">${faturasAbertasMesAtual}</span>`;
@@ -1762,7 +1752,7 @@ estado.lancamentos.forEach(item => {
         }
 
         /* --- PROCESSO DE PAGAMENTO --- */
-                function pagarLancamento(id) {
+   function pagarLancamento(id) {
             const index = estado.lancamentos.findIndex(item => item.id === id);
             if (index === -1) return;
 
@@ -1774,14 +1764,16 @@ estado.lancamentos.forEach(item => {
             }
 
             // Simula o tempo de carregamento de 1.2 segundos
+                        // Simula o tempo de carregamento de 1.2 segundos
             setTimeout(() => {
                 const lancamento = estado.lancamentos[index];
                 
+                // Mude o status para pago PRIMEIRO antes de atualizar a tela
+                lancamento.pago = true;
+
                 estado.saldo -= lancamento.valor;
                 localStorage.setItem('financas_saldo', estado.saldo);
                 renderizarSaldo();
-
-                lancamento.pago = true;
 
                 atualizarLocalStorageLancamentos();
                 renderizarLancamentos();
@@ -1796,8 +1788,8 @@ estado.lancamentos.forEach(item => {
                     alerta.classList.remove('mostrar');
                 }, 2500);
 
-                       }, 1200);
-        }
+            }, 1200);
+   }
 
         /* --- FUNÇÕES DE DOWNLOAD E UPLOAD DO BACKUP --- */
         function fazerDownloadBackup() {
