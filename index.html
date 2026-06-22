@@ -194,24 +194,30 @@
         }
 
         @media (max-width: 480px) {
-            .grid-lancamentos {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 10px;
-            }
+    .grid-lancamentos {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+    }
+    /* ADICIONE ESTE BLOCO AQUI DENTRO: */
+    .banco-item-compacto h3 {
+        font-size: 0.7rem;       /* Letra menor fixa para celular */
+        line-height: 1.1;        /* Junta um pouco as linhas para não dar espaço demais */
+    }
         }
+        
 
         .banco-item-compacto h3 {
-    font-size: 0.85rem;
     margin-top: 8px;
     color: var(--text-color);
     font-weight: 600;
     width: 100%;
-    /* MODIFICAÇÕES AQUI: */
-    word-wrap: break-word;       /* Força a quebra de palavras grandes */
-    word-break: break-word;      /* Garante a quebra em navegadores antigos */
-    overflow-wrap: anywhere;     /* Permite quebrar em qualquer lugar se necessário */
-    max-width: 80px;             /* Limita a largura máxima do texto para acompanhar a foto */
+    /* ALTERAÇÕES AQUI: */
+    font-size: calc(0.65rem + 0.5vw); /* Diminui de tamanho dinamicamente baseado na tela */
+    white-space: normal;              /* Permite que o texto vá para baixo */
+    word-wrap: break-word;            /* Quebra as palavras se necessário */
+    text-overflow: clip;              /* Remove os três pontinhos (...) e mostra tudo */
         }
+        
         
         .banco-item-compacto:hover {
             transform: translateY(-5px);
@@ -228,16 +234,7 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
 
-        .banco-item-compacto h3 {
-            font-size: 0.85rem;
-            margin-top: 8px;
-            color: var(--text-color);
-            font-weight: 600;
-            width: 100%;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+        
 
         /* Animação Pulsar para faturas Urgentes */
         .urgente .banco-grid-img {
