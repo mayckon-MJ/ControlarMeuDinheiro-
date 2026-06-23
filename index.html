@@ -1820,6 +1820,17 @@
         function fecharModalDetalhes() {
             document.getElementById('modal-detalhes-banco').classList.remove('active');
         }
+       function fecharModalCompra() {
+    document.getElementById('modal-compra').classList.remove('active');
+    document.getElementById('form-compra').reset(); // Limpa os campos preenchidos
+    
+    // Garante que a seção secreta de ajuste em massa feche junto
+    const containerAjuste = document.getElementById('container-ajuste-fixo');
+    if (containerAjuste) {
+        containerAjuste.style.display = 'none';
+    }
+}
+ 
 
         /* --- ABRIR MODAL PARA EDIÇÃO EM MASSA (LÁPIS DO CARD DE FERRAMENTAS ✏️) --- */
         function abrirModalParaEditarGrupo(banco) {
