@@ -2,22 +2,24 @@
 {
   "name": "Finanças Pessoais",
   "short_name": "Finanças",
-  "start_url": "index.html",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "black",
-  "theme-color": "#e0a800",
+  "background_color": "#000000",
+  "theme_color": "#e0a800",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "https://i.ibb.co/PvM0nN1X/108828.png?v=4", 
-      "sizes": "292x292",
-      "type": "image/png"
+      "src": "https://i.ibb.co/qL42fQBN/108582.png?v=5",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "https://i.ibb.co/qL42fQBN/108582.png?v=4",
-      "sizes": "999x999",
-      "type": "image/png"
+      "src": "https://i.ibb.co/qL42fQBN/108582.png?v=5",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
-  ],
-  "nota_desenvolvedor": "💡 DICA: Se você trocar o logo lá no ImgBB, atualize os links acima e mude o final de ?v=2 para ?v=3. Isso faz o navegador do celular entender que a imagem é nova!"
+  ]
 }
