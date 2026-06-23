@@ -2316,7 +2316,7 @@ function copiarPix() {
             leitor.readAsText(arquivo);
         }
 // LISTA DE IMAGENS DA SUA GALERIA (Substitua os links de exemplo pelos links reais das suas fotos)
-// Substitua a lista antiga por esta estrutura organizada:
+
 const galeriaFotos = [
     { nome: "Financiamento do Carro", url: "https://i.ibb.co/8kHPxHf/107496.jpg" },
     { nome: "Financiamento da Moto", url: "https://i.ibb.co/1GvwXr5Y/107821.jpg" },
@@ -2333,7 +2333,6 @@ const galeriaFotos = [
     { nome: "Creche", url: "https://i.ibb.co/hFxkJD6Z/107620.jpg" },
     { nome: "Beleto 1", url: "https://i.ibb.co/v6bW5yFx/107616.jpg" },
     { nome: "Boleto 2", url: "https://i.ibb.co/n8C6mwpF/107615.png" },
-
     { nome: "Habitação da Casa", url: "https://i.ibb.co/C5j6wVd9/107494.jpg" },
     { nome: "Nubank", url: "https://i.ibb.co/0ySTpRQ2/107445.png" },
     { nome: "Mercado Pago", url: "https://i.ibb.co/PG1RZfJ7/107493.png" },
@@ -2342,22 +2341,18 @@ const galeriaFotos = [
     { nome: "Inter", url: "https://i.ibb.co/JRkwn6x9/107617.webp" },
     { nome: "Bradesco", url: "https://i.ibb.co/VY37s0Cj/107577.jpg" },
     { nome: "Banco BV", url: "https://i.ibb.co/gCpBBNs/107593.jpg" },
-
     { nome: "Netflex", url: "https://i.ibb.co/wT3yRJJ/107602.jpg" },
     { nome: "Disney", url: "https://i.ibb.co/yFqG9624/107603.jpg" },
     { nome: "HBO", url: "https://i.ibb.co/HTt34tNM/107604.jpg" },
     { nome: "Apple TV", url: "https://i.ibb.co/0pHb6sWw/107614.jpg" },
-
     { nome: "Claro", url: "https://i.ibb.co/RpnS9mwr/107605.jpg" },
     { nome: "Tim", url: "https://i.ibb.co/9HZPJwx8/107606.jpg" },
     { nome: "Vivo", url: "https://i.ibb.co/sJXnpbxf/107611.png" },
     { nome: "Oi", url: "https://i.ibb.co/gZFDv4JM/107612.jpg" },
-
     { nome: "Fulano 1", url: "https://i.ibb.co/LDh1NCCG/107607.png" },
     { nome: "Fulano 2", url: "https://i.ibb.co/sdRMh5Cv/107610.png" },
     { nome: "Fulana 1", url: "https://i.ibb.co/Q7qyc1Bg/107608.png" },
     { nome: "Fulana 2", url: "https://i.ibb.co/QjPSL8Fd/107628.png" },
-
     { nome: "Transporte", url: "https://i.ibb.co/SXT0Y22v/107626.jpg" },
     { nome: "Combustível", url: "https://i.ibb.co/7NvKcXX7/107625.jpg" },
     { nome: "Seguro da Moto", url: "https://i.ibb.co/RT8rM452/107624.jpg" },    
@@ -2366,51 +2361,30 @@ const galeriaFotos = [
     { nome: "Realizar Boleto 2", url: "https://i.ibb.co/39RHdhG2/107848.png" },
     { nome: "Realizar Boleto 3", url: "https://i.ibb.co/VpMWnQLC/107846.png" },
     { nome: "Plano odontológico", url: "https://i.ibb.co/G4ynfCk5/107851.png" }
-    
-// { nome: "", url: "" },
 ];
 
-
-function abrirGaleria(event) {
-    event.preventDefault(); // Evita que a página suba ao clicar na tag <a>
-    const container = document.getElementById('container-fotos-galeria');
-    container.innerHTML = ''; // Limpa a galeria para recarregar
-
-    // Renderiza as fotos redondas na tela
-    galeriaFotos.forEach(url => {
-        const img = document.createElement('img');
-        img.src = url;
-        img.className = 'galeria-item';
-        img.onclick = () => selecionarFotoGaleria(url);
-        container.appendChild(img);
-    });
-
-    document.getElementById('modal-galeria').classList.add('active');
-}
-
+// FUNÇÃO ABRIR GALERIA UNIFICADA (Apenas uma versão válida)
 function abrirGaleria(event) {
     event.preventDefault(); 
     const container = document.getElementById('container-fotos-galeria');
+    if (!container) return;
     container.innerHTML = ''; 
 
-    // Define onde cada categoria começa na sua lista (com base no nome do primeiro item)
     const categorias = {
-        "Contas Fixas e Boletos": "Pacela do Carro",
-        "Bancos e Cartões": "Habitação da Casa", // (Note que você escreveu "Habitação da Casa", ajuste se mudar o nome na lista)
+        "Contas Fixas e Boletos": "Financiamento do Carro",
+        "Bancos e Cartões": "Habitação da Casa",
         "Streamings e TV": "Netflex",
         "Operadoras de Telefonia": "Claro",
         "Pessoas": "Fulano 1",
-        "Outos": "Transporte"
+        "Outros": "Transporte"
     };
 
-    // Renderiza o container com a foto e o nome abaixo dela
     galeriaFotos.forEach(item => {
-        
-        // VERIFICAÇÃO PARA CRIAR A DIVISÃO/LINHA E NOME DA CATEGORIA
+        // Cria divisores de categoria se o nome bater
         for (let nomeCategoria in categorias) {
             if (item.nome === categorias[nomeCategoria]) {
                 const divisor = document.createElement('div');
-                divisor.style.gridColumn = "1 / -1"; // Faz ocupar a largura inteira do grid
+                divisor.style.gridColumn = "1 / -1";
                 divisor.style.margin = "15px 0 5px 0";
                 divisor.style.textAlign = "left";
                 
@@ -2436,6 +2410,17 @@ function abrirGaleria(event) {
 
     document.getElementById('modal-galeria').classList.add('active');
 }
+
+function selecionarFotoGaleria(url, nome) {
+    document.getElementById('imagem-url').value = url;
+    document.getElementById('descricao').value = nome;
+    fecharGaleria();
+}
+
+function fecharGaleria() {
+    document.getElementById('modal-galeria').classList.remove('active');
+}
+
 
 
 function selecionarFotoGaleria(url, nome) {
