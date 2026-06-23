@@ -5,6 +5,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <title>Finanças Pessoais</title>
     <style>
         /* ==========================================
@@ -486,8 +488,9 @@
            ========================================== */
         .btn-flutuante {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
+            bottom: 20px;       /* Distância fixa da borda inferior */
+            left: 50%;          /* Move o botão até a metade da tela */
+            transform: translateX(-50%); /* Puxa o botão de volta para o centro exato */
             width: 60px;
             height: 60px;
             background-color: var(--primary-color);
@@ -505,7 +508,8 @@
         }
 
         .btn-flutuante:hover {
-            transform: scale(1.1) rotate(90deg);
+            /* Mantém o botão centralizado enquanto gira no efeito de hover */
+            transform: translateX(-50%) scale(1.1) rotate(90deg);
             background-color: #357abd;
         }
 
@@ -924,6 +928,117 @@
     z-index: 2;
 }
 
+/* Status dinâmico profissional */
+.status-indicador {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-weight: 700;
+}
+.status-alerta { background: #fef2f2; color: #ef4444; }
+.status-ok { background: #f0fdf4; color: #15803d; }
+
+.status-foguete {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: currentColor;
+    animation: piscarStatus 1.8s infinite ease-in-out;
+}
+@keyframes piscarStatus {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+}
+
+/* Container que vai envelopar a tag de status no topo */
+.status-topo-container {
+    grid-column: 1 / -1; /* Força a ocupar a linha toda se estiver em grid */
+    width: 100%;
+    display: flex;
+    justify-content: center; /* Centraliza horizontalmente */
+    margin-bottom: 10px;    /* Espaço em relação aos dados de baixo */
+}
+
+/* --- CONTAINER PAI: CONTROLADO VIA GRID DE 3 COLUNAS --- */
+.painel-topo-dados {
+    display: grid;
+    /* Divide o espaço em 3 colunas iguais e alinha verticalmente no centro */
+    grid-template-columns: 1fr auto 1fr; 
+    align-items: center;
+    gap: 8px 16px;       /* Espaçamento reduzido (vertical horizontal) */
+    background: #ffffff;
+    padding: 10px 14px;  /* Super compacto */
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgb(0 0 0 / 0.04);
+    margin-bottom: 16px;
+    box-sizing: border-box; /* Garante que o padding não jogue nada pra fora */
+}
+
+/* O Segredo: A tag ocupa a linha superior inteira atravessando as 3 colunas */
+.status-topo-container {
+    grid-column: 1 / -1; 
+    width: 100%;
+    display: flex;
+    justify-content: center; /* Centraliza perfeitamente no meio do painel */
+    margin-bottom: 4px;     /* Pouco espaço para não esticar o card */
+}
+
+/* Força os blocos de texto a respeitarem o espaço e não vazarem */
+#info-contas-parcelas {
+    justify-self: start; /* Alinha o texto na esquerda */
+    width: 100%;
+}
+
+#info-valores-mes {
+    justify-self: end;   /* Alinha o texto na direita */
+    width: 100%;
+    text-align: right;   /* Garante que o botão e textos fiquem colados na direita interna */
+}
+
+/* MINI-GRÁFICO TRAVADO NO CENTRO */
+.area-grafico-wrapper {
+    position: relative;
+    width: 75px; 
+    height: 75px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* --- RESPONSIVIDADE MOBILE CIRÚRGICA --- */
+@media (max-width: 600px) {
+    
+    .painel-topo-dados {
+        /* No celular vira uma coluna única, empilhando tudo dentro do card */
+        grid-template-columns: 1fr; 
+        justify-items: center;
+        text-align: center;
+        gap: 10px;
+        padding: 12px;
+    }
+
+    #info-contas-parcelas, 
+    #info-valores-mes {
+        justify-self: center;
+        text-align: center; /* Centraliza os textos em telas pequenas */
+    }
+
+    #info-valores-mes div {
+        text-align: center !important; /* Corrige os mini-grids de valores */
+    }
+    
+    #info-valores-mes style, 
+    #info-valores-mes a {
+        display: inline-block;
+        margin: 4px auto 0 auto !important; /* Centraliza o botão no celular */
+    }
+}
+
 
     </style>
 </head>
@@ -936,21 +1051,34 @@
 
     <div class="container">
        <header>
-             <div class="header-saldo-area">
-                <h1>Dinheiro Disponível</h1>
-                <div class="saldo-container">
-                    <span id="saldo-exibicao" class="saldo-valor">R$ 0,00</span>
-                    <button id="btn-editar-saldo" class="btn-edit" onclick="alternarEdicaoSaldo()">✏️</button>
-                </div>
-                <div style="display: flex; flex-direction: column; gap: 6px; align-items: center; margin-top: 10px; width: 100%;">
-                    <div id="info-contas-parcelas" style="background: #f1f5f9; padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; color: #64748b; border: 1px solid #e2e8f0; text-align: center; width: fit-content;">
-                        Minhas Dívidas: 0 | Faturas Em Aberto: 0
-                    </div>
-                    <div id="info-valores-mes" style="background: #f1f5f9; padding: 6px 14px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; color: #64748b; border: 1px solid #e2e8f0; text-align: center; width: fit-content; line-height: 1.4;">
-                        Valor total a pagar esse Mês: R$ 0,00<br>Valor pago esse Mês: R$ 0,00
-                    </div>
-                </div>
-            </div>                                                
+<video 
+  src="logo.mp4" 
+  autoplay 
+  loop 
+  muted 
+  playsinline 
+  style="width: 134px; height: 150px; object-fit: cover; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+</video>
+
+    <div class="header-saldo-area" style="width: 100%; align-items: stretch;">
+    <h1>Dinheiro Disponível</h1>
+    <div class="saldo-container" style="justify-content: space-between; width: 100%;">
+        <span id="saldo-exibicao" class="saldo-valor">R$ 0,00</span>
+        <button id="btn-editar-saldo" class="btn-edit" onclick="alternarEdicaoSaldo()">✏️</button>
+    </div>
+               
+<div class="painel-topo-dados">
+    <div id="status-topo-mes" class="status-topo-container"></div>
+
+    <div id="info-contas-parcelas"></div>
+
+    <div class="area-grafico-wrapper">
+        <canvas id="graficoFinancas"></canvas>
+    </div>
+
+    <div id="info-valores-mes"></div>
+</div>
+    </div>                                                
        </header>
 
 
@@ -967,6 +1095,40 @@
             </div>
             <input type="file" id="input-upload-backup" style="display: none;" accept=".json" onchange="fazerUploadBackup(event)">
         </div>
+        <div style="display: flex; justify-content: center; align-items: center; width: 100%; margin: 20px 0;">
+    <a href="https://wa.me/5562995679219?text=Ol%C3%A1%2C%20Mayckon!%20Eu%20vim%20pelo%20Site%20Fuma%C3%A7a." 
+       target="_blank" 
+       style="
+        display: inline-flex; 
+        align-items: center; 
+        gap: 14px; 
+        background-color: #ffffff; 
+        color: #2c3e50; 
+        border: 1px solid #e2e8f0;
+        text-decoration: none; 
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        padding: 12px 24px; 
+        border-radius: 8px; 
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        transition: all 0.2s;
+       "
+       onmouseover="this.style.backgroundColor='#f8fafc'; this.style.borderColor='#cbd5e1'; this.style.transform='translateY(-2px)';"
+       onmouseout="this.style.backgroundColor='#ffffff'; this.style.borderColor='#e2e8f0'; this.style.transform='translateY(0)';"
+    >
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M17 11c1.5 0 3 1 3 3v2"></path>
+            <path d="M19 16h2a1 1 0 0 0 1-1v-1a4 4 0 0 0-4-4"></path>
+        </svg>
+
+        <div style="display: flex; flex-direction: column; align-items: flex-start; line-height: 1.2;">
+            <span style="font-weight: 700; font-size: 15px;">Suporte Online</span>
+            <span style="font-weight: 400; font-size: 10px; color: #7f8c8d; margin-top: 2px;">Criador do Sistema</span>
+        </div>
+    </a>
+</div>
+
         </div>
 
     </div>
@@ -1695,30 +1857,146 @@
                 }
             });                    
 
-            // Injeta e mantém o texto centralizado dinamicamente
-            document.getElementById('info-contas-parcelas').innerHTML = `Minhas Dívidas: <span style="color: var(--primary-color);">${totalContas}</span><br>Toral de Faturas: <span style="color: #334155;">${totalParcelasPendentes}</span><br>Faturas Deste Mês: <span style="color: var(--danger-color);">${faturasAbertasMesAtual}</span>`;
-            document.getElementById('info-valores-mes').innerHTML = `
-              Dívida Deste Mês: <span style="color: var(--danger-color); font-weight: bold;">${totalDevidoMes.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span><br>
-              Total Pago: <span style="color: var(--success-color); font-weight: bold;">${totalPagoMes.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span><br>
-              <div style="margin-top: 1px;">
-                    <a href="#" onclick="abrirModalGeral(event)" style="
-                  display: inline-block;
-                  background-color: #2563eb; 
-                  color: white; 
-                  padding: 4px 11px; 
-                  font-size: 10px; 
-                  font-weight: 500; 
-                  text-decoration: none; 
-                  border-radius: 10px; 
-                  cursor: pointer;
-                  transition: background 0.2s;
-                " onmouseover="this.style.backgroundColor='#1d4ed8'" onmouseout="this.style.backgroundColor='#2563eb'">
-                  Visualizar
-                </a>
-              </div>
+            // Determina a tag de status visual para o mês atual
+            const situacaoHTML = faturasAbertasMesAtual > 0 
+                ? `<span class="status-indicador status-alerta"><span class="status-foguete"></span>Atenção</span>`
+                : `<span class="status-indicador status-ok"><span class="status-foguete"></span>Em Dia</span>`;
+
+            // INJETA O STATUS CENTRALIZADO NO TOPO
+            document.getElementById('status-topo-mes').innerHTML = situacaoHTML;
+
+            // INJEÇÃO DAS MÉTRICAS ESQUERDA (Sem a tag antiga embaixo)
+            document.getElementById('info-contas-parcelas').innerHTML = `
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px 10px;">
+                    <div>
+                        <div class="label-sistema">Minhas Dívidas</div>
+                        <div class="valor-sistema" style="color: var(--primary-color);">${totalContas}  <p style="font-size: 12px;">Contas</p></div>
+                    </div>
+                    <div>
+                        <div class="label-sistema">Total Geral</div>
+                       <div class="valor-sistema" style="color: var(--primary-color);">${totalParcelasPendentes}  <p style="font-size: 12px;">Contas</p></div>
+                    </div>
+                </div>
+                <div style="margin-top: 6px;">
+                    <span class="label-sistema">Faturas a pagar:</span>
+                    <span class="valor-sistema" style="color: ${faturasAbertasMesAtual > 0 ? 'var(--danger-color)' : 'var(--success-color)'};">${faturasAbertasMesAtual} em aberto</span>
+                </div>
             `;
 
-            // --- FIM DOS CÁLCULOS ---
+            // INJEÇÃO DAS MÉTRICAS DIREITA (Valores e Botão de Ação)
+            document.getElementById('info-valores-mes').innerHTML = `
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; margin-bottom: 4px;">
+                    <div>
+                        <div class="label-sistema" style="font-size:10px;">Debito Deste Mês:</div>
+                        <div class="valor-sistema" style="color: var(--danger-color); font-weight: 800;">${totalDevidoMes.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</div>
+                    </div>
+                    <div>
+                        <div class="label-sistema" style="font-size:10px;">Valor Pago deste mês</div>
+                        <div class="valor-sistema" style="color: var(--success-color); font-weight: 800;">${totalPagoMes.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</div>
+                    </div>
+                </div>
+                <div style="margin-top: 10px; text-align: right;">
+                    <a href="#" onclick="abrirModalGeral(event)" style="
+                      display: inline-flex;
+                      align-items: center;
+                      gap: 4px;
+                      background-color: #f1f5f9; 
+                      color: #475569; 
+                      padding: 4px 10px; 
+                      font-size: 0.65rem; 
+                      font-weight: 700; 
+                      text-transform: uppercase;
+                      letter-spacing: 0.5px;
+                      text-decoration: none; 
+                      border-radius: 6px; 
+                      cursor: pointer;
+                      border: 1px solid #cbd5e1;
+                      transition: all 0.2s;
+                    " onmouseover="this.style.background='#e2e8f0'; this.style.color='#1e293b'" onmouseout="this.style.background='#f1f5f9'; this.style.color='#475569'">
+                      📊 Detalhe Deste Mês
+                    </a>
+                </div>
+            `;
+
+            // --- INICIALIZAÇÃO / ATUALIZAÇÃO DO GRÁFICO DONUT COM VALOR CENTRAL ---
+            setTimeout(() => {
+                const ctx = document.getElementById('graficoFinancas');
+                if (!ctx) return;
+
+                // Destrói o gráfico anterior para evitar sobreposição ao atualizar a tela
+                if (window.meuGrafico) {
+                    window.meuGrafico.destroy();
+                }
+
+                // Se não há movimentação no mês atual, gera um gráfico cinza de espera
+                const temDados = totalDevidoMes > 0 || totalPagoMes > 0;
+                const dadosGrafico = temDados ? [totalPagoMes, totalDevidoMes] : [0, 1];
+                const coresGrafico = temDados ? ['#2ecc71', '#e74c3c'] : ['#e2e8f0', '#cbd5e1'];
+
+                window.meuGrafico = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        datasets: [{
+                            data: dadosGrafico,
+                            backgroundColor: coresGrafico,
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                enabled: temDados,
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataIndex === 0 ? 'Total Pago: ' : 'Pendente: ';
+                                        return label + context.raw.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                                    }
+                                }
+                            }
+                        },
+                        cutout: '85%' // Dá o espaçamento perfeito para o texto interno caber
+                    },
+                         plugins: [{
+                        id: 'textoCentro',
+                        beforeDraw: function(chart) {
+                            const width = chart.width;
+                            const height = chart.height;
+                            const ctxObj = chart.ctx;
+                            ctxObj.restore();
+
+                            // Ajuste dinâmico do tamanho da fonte baseado na proporção do gráfico
+                            const fontSize = (height / 115).toFixed(2);
+                            ctxObj.font = `bold ${fontSize}em sans-serif`;
+                            ctxObj.textBaseline = "middle";
+
+                            // MODIFICAÇÃO AQUI: Soma o valor Devido (vermelho) com o valor Pago (verde)
+                            const totalSomaMes = totalDevidoMes + totalPagoMes;
+                            const texto = totalSomaMes.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                            
+                            // Cor dinâmica: Vermelho se houver algo pendente no mês, senão Verde. Se tudo for zero, Cinza.
+                            if (totalDevidoMes > 0) {
+                                ctxObj.fillStyle = '#e74c3c'; // Vermelho
+                            } else if (totalPagoMes > 0) {
+                                ctxObj.fillStyle = '#2ecc71'; // Verde
+                            } else {
+                                ctxObj.fillStyle = '#94a3b8'; // Cinza corporativo
+                            }
+
+                            // Centralização matemática perfeita dos eixos X e Y
+                            const textX = Math.round((width - ctxObj.measureText(texto).width) / 2);
+                            const textY = height / 2;
+
+                            ctxObj.fillText(texto, textX, textY);
+                            ctxObj.save();
+                        }
+                    }]
+
+                });
+            }, 50);
+            // --- FIM DO BLOCO DO GRÁFICO ---
 
             if (estado.lancamentos.length === 0) {
                 container.innerHTML = `<div class="lista-vazia">Nenhum lançamento cadastrado.</div>`;
@@ -1739,7 +2017,6 @@
                 const faturasDoGrupo = grupos[banco];
                 const pendentes = faturasDoGrupo.filter(f => !f.pago).sort((a, b) => new Date(a.vencimento) - new Date(b.vencimento));
 
-                // Se houverem registros mas todos foram pagos, mostramos a logo do banco limpa sem pulsar
                 const possuiItensNoHistoricoGeral = faturasDoGrupo.length > 0;
                 if(!possuiItensNoHistoricoGeral) continue;
                 
@@ -1757,13 +2034,11 @@
                     }
                 }
 
-                // Verifica se existe uma fatura do mês atual e se ela já está paga
                 const faturaMesAtual = faturasDoGrupo.find(f => {
                     const dataVenc = new Date(f.vencimento);
                     return dataVenc.getMonth() === mesAtual && dataVenc.getFullYear() === anoAtual;
                 });
 
-                // Cria a tag HTML do ícone caso a fatura do mês atual esteja paga
                 const iconePagoHTML = (faturaMesAtual && faturaMesAtual.pago) ? '<div class="check-pago">✓</div>' : '';
 
                 const blocoGridHTML = `
@@ -1780,49 +2055,8 @@
                 container.innerHTML = `<div class="lista-vazia">🎉 Tudo em dia! Nenhuma fatura pendente.</div>`;
             }
         }
-      
-
-
-        /* --- PROCESSO DE PAGAMENTO --- */
-   function pagarLancamento(id) {
-            const index = estado.lancamentos.findIndex(item => item.id === id);
-            if (index === -1) return;
-
-            const botao = document.getElementById('btn-pagar-fatura-acao');
-            if (botao) {
-                botao.disabled = true;
-                botao.classList.remove('urgente-btn'); // Para a animação do botão durante o loading
-                botao.innerHTML = '<div class="spinner"></div>';
-            }
-
-            // Simula o tempo de carregamento de 1.2 segundos
-                        // Simula o tempo de carregamento de 1.2 segundos
-            setTimeout(() => {
-                const lancamento = estado.lancamentos[index];
-                
-                // Mude o status para pago PRIMEIRO antes de atualizar a tela
-                lancamento.pago = true;
-
-                estado.saldo -= lancamento.valor;
-                localStorage.setItem('financas_saldo', estado.saldo);
-                renderizarSaldo();
-
-                atualizarLocalStorageLancamentos();
-                renderizarLancamentos();
-                fecharModalDetalhes();
-
-                // Dispara o alerta customizado no centro da tela
-                const alerta = document.getElementById('alerta-sucesso');
-                alerta.classList.add('mostrar');
-
-                // Faz o alerta sumir após 2.5 segundos
-                setTimeout(() => {
-                    alerta.classList.remove('mostrar');
-                }, 2500);
-
-            }, 1200);
-   }
-
+       
+                  
         /* --- FUNÇÕES DE DOWNLOAD E UPLOAD DO BACKUP --- */
         function fazerDownloadBackup() {
             const dadosSessao = {
@@ -2025,6 +2259,7 @@ function fecharGaleria() {
             renderizarConteudoAbaGeral();
         }
 
+
         function renderizarConteudoAbaGeral() {
             const container = document.getElementById('lista-itens-geral');
             container.innerHTML = '';
@@ -2106,8 +2341,55 @@ function alternarDataLimiteRepeticao() {
     containerData.style.display = checkbox.checked ? 'block' : 'none';
 }
 
+function pagarLancamento(id) {
+    // 1. Procura o botão de forma segura (tanto no modal de detalhes quanto no geral)
+    const botaoDetalhes = document.getElementById('btn-pagar-fatura-acao');
+    
+    if (botaoDetalhes) {
+        botaoDetalhes.innerHTML = '<span class="spinner"></span>';
+        botaoDetalhes.disabled = true;
+    }
+
+    setTimeout(() => {
+        const index = estado.lancamentos.findIndex(item => item.id === id);
+        
+        if (index !== -1) {
+            const fatura = estado.lancamentos[index];
+
+            // 2. Deduz o valor do saldo e marca como pago
+            estado.saldo -= fatura.valor;
+            fatura.pago = true;
+
+            // 3. Salva no LocalStorage
+            localStorage.setItem('financas_saldo', estado.saldo);
+            atualizarLocalStorageLancamentos();
+
+            // 4. Som de sucesso (opcional, não trava se o arquivo não existir)
+            const audioSucesso = new Audio('audio2.mp3');
+            audioSucesso.play().catch(e => console.log("Áudio não configurado ainda."));
+
+            // 5. Exibe o alerta verde de sucesso
+            const alerta = document.getElementById('alerta-sucesso');
+            if (alerta) {
+                alerta.classList.add('mostrar');
+                setTimeout(() => alerta.classList.remove('mostrar'), 2500);
+            }
+
+            // 6. Atualiza a tela e fecha os modais abertos
+            renderizarSaldo();
+            renderizarLancamentos();
+            fecharModalDetalhes();
+            fecharModalGeral(); 
+        }
+    }, 600);
+}
+
+// EVITA O ERRO DE FUNÇÃO INEXISTENTE: Adicione esta função vazia logo abaixo para o botão "+" não quebrar o sistema
+function aplicarAjusteFixoEmTodasFaturas() {
+    alert("Função de ajuste em massa ainda não implementada.");
+}
+
 
     </script>
 </body>
-
 </html>
