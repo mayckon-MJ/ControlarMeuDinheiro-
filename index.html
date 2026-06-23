@@ -4,6 +4,12 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4a90e2">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="apple-touch-icon" href="https://i.ibb.co/0ySTpRQ2/107445.png">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -1039,10 +1045,78 @@
     }
 }
 
+/* ALERTA DE INSTALAÇÃO CUSTOMIZADO */
+.alerta-instalacao {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) scale(0.9);
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    z-index: 10000;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    width: 90%;
+    max-width: 400px;
+    border: 2px solid var(--primary-color);
+    transition: all 0.3s ease;
+}
+.alerta-instalacao.mostrar {
+    display: flex;
+    transform: translateX(-50%) scale(1);
+}
+.alerta-instalacao h3 {
+    font-size: 1.1rem;
+    color: var(--text-color);
+}
+.alerta-instalacao p {
+    font-size: 0.85rem;
+    color: #7f8c8d;
+    text-align: center;
+}
+.botoes-instalacao {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+.btn-instalar-agora {
+    flex: 1;
+    background-color: var(--success-color);
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.btn-instalar-depois {
+    flex: 1;
+    background-color: #e2e8f0;
+    color: #475569;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}
 
     </style>
 </head>
 <body>
+    <div id="alerta-pwa" class="alerta-instalacao">
+    <h3>Instalar Aplicativo 📲</h3>
+    <p>Baixe o sistema direto no seu celular para acessar mais rápido e usar offline.</p>
+    <div class="botoes-instalacao">
+        <button class="btn-instalar-agora" onclick="dispararInstalacao()">Instalar</button>
+        <button class="btn-instalar-depois" onclick="instalarDepois()">Depois</button>
+    </div>
+</div>
+
+    
     <div id="alerta-sucesso" class="alerta-sucesso-fixo">
     <div class="icone-positivo">✓</div>
     <span>Parabéns, uma fatura a menos</span>
@@ -2388,6 +2462,61 @@ function pagarLancamento(id) {
 function aplicarAjusteFixoEmTodasFaturas() {
     alert("Função de ajuste em massa ainda não implementada.");
 }
+// O QUE ACRESCENTAR NO FINAL DO SEU SCRIPT
+let gatilhoInstalacao = null;
+
+// Captura o evento nativo do Google/Android
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    gatilhoInstalacao = e;
+    
+    // Se o app já estiver instalado, o próprio navegador não dispara esse evento
+    verificarTempoEExibirAlerta();
+});
+
+function verificarTempoEExibirAlerta() {
+    const ultimaRejeicao = localStorage.getItem('pwa_rejeitado_em');
+    const agora = Date.now();
+    const trintaMinutos = 30 * 60 * 1000;
+
+    // Se nunca clicou em "Depois", ou se já passaram 30 minutos, mostra o alerta
+    if (!ultimaRejeicao || (agora - ultimaRejeicao > trintaMinutos)) {
+        if (gatilhoInstalacao) {
+            document.getElementById('alerta-pwa').classList.add('mostrar');
+        }
+    }
+}
+
+function dispararInstalacao() {
+    if (!gatilhoInstalacao) return;
+    
+    document.getElementById('alerta-pwa').classList.remove('mostrar');
+    gatilhoInstalacao.prompt(); // Abre a janelinha oficial do Google instalando o App
+    
+    gatilhoInstalacao.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+            console.log('Usuário instalou o sistema!');
+        }
+        gatilhoInstalacao = null;
+    });
+}
+
+function instalarDepois() {
+    document.getElementById('alerta-pwa').classList.remove('mostrar');
+    // Salva o momento exato do clique para contar os 30 minutos
+    localStorage.setItem('pwa_rejeitado_em', Date.now());
+}
+
+// Verifica novamente o tempo a cada 1 minuto caso a aba fique aberta
+setInterval(verificarTempoEExibirAlerta, 60000);
+
+// Mantém o registro do Service Worker que você já colocou
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js')
+        .then(() => console.log('App Pronto para Uso Local!'))
+        .catch(err => console.log('Erro ao carregar App:', err));
+}
+
 
 
     </script>
