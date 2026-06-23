@@ -46,15 +46,7 @@
             padding: 20px;
             display: flex;
             justify-content: center;
-        }
-        /*largura da imagem do aplicativo*/
-        .imagem-top {
-  width: 100vw;       /* Ocupa exatamente 100% da largura da tela do celular */
-  height: auto;       /* Calcula a altura automaticamente baseada na proporção da imagem */
-  display: block;     /* Remove espaços em branco bobos abaixo da imagem */
-  object-fit: contain;/* Garante que a imagem renderize com a máxima fidelidade */
-        }
-        /*FIM*/
+        }    
         
         .container {
             width: 100%;
@@ -1056,76 +1048,91 @@
     }
 }
 
-/* ALERTA DE INSTALAÇÃO CUSTOMIZADO */
+        /*CSS DO APLICATIVO*/
+/* Container do Alerta Inteiro */
 .alerta-instalacao {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%) scale(0.9);
-    background: #ffffff;
-    padding: 20px;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-    z-index: 10000;
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    width: 90%;
-    max-width: 400px;
-    border: 2px solid var(--primary-color);
-    transition: all 0.3s ease;
-}
-.alerta-instalacao.mostrar {
     display: flex;
-    transform: translateX(-50%) scale(1);
+    flex-direction: column;
+    align-items: center; /* Centraliza tudo na horizontal */
+    text-align: center;  /* Centraliza os textos */
+    padding: 20px;
+    background-color: #111; /* Cor de fundo escura elegante */
+    border-radius: 15px;
+    color: white;
+    max-width: 90%;
+    margin: 20px auto;
 }
-.alerta-instalacao h3 {
-    font-size: 1.1rem;
-    color: var(--text-color);
+
+/* Caixa da Logo + Nome */
+.app-brand-box {
+    display: flex;
+    flex-direction: column; /* Coloca um embaixo do outro */
+    align-items: center;    /* Alinha exatamente no centro */
+    justify-content: center;
+    margin: 15px 0;         /* Dá um espaçamento em cima e embaixo */
 }
-.alerta-instalacao p {
-    font-size: 0.85rem;
-    color: #7f8c8d;
-    text-align: center;
+
+/* Estilo da Imagem/Ícone */
+.imagem-app {
+    width: 60px;            /* Tamanho ideal para um ícone de alerta */
+    height: 60px;
+    object-fit: contain;
+    border-radius: 12px;    /* Deixa as pontas do ícone arredondadas (estilo app) */
+    margin-bottom: 8px;     /* Espaço entre a imagem e o texto "Finanças" */
 }
+
+/* Estilo do Nome "Finanças" */
+.nome-app {
+    font-size: 18px;
+    font-weight: bold;
+    color: #e0a800;         /* O dourado do seu tema */
+    letter-spacing: 0.5px;
+}
+
+/* Estilo dos Botões (Exemplo básico para combinar) */
 .botoes-instalacao {
     display: flex;
     gap: 10px;
-    width: 100%;
+    margin-top: 15px;
 }
+
 .btn-instalar-agora {
-    flex: 1;
-    background-color: var(--success-color);
-    color: white;
+    background-color: #e0a800;
+    color: black;
     border: none;
-    padding: 10px;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-}
-.btn-instalar-depois {
-    flex: 1;
-    background-color: #e2e8f0;
-    color: #475569;
-    border: none;
-    padding: 10px;
+    padding: 10px 20px;
     border-radius: 8px;
     font-weight: bold;
     cursor: pointer;
 }
 
+.btn-instalar-depois {
+    background-color: transparent;
+    color: #aaa;
+    border: 1px solid #555;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+        
     </style>
 </head>
 <body>
+
 <div id="alerta-pwa" class="alerta-instalacao">
     <h3>Instalar Aplicativo 📲</h3>
+    
+    <div class="app-brand-box">
+        <img src="https://i.ibb.co/qL42fQBN/108582.png?v=3" class="imagem-app" alt="Logo Emunah">
+        <span class="nome-app">Finanças</span>
+    </div>
+
     <p>Baixe o sistema direto no seu celular para acessar mais rápido e usar offline.</p>
+    
     <div class="botoes-instalacao">
         <button class="btn-instalar-agora" onclick="dispararInstalacao()">Instalar</button>
         <button class="btn-instalar-depois" onclick="instalarDepois()">Depois</button>
     </div>
-    <img src="https://i.ibb.co/qL42fQBN/108582.png?v=3" class="imagem-top" alt="Banner Emunah">
 </div>
 
     
