@@ -9,7 +9,7 @@
 // ===================================================
 // ALTERE APENAS O NÚMERO DA VERSÃO
 // ===================================================
-const CACHE_NAME = 'financas-v5';
+const CACHE_NAME = 'financas-v6';
 
 const ASSETS = [
   './',
