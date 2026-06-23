@@ -18,14 +18,6 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ]
+  ],
+  "nota_desenvolvedor": "💡 DICA: Se você trocar o logo lá no ImgBB, atualize os links acima e mude o final de ?v=2 para ?v=3. Isso faz o navegador do celular entender que a imagem é nova!"
 }
-
-/* ======================================================================
-  💡 DICA PARA A PRÓXIMA VEZ QUE VOCÊ MUDAR AS IMAGENS:
-  ======================================================================
-  Se você trocar o logo lá no ImgBB, atualize os links acima e mude o final 
-  de "?v=2" para "?v=3". 
-  Isso faz o navegador do celular entender que a imagem é nova!
-  💡 Não esqueça de ir no sw.js lá tem ensinando onque fazer também para tudo dá certo 
-*/
