@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -1212,15 +1213,28 @@
 
 
     <div class="container">
-       <header>
-<video 
-  src="logo.mp4" 
-  autoplay 
-  loop 
-  muted 
-  playsinline 
-  style="width: 134px; height: 150px; object-fit: cover; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-</video>
+<header>
+
+  <video
+    src="logo.mp4"
+    autoplay
+    loop
+    muted
+    playsinline
+    style="
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 30px;
+      background: rgba(255,255,255,0.05);
+      padding: 8px;
+      border: 2px solid rgba(255,255,255,0.15);
+      box-shadow:
+        0 0 25px rgba(59,130,246,0.4),
+        0 8px 25px rgba(0,0,0,0.4);
+    ">
+  </video>
+
 
     <div class="header-saldo-area" style="width: 100%; align-items: stretch;">
     <h1>Dinheiro Disponível</h1>
@@ -1807,15 +1821,87 @@
                     <div class="aba-item ${estado.abaAtualModal === 'faturas' ? 'active' : ''}" id="aba-faturas" onclick="document.querySelectorAll('.aba-item').forEach(e=>e.classList.remove('active')); this.classList.add('active'); alternarAbaModal('${faturaExibicaoBase.descricao.replace(/'/g, "\\'")}', 'faturas')">Faturas</div>
                     <div class="aba-item ${estado.abaAtualModal === 'extrato' ? 'active' : ''}" id="aba-extrato" onclick="document.querySelectorAll('.aba-item').forEach(e=>e.classList.remove('active')); this.classList.add('active'); alternarAbaModal('${faturaExibicaoBase.descricao.replace(/'/g, "\\'")}', 'extrato')">Extrato</div>
                 </div>
+              <div class="subfaturas-lista-modal"></div>
 
-                <div class="subfaturas-lista-modal"></div>
-            `;
+            <div style="margin-top: 25px; text-align: center; border-top: 1px dashed #e2e8f0; padding-top: 20px; display: block; clear: both;">
+                <h4 style="font-size: 13px; color: #64748b; margin-bottom: 5px;">Progresso do Empréstimo</h4>
+                <p id="texto-parcelas-restantes" style="font-size: 11px; color: #94a3b8; margin-bottom: 12px;"></p>
+                
+                <div style="position: relative; width: 140px; height: 140px; margin: 0 auto; display: block;">
+                    <canvas id="graficoDetalheBanco" width="140" height="140"></canvas>
+                    <img src="${faturaExibicaoBase.imagem}" onerror="this.src='https://via.placeholder.com/50?text=Erro'" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #cbd5e1; z-index: 10;">
+                </div>
+                
+                <p id="texto-previsao-termino" style="font-size: 12px; font-weight: bold; margin-top: 12px; color: #4a90e2;"></p>
+            </div>
+        `; // <--- Fecha a crase do seu containerDetalhes.innerHTML original
 
-            atualizarListaSubfaturasModal(banco);
-            document.getElementById('modal-detalhes-banco').classList.add('active');
+        atualizarListaSubfaturasModal(banco);
+        document.getElementById('modal-detalhes-banco').classList.add('active');
+
+        // LÓGICA DO GRÁFICO ESTILO NUBANK COM AS SUAS CORES
+        setTimeout(() => {
+            const ctxDet = document.getElementById('graficoDetalheBanco');
+            if (!ctxDet) return;
+
+            if (window.meuGraficoDetalhe) {
+                window.meuGraficoDetalhe.destroy();
+            }
+
+            const total = faturasDoGrupo.length;
+            const pendentes = faturasDoGrupo.filter(f => !f.pago).length;
+
+            // Atualiza o texto auxiliar de parcelas acima do gráfico
+            document.getElementById('texto-parcelas-restantes').textContent = `Faltam ${pendentes} de ${total} parcelas`;
+
+            // Calcula a proporção do que FALTA pagar
+            const proporcaoDivida = total > 0 ? (pendentes / total) : 0;
+
+            // SUAS REGRAS ESTRITAS DE CORES:
+            let corDinamica = '#2ecc71'; // Verde (Do início até antes do meio)
+
+            if (proporcaoDivida > 0.66) { 
+                corDinamica = '#e74c3c'; // Começa Vermelho (Mais de 2/3 da dívida restantes)
+            } else if (proporcaoDivida <= 0.66 && proporcaoDivida > 0.5) {
+                corDinamica = '#f1c40f'; // Chegou na terça parte paga -> Amarelo
+            } else if (proporcaoDivida === 0.5) {
+                corDinamica = '#4a90e2'; // Chegou na metade exata -> Azul
+            }
+
+            // Se tudo já estiver pago, mantém uma rosca cinza/verde discreta
+            const dadoGrafico = pendentes === 0 ? [0, total] : [pendentes, total - pendentes];
+            const corGrafico = pendentes === 0 ? ['#e2e8f0', '#2ecc71'] : [corDinamica, '#f1f5f9'];
+
+            window.meuGraficoDetalhe = new Chart(ctxDet, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: dadoGrafico, 
+                        backgroundColor: corGrafico, 
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: false, // Força a respeitar os tamanhos em pixels definidos no HTML
+                    maintainAspectRatio: true,
+                    plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                    cutout: '83%', 
+                    rotation: -90, 
+                    circumference: 360
+                }
+            });
+
+            // CORRIGIDO: Cálculo seguro da data de término
+            const ordenadas = [...faturasDoGrupo].sort((a, b) => new Date(a.vencimento) - new Date(b.vencimento));
+            if(ordenadas.length > 0) {
+                const dataFinal = new Date(ordenadas[ordenadas.length - 1].vencimento);
+                const formatada = dataFinal.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+                document.getElementById('texto-previsao-termino').textContent = `Quitação Prevista: ${formatada}`;
+            }
+
+        }, 150);
         }
-            
-                 
+           
 
         function fecharModalDetalhes() {
             document.getElementById('modal-detalhes-banco').classList.remove('active');
