@@ -2599,8 +2599,8 @@ function pagarLancamento(id) {
     }, 600);
 }
 
-// EVITA O ERRO DE FUNÇÃO INEXISTENTE: Adicione esta função vazia logo abaixo para o botão "+" não quebrar o sistema
-function aplicarAjusteFixoEmTodasFaturas() {
+// 🔴
+    function aplicarAjusteFixoEmTodasFaturas() {
     alert("Função de ajuste em massa ainda não implementada.");
 }
 
@@ -2663,19 +2663,6 @@ if ('serviceWorker' in navigator) {
         .catch(err => console.log('Erro ao carregar App:', err));
 }
 
-// EXECUTA ASSIM QUE O USUÁRIO ENTRA NO SISTEMA
-document.addEventListener('DOMContentLoaded', () => {
-    // Garante que o alerta comece escondido até que o 'beforeinstallprompt' valide a exibição
-    const alerta = document.getElementById('alerta-pwa');
-    if (alerta) {
-        alerta.style.display = 'none';
-    }
-    verificarPlanilhaEDoacao();
-});
-
-    
- 
-    
 function verificarPlanilhaEDoacao() {
     // LINK DA SUA PLANILHA EXPORTADA EM CSV:
     const urlPlanilhaCsv = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS4rTt91BY7VeuVskX8iKY2RKcq60Ekk_HhN58TbT3O2VF8ZbJHUIgXXoFz7SkBToeeMCuC9doJiRCw/pub?output=csv";
@@ -2705,8 +2692,7 @@ function verificarPlanilhaEDoacao() {
                 }
             }
 
-            
-                        // ==========================================
+            // ==========================================
             // LOGÍSTICA DO ALERTA 2 (LINHA 3) - IMAGEM TELA CHEIA
             // ==========================================
             if (dados[2] && dados[2][1] !== undefined) {
@@ -2728,12 +2714,12 @@ function verificarPlanilhaEDoacao() {
                 const linkVideoC4 = dados[3][2] ? dados[3][2].trim() : "";
                 
                 // Contador de acessos/atualizações
-let contadorAcessos = parseInt(localStorage.getItem('contador_acessos')) || 0;
-contadorAcessos++;
-localStorage.setItem('contador_acessos', contadorAcessos.toString());
+                let contadorAcessos = parseInt(localStorage.getItem('contador_acessos')) || 0;
+                contadorAcessos++;
+                localStorage.setItem('contador_acessos', contadorAcessos.toString());
 
-// Exibe só a partir da 3ª vez
-const jaExibidoAlerta3 = localStorage.getItem('alerta3_exibido');
+                // Exibe só a partir da 3ª vez
+                const jaExibidoAlerta3 = localStorage.getItem('alerta3_exibido');
 
                 if (colunaB4 === "ATIVAR" && linkVideoC4 && !jaExibidoAlerta3 && contadorAcessos >= 3) {
                      exibirAlertaVideoLinha4(linkVideoC4);
@@ -2763,6 +2749,7 @@ function exibirAlertaLinha2(mensagem) {
         }
     });
 }
+
 function exibirAlertaImagemLinha3(urlImagem) {
     Swal.fire({
         imageUrl: urlImagem,
@@ -2780,33 +2767,7 @@ function exibirAlertaImagemLinha3(urlImagem) {
     });
 }
 
-// ANTES
-function exibirAlertaVideoLinha4(urlVideo) {
-    Swal.fire({
-        title: '',
-        html: `
-            <video 
-                src="${urlVideo}" 
-                autoplay 
-                loop          
-                muted         
-                playsinline 
-                style="width: 100; max-height: 50vh; border-radius: 8px;"
-            >
-                Seu navegador não suporta vídeos.
-            </video>
-        `,
-        showConfirmButton: true,
-        confirmButtonText: 'Fechar Vídeo',
-        confirmButtonColor: '#4a90e2',
-        width: '300px',
-        allowOutsideClick: false
-    }).then(() => {
-        sessionStorage.setItem('alerta3_exibido', 'true');
-    });
-}
-
-// DEPOIS
+// DEPOIS (Sua versão atualizada com localStorage)
 function exibirAlertaVideoLinha4(urlVideo) {
     Swal.fire({
         title: 'Tutorial',
@@ -2834,33 +2795,55 @@ function exibirAlertaVideoLinha4(urlVideo) {
         localStorage.setItem('alerta3_exibido', 'true'); // Mudei para localStorage para manter o bloqueio
     });
 }
+
+// CONJUNTO ÚNICO DE INICIALIZAÇÃO - CORRIGE OS CLIQUES E CONFLITOS DE EVENTO
 document.addEventListener("DOMContentLoaded", () => {
+    // 1. Garante que o alerta PWA comece oculto
+    const alerta = document.getElementById('alerta-pwa');
+    if (alerta) {
+        alerta.style.display = 'none';
+    }
+
+    // 2. Controladores do Splash Video
     const splashScreen = document.getElementById("splash-screen");
     const splashVideo = document.getElementById("splash-video");
     const mainSystem = document.getElementById("main-system");
 
-    // Tenta forçar o play assim que a página carregar
-    splashVideo.play().catch(error => {
-        console.log("Autoplay bloqueado pelo navegador. Aguardando interação ou configuração.");
-    });
+    if (splashVideo && splashScreen) {
+        // Tenta forçar o play assim que a página carregar
+        splashVideo.play().catch(error => {
+            console.log("Autoplay bloqueado pelo navegador. Aguardando interação ou configuração.");
+        });
 
-    // Evento que dispara EXATAMENTE quando o vídeo termina
-    splashVideo.addEventListener("ended", () => {
-        // 1. Torna a tela transparente (efeito fade-out)
-        splashScreen.style.opacity = "0";
+        // Evento que dispara EXATAMENTE quando o vídeo termina
+        splashVideo.addEventListener("ended", () => {
+            // Torna a tela transparente
+            splashScreen.style.opacity = "0";
+            // Remove a capacidade de bloquear cliques imediatamente
+            splashScreen.style.pointerEvents = "none"; 
 
-        // 2. Mostra o sistema principal
-        mainSystem.style.display = "block";
-        document.body.style.overflow = "auto"; // Devolve o scroll ao sistema, se necessário
+            // Mostra o sistema principal
+            if (mainSystem) {
+                mainSystem.style.display = "block";
+            }
+            document.body.style.overflow = "auto"; // Devolve o scroll ao sistema
 
-        // 3. Remove a tela de splash do HTML após a transição para não pesar na memória
-        setTimeout(() => {
-            splashScreen.remove();
-        }, 500); // 500ms é o mesmo tempo configurado no CSS transition
-    });
+            // Remove fisicamente a tela do HTML para não tampar os botões instaladores
+            setTimeout(() => {
+                splashScreen.remove();
+                
+                // SÓ CHAMA AS VERIFICAÇÕES DE PLANILHA E PWA APÓS O VÍDEO SUMIR TOTALMENTE
+                verificarPlanilhaEDoacao();
+                verificarTempoEExibirAlerta();
+            }, 500); 
+        });
+    } else {
+        // Caso o splash-screen não exista nesta página, roda o sistema direto
+        verificarPlanilhaEDoacao();
+        verificarTempoEExibirAlerta();
+    }
 });
-
-        
+    
     </script>
 </body>
 </html>
