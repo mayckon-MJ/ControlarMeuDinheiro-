@@ -2578,7 +2578,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function verificarPlanilhaEDoacao() {
-    // COLOQUE O LINK DA SUA PLANILHA EXPORTADA EM CSV AQUI:
+    // LINK DA SUA PLANILHA EXPORTADA EM CSV:
     const urlPlanilhaCsv = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS4rTt91BY7VeuVskX8iKY2RKcq60Ekk_HhN58TbT3O2VF8ZbJHUIgXXoFz7SkBToeeMCuC9doJiRCw/pub?output=csv";
 
     Papa.parse(urlPlanilhaCsv, {
@@ -2586,57 +2586,79 @@ function verificarPlanilhaEDoacao() {
         header: false,
         complete: function(results) {
             const dados = results.data;
-            
-            // Verifica se a linha 2 (índice 1) e coluna B (índice 1) existem
-            if (!dados || !dados[1] || dados[1][1] === undefined) return;
+            if (!dados) return;
 
-            const conteudoColunaB2 = dados[1][1].trim();
             const agora = Date.now();
-            const vinteDias = 20 * 24 * 60 * 60 * 1000; // Milissegundos em 20 dias
-            const dataBloqueio = localStorage.getItem('doacao_bloqueada_ate');
 
-            // REGRA: "TextoFochar" reseta qualquer trava de 20 dias e força o alerta
-            if (conteudoColunaB2 === "TextoFochar") {
-                localStorage.removeItem('doacao_bloqueada_ate');
-                exibirAlertaDoacao();
-                return;
+            // ==========================================
+            // LOGÍSTICA DO ALERTA 1 (LINHA 2)
+            // ==========================================
+            if (dados[1] && dados[1][1] !== undefined) {
+                const colunaB2 = dados[1][1].trim();
+                const fraseC2 = dados[1][2] ? dados[1][2].trim() : "Sem mensagem definida.";
+                const dataBloqueioAlerta1 = localStorage.getItem('alerta1_bloqueado_ate');
+
+                if (colunaB2 === "ENVIAR") {
+                    // Só exibe se não estiver no bloqueio dos 15 dias
+                    if (!dataBloqueioAlerta1 || agora >= parseInt(dataBloqueioAlerta1)) {
+                        exibirAlertaLinha2(fraseC2);
+                    }
+                }
             }
 
-            // REGRA: Se for "Texto1", verifica se está no período de bloqueio dos 20 dias
-            if (conteudoColunaB2 === "Texto1") {
-                if (dataBloqueio && agora < parseInt(dataBloqueio)) {
-                    // Ainda está no prazo dos 20 dias, não mostra nada.
-                    return; 
+            // ==========================================
+            // LOGÍSTICA DO ALERTA 2 (LINHA 3)
+            // ==========================================
+            if (dados[2] && dados[2][1] !== undefined) {
+                const colunaB3 = dados[2][1].trim();
+                const fraseC3 = dados[2][2] ? dados[2][2].trim() : "Sem mensagem definida.";
+                
+                // Pega se já foi exibido nesta sessão atual (aba aberta)
+                const jaExibidoNestaSessao = sessionStorage.getItem('alerta2_exibido');
+
+                if (colunaB3 === "ENVIAR2" && !jaExibidoNestaSessao) {
+                    exibirAlertaLinha3(fraseC3);
                 }
-                exibirAlertaDoacao();
             }
         }
     });
 }
 
-function exibirAlertaDoacao() {
+function exibirAlertaLinha2(mensagem) {
     Swal.fire({
-        title: 'Olá, tudo bem? Eu sou o criador do sistema.',
-        html: 'Deseja fazer uma doação hoje?<br>Que tal doar 2 reais ou 5 reais para ajudar?',
+        title: 'Aviso Importante',
+        html: mensagem,
         icon: 'info',
         showCancelButton: true,
         confirmButtonText: '📋 Copiar Pix',
         cancelButtonText: 'Hoje não',
         confirmButtonColor: '#2ecc71',
         cancelButtonColor: '#95a5a6',
-        allowOutsideClick: false // Força o usuário a escolher uma das opções
+        allowOutsideClick: false
     }).then((result) => {
         if (result.isConfirmed) {
-            // Clicou em Copiar Pix: Roda sua função de cópia e bloqueia por 20 dias
             copiarPix();
-            const dataLimite = Date.now() + (20 * 24 * 60 * 60 * 1000);
-            localStorage.setItem('doacao_bloqueada_ate', dataLimite);
-        } else {
-            // Clicou em Hoje Não: Não salva bloqueio, aparece na próxima visita.
-            console.log("Alerta aparecerá na próxima vez.");
+            // Aplica o bloqueio rígido de 15 dias no localStorage
+            const quinzeDias = 15 * 24 * 60 * 60 * 1000;
+            localStorage.setItem('alerta1_bloqueado_ate', Date.now() + quinzeDias);
         }
     });
 }
+
+function exibirAlertaLinha3(mensagem) {
+    Swal.fire({
+        title: 'Notificação',
+        html: mensagem,
+        icon: 'warning',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: '#4a90e2',
+        allowOutsideClick: false
+    }).then(() => {
+        // Marca que já apareceu uma vez nesta entrada do sistema
+        sessionStorage.setItem('alerta2_exibido', 'true');
+    });
+}
+
 
 
     </script>
