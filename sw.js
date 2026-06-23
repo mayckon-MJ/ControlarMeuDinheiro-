@@ -1,18 +1,30 @@
 
-const CACHE_NAME = 'financas-v1';
-const ASSETS = [
-  'index.html',
-  'manifest.json',
-  'logo.mp4',
-  'audio1.mp3',
-  'audio2.mp3'
-];
+{
+  "name": "Finanças Pessoais",
+  "short_name": "Finanças",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#011638",
+  "theme-color": "#e0a800",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://i.ibb.co/jZQc0SJ2/108585.png?v=2", 
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://i.ibb.co/dwVqLqRL/108450.png?v=2",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
 
-self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)));
-});
-
-self.addEventListener('fetch', e => {
-  e.respondWith(caches.match(e.request).then(response => response || fetch(e.request)));
-});
-
+/* ======================================================================
+  💡 DICA PARA A PRÓXIMA VEZ QUE VOCÊ MUDAR AS IMAGENS:
+  ======================================================================
+  Se você trocar o logo lá no ImgBB, atualize os links acima e mude o final 
+  de "?v=2" para "?v=3". 
+  Isso faz o navegador do celular entender que a imagem é nova!
+*/
