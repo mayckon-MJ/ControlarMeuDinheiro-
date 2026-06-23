@@ -2563,9 +2563,12 @@ function pagarLancamento(id) {
 }
 
 // EVITA O ERRO DE FUNÇÃO INEXISTENTE: Adicione esta função vazia logo abaixo para o botão "+" não quebrar o sistema
-function aplicarAjusteFixoEmTodasFaturas() {
+
+    
+ function aplicarAjusteFixoEmTodasFaturas() {
     alert("Função de ajuste em massa ainda não implementada.");
 }
+
 // O QUE ACRESCENTAR NO FINAL DO SEU SCRIPT
 let gatilhoInstalacao = null;
 
@@ -2586,7 +2589,10 @@ function verificarTempoEExibirAlerta() {
     // Se nunca clicou em "Depois", ou se já passaram 30 minutos, mostra o alerta
     if (!ultimaRejeicao || (agora - ultimaRejeicao > trintaMinutos)) {
         if (gatilhoInstalacao) {
-            document.getElementById('alerta-pwa').classList.add('mostrar');
+            const alerta = document.getElementById('alerta-pwa');
+            if (alerta) {
+                alerta.style.display = 'flex'; // Exibe o pop-up e o fundo escuro
+            }
         }
     }
 }
@@ -2594,7 +2600,11 @@ function verificarTempoEExibirAlerta() {
 function dispararInstalacao() {
     if (!gatilhoInstalacao) return;
     
-    document.getElementById('alerta-pwa').classList.remove('mostrar');
+    const alerta = document.getElementById('alerta-pwa');
+    if (alerta) {
+        alerta.style.display = 'none'; // Esconde o pop-up imediatamente ao clicar
+    }
+    
     gatilhoInstalacao.prompt(); // Abre a janelinha oficial do Google instalando o App
     
     gatilhoInstalacao.userChoice.then((choiceResult) => {
@@ -2606,7 +2616,10 @@ function dispararInstalacao() {
 }
 
 function instalarDepois() {
-    document.getElementById('alerta-pwa').classList.remove('mostrar');
+    const alerta = document.getElementById('alerta-pwa');
+    if (alerta) {
+        alerta.style.display = 'none'; // Esconde o pop-up imediatamente ao clicar
+    }
     // Salva o momento exato do clique para contar os 30 minutos
     localStorage.setItem('pwa_rejeitado_em', Date.now());
 }
@@ -2623,11 +2636,14 @@ if ('serviceWorker' in navigator) {
 
 // EXECUTA ASSIM QUE O USUÁRIO ENTRA NO SISTEMA
 document.addEventListener('DOMContentLoaded', () => {
+    // Garante que o alerta comece escondido até que o 'beforeinstallprompt' valide a exibição
+    const alerta = document.getElementById('alerta-pwa');
+    if (alerta) {
+        alerta.style.display = 'none';
+    }
     verificarPlanilhaEDoacao();
 });
-
-    
-    
+   
     
     
     
