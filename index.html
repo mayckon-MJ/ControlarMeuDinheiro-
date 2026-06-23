@@ -1049,91 +1049,123 @@
 }
 
         /*CSS DO APLICATIVO*/
-/* Container do Alerta Inteiro */
+/* Container do Alerta Inteiro (Transformado em Pop-up Fixo) */
 .alerta-instalacao {
+    position: fixed;        /* Faz o alerta flutuar por cima de tudo */
+    top: 50%;               /* Alinha no meio vertical */
+    left: 50%;              /* Alinha no meio horizontal */
+    transform: translate(-50%, -50%); /* Ajuste perfeito de centralização */
+    z-index: 9999;          /* Garante que fica na frente do painel financeiro */
+    
     display: flex;
     flex-direction: column;
-    align-items: center; /* Centraliza tudo na horizontal */
-    text-align: center;  /* Centraliza os textos */
-    padding: 20px;
-    background-color: #111; /* Cor de fundo escura elegante */
-    border-radius: 15px;
+    align-items: center; 
+    text-align: center;  
+    padding: 22px;
+    background-color: #111111; 
+    border-radius: 16px;
     color: white;
-    max-width: 90%;
-    margin: 20px auto;
+    width: 85%;             /* Largura ideal para celular */
+    max-width: 340px;       /* Não deixa ficar gigante em telas maiores */
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.7); /* Sombra para dar profundidade */
+}
+
+/* Fundo escurecido atrás do pop-up (Opcional, mas deixa muito mais profissional) */
+.alerta-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.6); /* Escurece o fundo do site */
+    z-index: 9998;          /* Fica logo atrás do pop-up */
 }
 
 /* Caixa da Logo + Nome */
 .app-brand-box {
     display: flex;
-    flex-direction: column; /* Coloca um embaixo do outro */
-    align-items: center;    /* Alinha exatamente no centro */
+    flex-direction: column; 
+    align-items: center;    
     justify-content: center;
-    margin: 15px 0;         /* Dá um espaçamento em cima e embaixo */
+    margin: 15px 0;         
 }
 
 /* Estilo da Imagem/Ícone */
 .imagem-app {
-    width: 60px;            /* Tamanho ideal para um ícone de alerta */
-    height: 60px;
+    width: 65px;            
+    height: 65px;
     object-fit: contain;
-    border-radius: 12px;    /* Deixa as pontas do ícone arredondadas (estilo app) */
-    margin-bottom: 8px;     /* Espaço entre a imagem e o texto "Finanças" */
+    border-radius: 12px;    
+    margin-bottom: 8px;     
 }
 
 /* Estilo do Nome "Finanças" */
 .nome-app {
     font-size: 18px;
     font-weight: bold;
-    color: #e0a800;         /* O dourado do seu tema */
+    color: #e0a800;         
     letter-spacing: 0.5px;
 }
 
-/* Estilo dos Botões (Exemplo básico para combinar) */
+/* Estilo dos Botões */
 .botoes-instalacao {
     display: flex;
-    gap: 10px;
+    gap: 12px;
     margin-top: 15px;
+    width: 100%;
+    justify-content: center;
 }
 
 .btn-instalar-agora {
     background-color: #e0a800;
     color: black;
     border: none;
-    padding: 10px 20px;
+    padding: 12px 24px;
     border-radius: 8px;
     font-weight: bold;
     cursor: pointer;
+    flex: 1; /* Faz os botões terem tamanhos iguais */
+    max-width: 120px;
 }
 
 .btn-instalar-depois {
     background-color: transparent;
     color: #aaa;
-    border: 1px solid #555;
-    padding: 10px 20px;
+    border: 1px solid #444;
+    padding: 12px 24px;
     border-radius: 8px;
     cursor: pointer;
+    flex: 1;
+    max-width: 120px;
 }
+
+
         
     </style>
 </head>
 <body>
 
-<div id="alerta-pwa" class="alerta-instalacao">
-    <h3>Instalar Aplicativo 📲</h3>
+<div id="alerta-pwa" class="alerta-overlay">
     
-    <div class="app-brand-box">
-        <img src="https://i.ibb.co/qL42fQBN/108582.png?v=3" class="imagem-app" alt="Logo Emunah">
-        <span class="nome-app">Finanças</span>
-    </div>
+    <div class="alerta-instalacao">
+        <h3 style="margin-top: 0;">Instalar Aplicativo 📲</h3>
+        
+        <div class="app-brand-box">
+            <img src="https://i.ibb.co/qL42fQBN/108582.png?v=3" class="imagem-app" alt="Logo Emunah">
+            <span class="nome-app">Finanças</span>
+        </div>
 
-    <p>Baixe o sistema direto no seu celular para acessar mais rápido e usar offline.</p>
-    
-    <div class="botoes-instalacao">
-        <button class="btn-instalar-agora" onclick="dispararInstalacao()">Instalar</button>
-        <button class="btn-instalar-depois" onclick="instalarDepois()">Depois</button>
+        <p style="font-size: 14px; color: #ccc; margin: 5px 0 15px 0;">
+            Baixe o sistema direto no seu celular para acessar mais rápido e usar offline.
+        </p>
+        
+        <div class="botoes-instalacao">
+            <button class="btn-instalar-agora" onclick="dispararInstalacao()">Instalar</button>
+            <button class="btn-instalar-depois" onclick="instalarDepois()">Depois</button>
+        </div>
     </div>
 </div>
+
 
     
     <div id="alerta-sucesso" class="alerta-sucesso-fixo">
