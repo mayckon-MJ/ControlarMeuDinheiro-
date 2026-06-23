@@ -4,11 +4,14 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#4a90e2">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="apple-touch-icon" href="https://i.ibb.co/0ySTpRQ2/107445.png">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -1169,41 +1172,63 @@
             </div>
             <input type="file" id="input-upload-backup" style="display: none;" accept=".json" onchange="fazerUploadBackup(event)">
         </div>
-        <div style="display: flex; justify-content: center; align-items: center; width: 100%; margin: 20px 0;">
-    <a href="https://wa.me/5562995679219?text=Ol%C3%A1%2C%20Mayckon!%20Eu%20vim%20pelo%20Site%20Fuma%C3%A7a." 
-       target="_blank" 
-       style="
-        display: inline-flex; 
-        align-items: center; 
-        gap: 14px; 
-        background-color: #ffffff; 
-        color: #2c3e50; 
-        border: 1px solid #e2e8f0;
-        text-decoration: none; 
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        padding: 12px 24px; 
-        border-radius: 8px; 
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        transition: all 0.2s;
-       "
-       onmouseover="this.style.backgroundColor='#f8fafc'; this.style.borderColor='#cbd5e1'; this.style.transform='translateY(-2px)';"
-       onmouseout="this.style.backgroundColor='#ffffff'; this.style.borderColor='#e2e8f0'; this.style.transform='translateY(0)';"
-    >
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-            <circle cx="9" cy="7" r="4"></circle>
-            <path d="M17 11c1.5 0 3 1 3 3v2"></path>
-            <path d="M19 16h2a1 1 0 0 0 1-1v-1a4 4 0 0 0-4-4"></path>
-        </svg>
+      <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; margin: 20px 0; gap: 15px;">
+            <a href="https://wa.me/5562995679219?text=Ol%C3%A1%2C%20Mayckon!%20Eu%20vim%20pelo%20Site%20Fuma%C3%A7a." 
+               target="_blank" 
+               style="display: inline-flex; align-items: center; gap: 14px; background-color: #ffffff; color: #2c3e50; border: 1px solid #e2e8f0; text-decoration: none; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 12px 24px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: all 0.2s; width: 230px;"
+               onmouseover="this.style.backgroundColor='#f8fafc'; this.style.borderColor='#cbd5e1'; this.style.transform='translateY(-2px)';"
+               onmouseout="this.style.backgroundColor='#ffffff'; this.style.borderColor='#e2e8f0'; this.style.transform='translateY(0)';"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M17 11c1.5 0 3 1 3 3v2"></path>
+                    <path d="M19 16h2a1 1 0 0 0 1-1v-1a4 4 0 0 0-4-4"></path>
+                </svg>
+                <div style="display: flex; flex-direction: column; align-items: flex-start; line-height: 1.2;">
+                    <span style="font-weight: 700; font-size: 15px;">Suporte Online</span>
+                    <span style="font-weight: 400; font-size: 10px; color: #7f8c8d; margin-top: 2px;">Criador do Sistema</span>
+                </div>
+            </a>
 
-        <div style="display: flex; flex-direction: column; align-items: flex-start; line-height: 1.2;">
-            <span style="font-weight: 700; font-size: 15px;">Suporte Online</span>
-            <span style="font-weight: 400; font-size: 10px; color: #7f8c8d; margin-top: 2px;">Criador do Sistema</span>
+            <button onclick="abrirModalDoacao()" style="display: inline-flex; align-items: center; gap: 14px; background-color: #2ecc71; color: #ffffff; border: none; padding: 12px 24px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: all 0.2s; cursor: pointer; font-family: 'Segoe UI', sans-serif; width: 230px;"
+               onmouseover="this.style.backgroundColor='#27ae60'; this.style.transform='translateY(-2px)';"
+               onmouseout="this.style.backgroundColor='#2ecc71'; this.style.transform='translateY(0)';"
+            >
+                <span style="font-size: 24px;"></span>
+                <div style="display: flex; flex-direction: column; align-items: flex-start; line-height: 1.2; text-align: left;">
+                    <span style="font-weight: 700; font-size: 15px;">Veja clicando aqui</span>
+           </div>
+            </button>
         </div>
-    </a>
-</div>
+    <div id="modal-doacao" class="modal-overlay" onclick="fecharModalExterno(event, 'modal-doacao')">
+        <div class="modal-content" style="text-align: center;">
+            <div class="modal-header">
+                <h2 style="font-size: 17px;">Contribuição Voluntária 💝</h2>
+                <button class="btn-fechar-modal" onclick="fecharModalDoacao()">&times;</button>
+            </div>
+            <p style="font-size: 0.95rem; color: #555; margin-bottom: 20px; line-height: 1.4;">
+    Se este sistema de finanças está te ajudando e você deseja apoiar o trabalho de quem o criou, <br>sinta-se à vontade para doar <br>
+    
+    <span style="color: red; display: inline-block; animation: pulsar 1.5s infinite ease-in-out; font-weight: bold;">QUALQUER VALOR</span><br> 
+    
+    por vontade própria!
+</p>
+            <span style="font-size: 10px;"><strong style="color: #08cf3d; font-size: 19px;">O sistema é 100% grátis</strong><br> Mas se quiser ajudar eu agradeço muito mesmo!</span>
 
+<style>@keyframes pulsar { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }</style>
+
+            
+            <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 2px dashed #2ecc71; margin-bottom: 20px;">
+                <span style="font-size: 0.8rem; text-transform: uppercase; color: #7f8c8d; font-weight: bold; display: block; margin-bottom: 5px;">Chave PIX (Celular)</span>
+                <strong id="chave-pix-texto" style="font-size: 1.4rem; color: #2c3e50; letter-spacing: 1px;">62995679219</strong><br>
+                <span style="font-size: 10px;"><strong style="font-size: 15px;">Nome:</strong> MAYCKON JHONATAS SILVA RAMOS</span>
+            </div>
+
+            <button class="btn-salvar" style="background-color: #4a90e2; margin-top: 0;" onclick="copiarPix()">📋 Copiar Chave Pix</button>
         </div>
+    </div>
+
 
     </div>
 
@@ -1521,7 +1546,8 @@
                 if(idModal === 'modal-cadastro') fecharModal();
                 if(idModal === 'modal-compra') fecharModalCompra();
                 if(idModal === 'modal-detalhes-banco') fecharModalDetalhes();
-                if(idModal === 'modal-visualizacao-geral') fecharModalGeral(); // <-- Linha adicionada
+                if(idModal === 'modal-visualizacao-geral') fecharModalGeral(); 
+                if(idModal === 'modal-doacao') fecharModalDoacao(); 
             }
         }
         
@@ -1739,11 +1765,41 @@
             document.getElementById('modal-compra').classList.add('active');
         }
 
-        function fecharModalCompra() {
-            document.getElementById('modal-compra').classList.remove('active');
-            document.getElementById('form-compra').reset();
-        }
-    function alternarCampoAjusteFixo() {
+function abrirModalDoacao() {
+    document.getElementById('modal-doacao').classList.add('active');
+}
+
+function fecharModalDoacao() {
+    document.getElementById('modal-doacao').classList.remove('active');
+}
+
+function copiarPix() {
+    const chavePix = "62995679219";
+    
+    navigator.clipboard.writeText(chavePix).then(() => {
+        // Alerta bonito de sucesso
+        Swal.fire({
+            icon: 'success',
+            title: 'Copiado!',
+            text: 'Chave Pix copiada com sucesso!',
+            showConfirmButton: false,
+            timer: 2000, // Fecha sozinho em 2 segundos
+            iconColor: '#28a745', // Cor verde personalizada
+            confirmButtonColor: '#3085d6'
+        });
+    }).catch(err => {
+        // Alerta bonito de erro
+        Swal.fire({
+            icon: 'error',
+            title: 'Ops! Algo deu errado',
+            text: 'Erro ao copiar automaticamente. Copie manualmente: ' + chavePix,
+            confirmButtonText: 'Entendido',
+            confirmButtonColor: '#dc3545'
+        });
+    });
+}
+
+       function alternarCampoAjusteFixo() {
             const container = document.getElementById('container-ajuste-fixo');
             container.style.display = container.style.display === 'none' ? 'block' : 'none';
         }
@@ -2517,6 +2573,71 @@ if ('serviceWorker' in navigator) {
         .catch(err => console.log('Erro ao carregar App:', err));
 }
 
+// EXECUTA ASSIM QUE O USUÁRIO ENTRA NO SISTEMA
+document.addEventListener('DOMContentLoaded', () => {
+    verificarPlanilhaEDoacao();
+});
+
+function verificarPlanilhaEDoacao() {
+    // COLOQUE O LINK DA SUA PLANILHA EXPORTADA EM CSV AQUI:
+    const urlPlanilhaCsv = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS4rTt91BY7VeuVskX8iKY2RKcq60Ekk_HhN58TbT3O2VF8ZbJHUIgXXoFz7SkBToeeMCuC9doJiRCw/pub?output=csv";
+
+    Papa.parse(urlPlanilhaCsv, {
+        download: true,
+        header: false,
+        complete: function(results) {
+            const dados = results.data;
+            
+            // Verifica se a linha 2 (índice 1) e coluna B (índice 1) existem
+            if (!dados || !dados[1] || dados[1][1] === undefined) return;
+
+            const conteudoColunaB2 = dados[1][1].trim();
+            const agora = Date.now();
+            const vinteDias = 20 * 24 * 60 * 60 * 1000; // Milissegundos em 20 dias
+            const dataBloqueio = localStorage.getItem('doacao_bloqueada_ate');
+
+            // REGRA: "TextoFochar" reseta qualquer trava de 20 dias e força o alerta
+            if (conteudoColunaB2 === "TextoFochar") {
+                localStorage.removeItem('doacao_bloqueada_ate');
+                exibirAlertaDoacao();
+                return;
+            }
+
+            // REGRA: Se for "Texto1", verifica se está no período de bloqueio dos 20 dias
+            if (conteudoColunaB2 === "Texto1") {
+                if (dataBloqueio && agora < parseInt(dataBloqueio)) {
+                    // Ainda está no prazo dos 20 dias, não mostra nada.
+                    return; 
+                }
+                exibirAlertaDoacao();
+            }
+        }
+    });
+}
+
+function exibirAlertaDoacao() {
+    Swal.fire({
+        title: 'Olá, tudo bem? Eu sou o criador do sistema.',
+        html: 'Deseja fazer uma doação hoje?<br>Que tal doar 2 reais ou 5 reais para ajudar?',
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonText: '📋 Copiar Pix',
+        cancelButtonText: 'Hoje não',
+        confirmButtonColor: '#2ecc71',
+        cancelButtonColor: '#95a5a6',
+        allowOutsideClick: false // Força o usuário a escolher uma das opções
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Clicou em Copiar Pix: Roda sua função de cópia e bloqueia por 20 dias
+            copiarPix();
+            const dataLimite = Date.now() + (20 * 24 * 60 * 60 * 1000);
+            localStorage.setItem('doacao_bloqueada_ate', dataLimite);
+        } else {
+            // Clicou em Hoje Não: Não salva bloqueio, aparece na próxima visita.
+            console.log("Alerta aparecerá na próxima vez.");
+        }
+    });
+}
 
 
     </script>
