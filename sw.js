@@ -5,9 +5,14 @@
 // Mude o nome abaixo de 'financas-v2' para 'financas-v3' (e assim por diante).
 // Isso vai forçar o aplicativo a limpar a memória antiga e baixar o novo logo.
 // ======================================================================
-const CACHE_NAME = 'financas-v4'; 
+
+// ===================================================
+// ALTERE APENAS O NÚMERO DA VERSÃO
+// ===================================================
+const CACHE_NAME = 'financas-v5';
 
 const ASSETS = [
+  './',
   'index.html',
   'manifest.json',
   'logo.mp4',
@@ -15,46 +20,80 @@ const ASSETS = [
   'audio2.mp3'
 ];
 
-// Instala o sw.js e armazena os arquivos essenciais no cache
-self.addEventListener('install', e => {
-  self.skipWaiting(); // Obriga o app a usar o novo código imediatamente
-  e.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
+// Instala
+self.addEventListener('install', event => {
+  self.skipWaiting();
+
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(ASSETS))
   );
 });
 
-// Remove os caches antigos (evita que o logo antigo fique travado no celular)
-self.addEventListener('activate', e => {
-  e.waitUntil(
-    caches.keys().then(keys => {
-      return Promise.all(
-        keys.map(key => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
-        })
-      );
-    })
+// Ativa
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    Promise.all([
+      caches.keys().then(keys =>
+        Promise.all(
+          keys.map(key => {
+            if (key !== CACHE_NAME) {
+              return caches.delete(key);
+            }
+          })
+        )
+      ),
+      clients.claim()
+    ])
   );
 });
 
-// Controla as requisições (Internet primeiro para o Manifest, Cache primeiro para mídia)
-self.addEventListener('fetch', e => {
-  if (e.request.url.includes('manifest.json')) {
-    // Para o manifest, tenta sempre buscar da internet para ver se há ícones novos
-    e.respondWith(
-      fetch(e.request)
-        .then(response => {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
-          return response;
-        })
-        .catch(() => caches.match(e.request)) // Se estiver sem internet, usa o salvo
+// Busca arquivos
+self.addEventListener('fetch', event => {
+
+  // Manifest sempre atualizado pela internet
+  if (
+    event.request.url.includes('manifest.json')
+  ) {
+
+    event.respondWith(
+      fetch(event.request, {
+        cache: 'no-store'
+      })
+      .then(response => {
+        const clone = response.clone();
+
+        caches.open(CACHE_NAME)
+          .then(cache => cache.put(event.request, clone));
+
+        return response;
+      })
+      .catch(() => caches.match(event.request))
     );
-  } else {
-    // Para vídeos e áudios, carrega do cache primeiro (para o app abrir rápido e offline)
-    e.respondWith(
-      caches.match(e.request).then(response => response || fetch(e.request))
-    );
+
+    return;
   }
+
+  // Ícones sempre atualizados
+  if (
+    event.request.url.includes('ibb.co') ||
+    event.request.url.includes('.png')
+  ) {
+
+    event.respondWith(
+      fetch(event.request, {
+        cache: 'reload'
+      })
+      .then(response => response)
+      .catch(() => caches.match(event.request))
+    );
+
+    return;
+  }
+
+  // Restante: cache primeiro
+  event.respondWith(
+    caches.match(event.request)
+      .then(response => response || fetch(event.request))
+  );
 });
