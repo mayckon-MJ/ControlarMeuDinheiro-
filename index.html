@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -46,7 +47,15 @@
             display: flex;
             justify-content: center;
         }
-
+        /*largura da imagem do aplicativo*/
+        .imagem-top {
+  width: 100vw;       /* Ocupa exatamente 100% da largura da tela do celular */
+  height: auto;       /* Calcula a altura automaticamente baseada na proporção da imagem */
+  display: block;     /* Remove espaços em branco bobos abaixo da imagem */
+  object-fit: contain;/* Garante que a imagem renderize com a máxima fidelidade */
+        }
+        /*FIM*/
+        
         .container {
             width: 100%;
             max-width: 600px;
@@ -1109,13 +1118,14 @@
     </style>
 </head>
 <body>
-    <div id="alerta-pwa" class="alerta-instalacao">
+<div id="alerta-pwa" class="alerta-instalacao">
     <h3>Instalar Aplicativo 📲</h3>
     <p>Baixe o sistema direto no seu celular para acessar mais rápido e usar offline.</p>
     <div class="botoes-instalacao">
         <button class="btn-instalar-agora" onclick="dispararInstalacao()">Instalar</button>
         <button class="btn-instalar-depois" onclick="instalarDepois()">Depois</button>
     </div>
+    <img src="https://i.ibb.co/qL42fQBN/108582.png?v=3" class="imagem-top" alt="Banner Emunah">
 </div>
 
     
@@ -2577,6 +2587,11 @@ document.addEventListener('DOMContentLoaded', () => {
     verificarPlanilhaEDoacao();
 });
 
+    
+    
+    
+    
+    
 function verificarPlanilhaEDoacao() {
     // LINK DA SUA PLANILHA EXPORTADA EM CSV:
     const urlPlanilhaCsv = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS4rTt91BY7VeuVskX8iKY2RKcq60Ekk_HhN58TbT3O2VF8ZbJHUIgXXoFz7SkBToeeMCuC9doJiRCw/pub?output=csv";
@@ -2606,18 +2621,38 @@ function verificarPlanilhaEDoacao() {
                 }
             }
 
-            // ==========================================
-            // LOGÍSTICA DO ALERTA 2 (LINHA 3)
+            
+                        // ==========================================
+            // LOGÍSTICA DO ALERTA 2 (LINHA 3) - IMAGEM TELA CHEIA
             // ==========================================
             if (dados[2] && dados[2][1] !== undefined) {
                 const colunaB3 = dados[2][1].trim();
-                const fraseC3 = dados[2][2] ? dados[2][2].trim() : "Sem mensagem definida.";
+                const linkImagemC3 = dados[2][2] ? dados[2][2].trim() : "";
                 
-                // Pega se já foi exibido nesta sessão atual (aba aberta)
-                const jaExibidoNestaSessao = sessionStorage.getItem('alerta2_exibido');
+                const jaExibidoAlerta2 = sessionStorage.getItem('alerta2_exibido');
 
-                if (colunaB3 === "ENVIAR2" && !jaExibidoNestaSessao) {
-                    exibirAlertaLinha3(fraseC3);
+                if (colunaB3 === "ATIVAR" && linkImagemC3 && !jaExibidoAlerta2) {
+                    exibirAlertaImagemLinha3(linkImagemC3);
+                }
+            }
+
+            // ==========================================
+            // LOGÍSTICA DO ALERTA 3 (LINHA 4) - VÍDEO MP4
+            // ==========================================
+            if (dados[3] && dados[3][1] !== undefined) {
+                const colunaB4 = dados[3][1].trim();
+                const linkVideoC4 = dados[3][2] ? dados[3][2].trim() : "";
+                
+                // Contador de acessos/atualizações
+let contadorAcessos = parseInt(localStorage.getItem('contador_acessos')) || 0;
+contadorAcessos++;
+localStorage.setItem('contador_acessos', contadorAcessos.toString());
+
+// Exibe só a partir da 3ª vez
+const jaExibidoAlerta3 = localStorage.getItem('alerta3_exibido');
+
+                if (colunaB4 === "ATIVAR" && linkVideoC4 && !jaExibidoAlerta3 && contadorAcessos >= 3) {
+                     exibirAlertaVideoLinha4(linkVideoC4);
                 }
             }
         }
@@ -2644,22 +2679,77 @@ function exibirAlertaLinha2(mensagem) {
         }
     });
 }
-
-function exibirAlertaLinha3(mensagem) {
+function exibirAlertaImagemLinha3(urlImagem) {
     Swal.fire({
-        title: 'Notificação',
-        html: mensagem,
-        icon: 'warning',
-        confirmButtonText: 'Entendido',
-        confirmButtonColor: '#4a90e2',
+        imageUrl: urlImagem,
+        imageWidth: '100%',
+        imageHeight: 'auto',
+        imageAlt: 'Alerta Imagem',
+        showConfirmButton: false, // Remove o botão de OK de baixo
+        showCloseButton: true,    // Ativa o botão "X" no canto superior direito
+        width: '95vw',            // Alarga o modal quase ao tamanho total da tela
+        padding: '0',
+        background: 'transparent', // Deixa o fundo invisível destacando a imagem
         allowOutsideClick: false
     }).then(() => {
-        // Marca que já apareceu uma vez nesta entrada do sistema
         sessionStorage.setItem('alerta2_exibido', 'true');
     });
 }
 
+// ANTES
+function exibirAlertaVideoLinha4(urlVideo) {
+    Swal.fire({
+        title: 'Tutorial',
+        html: `
+            <video 
+                src="${urlVideo}" 
+                autoplay 
+                loop          
+                muted         
+                playsinline 
+                style="width: 100; max-height: 50vh; border-radius: 8px;"
+            >
+                Seu navegador não suporta vídeos.
+            </video>
+        `,
+        showConfirmButton: true,
+        confirmButtonText: 'Fechar Vídeo',
+        confirmButtonColor: '#4a90e2',
+        width: '300px',
+        allowOutsideClick: false
+    }).then(() => {
+        sessionStorage.setItem('alerta3_exibido', 'true');
+    });
+}
 
+// DEPOIS
+function exibirAlertaVideoLinha4(urlVideo) {
+    Swal.fire({
+        title: 'Tutorial',
+        html: `
+            <video 
+                src="${urlVideo}" 
+                autoplay 
+                loop
+                muted
+                playsinline
+                preload="auto"
+                controls
+                style="width: 100%; max-height: 55vh; border-radius: 8px;"
+                onerror="this.parentElement.innerHTML='❌ Vídeo não pôde ser carregado. Verifique o link.'"
+            >
+                Seu navegador não suporta reproduzir vídeos.
+            </video>
+        `,
+        showConfirmButton: true,
+        confirmButtonText: 'Fechar',
+        confirmButtonColor: '#4a90e2',
+        width: '90%',
+        allowOutsideClick: false
+    }).then(() => {
+        localStorage.setItem('alerta3_exibido', 'true'); // Mudei para localStorage para manter o bloqueio
+    });
+}
 
     </script>
 </body>
