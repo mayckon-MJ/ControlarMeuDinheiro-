@@ -1095,7 +1095,7 @@
     width: 65px;            
     height: 65px;
     object-fit: contain;
-    border-radius: 12px;    
+    border-radius: 30px;    
     margin-bottom: 8px;     
 }
 
@@ -2563,9 +2563,7 @@ function pagarLancamento(id) {
 }
 
 // EVITA O ERRO DE FUNÇÃO INEXISTENTE: Adicione esta função vazia logo abaixo para o botão "+" não quebrar o sistema
-
-    
- function aplicarAjusteFixoEmTodasFaturas() {
+function aplicarAjusteFixoEmTodasFaturas() {
     alert("Função de ajuste em massa ainda não implementada.");
 }
 
@@ -2582,17 +2580,12 @@ window.addEventListener('beforeinstallprompt', (e) => {
 });
 
 function verificarTempoEExibirAlerta() {
-    const ultimaRejeicao = localStorage.getItem('pwa_rejeitado_em');
-    const agora = Date.now();
-    const trintaMinutos = 30 * 60 * 1000;
-
-    // Se nunca clicou em "Depois", ou se já passaram 30 minutos, mostra o alerta
-    if (!ultimaRejeicao || (agora - ultimaRejeicao > trintaMinutos)) {
-        if (gatilhoInstalacao) {
-            const alerta = document.getElementById('alerta-pwa');
-            if (alerta) {
-                alerta.style.display = 'flex'; // Exibe o pop-up e o fundo escuro
-            }
+    // Removemos a trava de 30 minutos daqui. 
+    // Agora, se o gatilho de instalação estiver disponível, ele sempre mostra o alerta ao entrar/atualizar.
+    if (gatilhoInstalacao) {
+        const alerta = document.getElementById('alerta-pwa');
+        if (alerta) {
+            alerta.style.display = 'flex'; // Exibe o pop-up e o fundo escuro
         }
     }
 }
@@ -2618,10 +2611,9 @@ function dispararInstalacao() {
 function instalarDepois() {
     const alerta = document.getElementById('alerta-pwa');
     if (alerta) {
-        alerta.style.display = 'none'; // Esconde o pop-up imediatamente ao clicar
+        alerta.style.display = 'none'; // Esconde o pop-up imediatamente apenas nesta sessão
     }
-    // Salva o momento exato do clique para contar os 30 minutos
-    localStorage.setItem('pwa_rejeitado_em', Date.now());
+    // Removemos o salvamento do tempo no localStorage para permitir que reapareça na próxima visita
 }
 
 // Verifica novamente o tempo a cada 1 minuto caso a aba fique aberta
@@ -2643,9 +2635,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     verificarPlanilhaEDoacao();
 });
-   
+
     
-    
+ 
     
 function verificarPlanilhaEDoacao() {
     // LINK DA SUA PLANILHA EXPORTADA EM CSV:
