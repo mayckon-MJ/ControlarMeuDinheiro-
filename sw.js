@@ -5,7 +5,7 @@
 // Mude o nome abaixo de 'financas-v2' para 'financas-v3' (e assim por diante).
 // Isso vai forçar o aplicativo a limpar a memória antiga e baixar o novo logo.
 // ======================================================================
-const CACHE_NAME = 'financas-v3'; 
+const CACHE_NAME = 'financas-v4'; 
 
 const ASSETS = [
   'index.html',
