@@ -4,17 +4,17 @@
   "short_name": "Finanças",
   "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#011638",
+  "background_color": "black",
   "theme-color": "#e0a800",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "https://i.ibb.co/dwVqLqRL/108450.png?v=3", 
+      "src": "https://i.ibb.co/qL42fQBN/108582.png?v=3", 
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "https://i.ibb.co/ymLnTHZM/108643.png?v=3",
+      "src": "https://i.ibb.co/qL42fQBN/108582.pngv=3",
       "sizes": "812x812",
       "type": "image/png"
     }
