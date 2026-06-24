@@ -1,7 +1,6 @@
 
 
 
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -2804,9 +2803,9 @@ if ('serviceWorker' in navigator) {
         .then(() => console.log('App Pronto para Uso Local!'))
         .catch(err => console.log('Erro ao carregar App:', err));
 }
-
+            
 function verificarPlanilhaEDoacao() {
-    // LINK DA SUA PLANILHA EXPORTADA EM CSV:
+    // LINK DA SUA PLANILHA EXPORTADA EM CSV
     const urlPlanilhaCsv = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS4rTt91BY7VeuVskX8iKY2RKcq60Ekk_HhN58TbT3O2VF8ZbJHUIgXXoFz7SkBToeeMCuC9doJiRCw/pub?output=csv";
 
     Papa.parse(urlPlanilhaCsv, {
@@ -2814,62 +2813,87 @@ function verificarPlanilhaEDoacao() {
         header: false,
         complete: function(results) {
             const dados = results.data;
-            if (!dados) return;
+            if (!dados || dados.length === 0) return;
 
-            const agora = Date.now();
+            // Pega os dados deste usuário específico guardados no navegador
+            const meuNomeLocal = localStorage.getItem('usuario_nome_registrado');
+            const meuCelularLocal = localStorage.getItem('usuario_celular_registrado');
 
-            // ==========================================
-            // LOGÍSTICA DO ALERTA 1 (LINHA 2)
-            // ==========================================
-            if (dados[1] && dados[1][1] !== undefined) {
-                const colunaB2 = dados[1][1].trim();
-                const fraseC2 = dados[1][2] ? dados[1][2].trim() : "Sem mensagem definida.";
-                const dataBloqueioAlerta1 = localStorage.getItem('alerta1_bloqueado_ate');
+            // 1. VERIFICAÇÃO DO GATILHO GLOBAL (Coluna B, Linha 1 -> índice dados[0][1])
+            if (dados[0] && dados[0][1] && dados[0][1].trim() === "ENVIAR-TODOS") {
+                // Se o gatilho geral estiver ativado, exibe para qualquer usuário logado
+                if (meuNomeLocal) {
+                    exibirNovoAlertaPixPersonalizado(meuNomeLocal);
+                    return; // Interrompe para não duplicar com o individual
+                }
+            }
 
-                if (colunaB2 === "ENVIAR") {
-                    // Só exibe se não estiver no bloqueio dos 15 dias
-                    if (!dataBloqueioAlerta1 || agora >= parseInt(dataBloqueioAlerta1)) {
-                        exibirAlertaLinha2(fraseC2);
+            // 2. VERIFICAÇÃO DO GATILHO INDIVIDUAL (Varre a planilha procurando o usuário correto)
+            for (let i = 1; i < dados.length; i++) {
+                const linha = dados[i];
+                if (!linha[0] || !linha[1]) continue;
+
+                const nomePlanilha = linha[0].trim();
+                const celularPlanilha = linha[1].trim();
+                const colunaDStatus = linha[3] ? linha[3].trim() : ""; // Coluna D (índice 3)
+
+                // Se achar a linha correspondente ao usuário local do celular dele
+                if (nomePlanilha === meuNomeLocal && celularPlanilha === meuCelularLocal) {
+                    if (colunaDStatus === "ENVIAR") {
+                        exibirNovoAlertaPixPersonalizado(meuNomeLocal);
                     }
-                }
-            }
-
-            // ==========================================
-            // LOGÍSTICA DO ALERTA 2 (LINHA 3) - IMAGEM TELA CHEIA
-            // ==========================================
-            if (dados[2] && dados[2][1] !== undefined) {
-                const colunaB3 = dados[2][1].trim();
-                const linkImagemC3 = dados[2][2] ? dados[2][2].trim() : "";
-                
-                const jaExibidoAlerta2 = sessionStorage.getItem('alerta2_exibido');
-
-                if (colunaB3 === "ATIVAR" && linkImagemC3 && !jaExibidoAlerta2) {
-                    exibirAlertaImagemLinha3(linkImagemC3);
-                }
-            }
-
-            // ==========================================
-            // LOGÍSTICA DO ALERTA 3 (LINHA 4) - VÍDEO MP4
-            // ==========================================
-            if (dados[3] && dados[3][1] !== undefined) {
-                const colunaB4 = dados[3][1].trim();
-                const linkVideoC4 = dados[3][2] ? dados[3][2].trim() : "";
-                
-                // Contador de acessos/atualizações
-                let contadorAcessos = parseInt(localStorage.getItem('contador_acessos')) || 0;
-                contadorAcessos++;
-                localStorage.setItem('contador_acessos', contadorAcessos.toString());
-
-                // Exibe só a partir da 3ª vez
-                const jaExibidoAlerta3 = localStorage.getItem('alerta3_exibido');
-
-                if (colunaB4 === "ATIVAR" && linkVideoC4 && !jaExibidoAlerta3 && contadorAcessos >= 3) {
-                     exibirAlertaVideoLinha4(linkVideoC4);
+                    break; // Achou o usuário, pode encerrar o loop
                 }
             }
         }
     });
 }
+
+//❤️🔴
+//❤️🔴
+// NOVO MODAL PERSONALIZADO E ELEGANTE COM CHAVE PIX
+function exibirNovoAlertaPixPersonalizado(nomeUsuario) {
+    // Chave para evitar que o modal fique reabrindo sem parar na mesma navegação/sessão
+    if (sessionStorage.getItem('alerta_pix_exibido_sessao')) return;
+
+    Swal.fire({
+        title: `<span style="font-size: 1.3rem; color: #1e293b;">Olá, ${nomeUsuario}!</span>`,
+        html: `
+            <div style="text-align: center; margin-bottom: 15px;">
+                <img src="https://i.ibb.co/GQW3r88J/IMG-20260623-125341.png" style="width: 80px; height: 80px; border-radius: 20px; object-fit: contain; border-radius: 12px;" alt="Logo Sistema">
+            </div>
+            
+             <p style="font-size: 0.95rem; color: #3abf2e; line-height: 1.5; margin-bottom: 20px;">
+             O sistema é 100% GRÁTIS
+            </p>
+            <p style="font-size: 0.95rem; color: #475569; line-height: 1.5; margin-bottom: 20px;">
+             Se este sistema de finanças está te ajudando e você deseja apoiar o trabalho de quem o criou, sinta-se à vontade para doar QUALQUER VALOR por vontade própria!
+           </p>
+            
+            <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 2px dashed #2ecc71; text-align: center; margin-bottom: 5px;">
+                <span style="font-size: 0.75rem; text-transform: uppercase; color: #64748b; font-weight: bold; display: block; margin-bottom: 5px;">Chave PIX (Celular)</span>
+                <strong style="font-size: 1.3rem; color: #0f172a; letter-spacing: 1px; display: block; margin-bottom: 6px;">62995679219</strong>
+                <span style="font-size: 0.8rem; color: #334155; display: block;"><strong>Nome:</strong> MAYCKON JHONATAS SILVA RAMOS</span>
+            </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: '📋 Copiar Pix',
+        cancelButtonText: '😔 Hoje Não',
+        confirmButtonColor: '#4a90e2',
+        cancelButtonColor: '#94a3b8',
+        allowOutsideClick: false,
+        focusConfirm: false
+    }).then((result) => {
+        // Marca que já foi exibido nesta sessão para dar usabilidade ao botão "Hoje Não"
+        sessionStorage.setItem('alerta_pix_exibido_sessao', 'true');
+        
+        if (result.isConfirmed) {
+            copiarPix();
+        }
+    });
+}
+          
+              
 
 function exibirAlertaLinha2(mensagem) {
     Swal.fire({
