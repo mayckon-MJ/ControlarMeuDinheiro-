@@ -2,7 +2,6 @@
 
 
 
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -1471,13 +1470,19 @@
     <label for="data-limite-repeticao">Até quando repetir? (Mês Limite)</label>
     <input type="month" id="data-limite-repeticao" class="form-control">
 </div>
- <!-- CAMPO QUANTIDADE DE PARCELAS PARA DIVIDIR O VALOR -->
+
+
+
+<!-- COLE ESTE BLOCO AQUI -->
 <div class="form-group">
-    <label for="qtd-parcelas-dividir">Quantidade de parcelas para dividir o valor</label>
-    <input type="number" id="qtd-parcelas-dividir" class="form-control" min="1" value="1" placeholder="Ex: 10">
-    <small style="font-size: 0.8rem; color: #64748b;">Deixe 1 para valor único</small>
+    <label for="quantidade-parcelas">Quantidade de Parcelas / Faturas</label>
+    <input type="number" id="quantidade-parcelas" class="form-control" min="1" max="120" value="1" placeholder="Ex: 10">
+    <small style="color: #64748b; font-size: 0.8rem;">Deixe 1 para lançamento único</small>
 </div>
-               
+<!-- FIM DO BLOCO NOVO -->
+
+
+                
    
                 <button type="submit" class="btn-salvar">Salvar Lançamento</button>
             </form>
@@ -2066,108 +2071,132 @@ function copiarPix() {
             fecharModalCompra();
         }
 
-        /* --- OPERAÇÃO DE SALVAMENTO --- */
-        // Função para salvar um lançamento financeiro
-function salvarLancamento() {
-  // 1. Capturar valores dos campos do formulário
-  let data = document.getElementById("dataLancamento").value;
-  let tipo = document.getElementById("tipoLancamento").value;
-  let descricao = document.getElementById("descricaoLancamento").value;
-  let valorTexto = document.getElementById("valorLancamento").value;
-  let categoria = document.getElementById("categoriaLancamento").value;
-  let observacao = document.getElementById("observacaoLancamento").value;
+        
+/* --- OPERAÇÃO DE SALVAMENTO --- */
+function salvarLancamento(event) {
+    event.preventDefault();
+    const modoEdicaoBanco = document.getElementById('modo-edicao-banco').value;
 
-  // 2. Converter valor para número
-  let valor = parseFloat(valorTexto);
+    if (modoEdicaoBanco !== "") {
+        const idsRepetidos = document.querySelectorAll('.id-repetido');
+        const vencimentosRepetidos = document.querySelectorAll('.vencimento-repetido');
+        const valoresRepetidos = document.querySelectorAll('.valor-repetido');
 
-  // 3. Validação básica dos campos
-  if (data === "") {
-    alert("Preencha a data do lançamento!");
-    return;
-  }
-  if (tipo === "") {
-    alert("Selecione o tipo do lançamento!");
-    return;
-  }
-  if (descricao === "") {
-    alert("Informe a descrição!");
-    return;
-  }
-  if (isNaN(valor) || valor <= 0) {
-    alert("Informe um valor válido maior que zero!");
-    return;
-  }
-  if (categoria === "") {
-    alert("Escolha uma categoria!");
-    return;
-  }
+        idsRepetidos.forEach((elId, idx) => {
+            const idLancamento = elId.value;
+            
+            if(idLancamento !== "") {
+                const indexNoEstado = estado.lancamentos.findIndex(item => item.id === idLancamento);
+                if (indexNoEstado !== -1) {
+                    estado.lancamentos[indexNoEstado].vencimento = vencimentosRepetidos[idx].value;
+                    estado.lancamentos[indexNoEstado].valor = converterParaFloat(valoresRepetidos[idx].value);
+                }
+            } else {
+                const faturasAtuaisDoGrupo = estado.lancamentos.filter(item => item.descricao === modoEdicaoBanco);
+                const imagemGrupo = faturasAtuaisDoGrupo.length > 0 ? faturasAtuaisDoGrupo[0].imagem : 'https://via.placeholder.com/50?text=S/I';
+                
+                const novaFaturaAdicionadaPeloLapis = {
+                    id: Date.now().toString() + "-lapis-add-" + idx,
+                    descricao: modoEdicaoBanco,
+                    imagem: imagemGrupo,
+                    vencimento: vencimentosRepetidos[idx].value,
+                    valor: converterParaFloat(valoresRepetidos[idx].value),
+                    pago: false
+                };
+                estado.lancamentos.push(novaFaturaAdicionadaPeloLapis);
+            }
+        });
+    } else {
+        const descricao = document.getElementById('descricao').value;
+        const imagem = document.getElementById('imagem-url').value || 'https://via.placeholder.com/50?text=S/I';
+        const vencimentoInicial = document.getElementById('vencimento').value;
+        const valorTotal = converterParaFloat(document.getElementById('valor').value);
+        const quantidadeParcelas = parseInt(document.getElementById('quantidade-parcelas').value) || 1;
 
-  // 4. Criar objeto com os dados do lançamento
-  let lancamento = {
-    data: data,
-    tipo: tipo,
-    descricao: descricao,
-    valor: valor,
-    categoria: categoria,
-    observacao: observacao
-  };
+        // Validação básica
+        if (valorTotal <= 0) {
+            alert("Informe um valor válido maior que zero!");
+            return;
+        }
+        if (quantidadeParcelas < 1) {
+            alert("A quantidade de parcelas deve ser pelo menos 1!");
+            return;
+        }
 
-  // 5. Recuperar lista de lançamentos já salvos no localStorage
-  let listaLancamentos = localStorage.getItem("lancamentos");
-  if (listaLancamentos === null) {
-    listaLancamentos = [];
-  } else {
-    listaLancamentos = JSON.parse(listaLancamentos);
-  }
+        // Calcula valor de cada parcela
+        const valorPorParcela = parseFloat((valorTotal / quantidadeParcelas).toFixed(2));
 
-  // 6. Adicionar o novo lançamento na lista
-  listaLancamentos.push(lancamento);
+        // Cria todas as faturas divididas
+        let dataAtual = new Date(vencimentoInicial);
+        for (let i = 0; i < quantidadeParcelas; i++) {
+            const dataFormatada = new Date(dataAtual);
+            dataFormatada.setMinutes(dataFormatada.getMinutes() - dataFormatada.getTimezoneOffset());
+            
+            const novaFatura = {
+                id: Date.now().toString() + "-parcela-" + i,
+                descricao: descricao,
+                imagem: imagem,
+                vencimento: dataFormatada.toISOString().slice(0, 16),
+                valor: valorPorParcela,
+                pago: false
+            };
 
-  // 7. Salvar a lista atualizada novamente no localStorage
-  localStorage.setItem("lancamentos", JSON.stringify(listaLancamentos));
+            estado.lancamentos.push(novaFatura);
+            // Avança 1 mês para a próxima parcela
+            dataAtual.setMonth(dataAtual.getMonth() + 1);
+        }
 
-  // 8. Mensagem de confirmação e limpeza do formulário
-  alert("Lançamento salvo com sucesso!");
-  document.getElementById("dataLancamento").value = "";
-  document.getElementById("tipoLancamento").value = "";
-  document.getElementById("descricaoLancamento").value = "";
-  document.getElementById("valorLancamento").value = "";
-  document.getElementById("categoriaLancamento").value = "";
-  document.getElementById("observacaoLancamento").value = "";
+        // SE O BOTÃO DE REPETIR ESTIVER SELECIONADO
+        const repetirMensal = document.getElementById('repetir-mensal').checked;
+        const dataLimiteValue = document.getElementById('data-limite-repeticao').value;
 
-  // 9. Atualizar a exibição dos lançamentos na tela
-  listarLancamentos();
+        if (repetirMensal && dataLimiteValue) {
+            let dataInicioRepeticao = new Date(vencimentoInicial);
+            const [anoLimite, mesLimite] = dataLimiteValue.split('-').map(Number);
+            const dataLimite = new Date(anoLimite, mesLimite - 1, 31, 23, 59, 59);
+
+            let contadorRepeticao = 1;
+            
+            while (true) {
+                dataInicioRepeticao.setMonth(dataInicioRepeticao.getMonth() + 1);
+                if (dataInicioRepeticao > dataLimite) break;
+
+                const faturaAutomatica = {
+                    id: Date.now().toString() + "-auto-" + contadorRepeticao,
+                    descricao: descricao,
+                    imagem: imagem,
+                    vencimento: dataInicioRepeticao.toISOString().slice(0, 16),
+                    valor: valorPorParcela,
+                    pago: false
+                };
+                estado.lancamentos.push(faturaAutomatica);
+                contadorRepeticao++;
+            }
+        }
+
+        // Mantém os vencimentos manuais adicionais, caso existam
+        const vencimentosRepetidos = document.querySelectorAll('.vencimento-repetido');
+        const valoresRepetidos = document.querySelectorAll('.valor-repetido');
+
+        vencimentosRepetidos.forEach((elementoData, index) => {
+            const valorRep = converterParaFloat(valoresRepetidos[index].value);
+            const faturaAdicional = {
+                id: Date.now().toString() + "-manual-" + (index + 1),
+                descricao: descricao,
+                imagem: imagem,
+                vencimento: elementoData.value,
+                valor: valorRep,
+                pago: false
+            };
+            estado.lancamentos.push(faturaAdicional);
+        });
+    }
+
+    atualizarLocalStorageLancamentos();
+    renderizarLancamentos();
+    fecharModal();
 }
 
-// Função auxiliar para listar os lançamentos (usada ao final do salvamento)
-function listarLancamentos() {
-  let lista = localStorage.getItem("lancamentos");
-  let container = document.getElementById("listaLancamentos");
-  container.innerHTML = "";
-
-  if (lista === null) {
-    container.innerHTML = "<p>Nenhum lançamento cadastrado ainda.</p>";
-    return;
-  }
-
-  lista = JSON.parse(lista);
-  for (let i = 0; i < lista.length; i++) {
-    let item = document.createElement("div");
-    item.className = "item-lancamento";
-    item.innerHTML = `
-      <strong>Data:</strong> ${lista[i].data} <br>
-      <strong>Tipo:</strong> ${lista[i].tipo} <br>
-      <strong>Descrição:</strong> ${lista[i].descricao} <br>
-      <strong>Valor:</strong> R$ ${lista[i].valor.toFixed(2)} <br>
-      <strong>Categoria:</strong> ${lista[i].categoria} <br>
-      <strong>Observação:</strong> ${lista[i].observacao || "-"}
-      <hr>
-    `;
-    container.appendChild(item);
-  }
-}
-
-           
 
         function atualizarLocalStorageLancamentos() {
             localStorage.setItem('financas_lancamentos', JSON.stringify(estado.lancamentos));
