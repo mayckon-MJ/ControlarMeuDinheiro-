@@ -2058,170 +2058,6 @@ function copiarPix() {
 
         /* --- OPERAÇÃO DE SALVAMENTO --- */
         function salvarLancamento(event) {
-            event.preventDefault();
-            const modoEdicaoBanco = document.getElementById('modo-edicao-banco').value;
-
-            if (modoEdicaoBanco !== "") {
-                const idsRepetidos = document.querySelectorAll('.id-repetido');
-                const vencimentosRepetidos = document.querySelectorAll('.vencimento-repetido');
-                const valoresRepetidos = document.querySelectorAll('.valor-repetido');
-
-                idsRepetidos.forEach((elId, idx) => {
-                    const idLancamento = elId.value;
-                    
-                    if(idLancamento !== "") {
-                        const indexNoEstado = estado.lancamentos.findIndex(item => item.id === idLancamento);
-                        if (indexNoEstado !== -1) {
-                            estado.lancamentos[indexNoEstado].vencimento = vencimentosRepetidos[idx].value;
-                            estado.lancamentos[indexNoEstado].valor = converterParaFloat(valoresRepetidos[idx].value);
-                        }
-                    } else {
-                        const faturasAtuaisDoGrupo = estado.lancamentos.filter(item => item.descricao === modoEdicaoBanco);
-                        const imagemGrupo = faturasAtuaisDoGrupo.length > 0 ? faturasAtuaisDoGrupo[0].imagem : 'https://via.placeholder.com/50?text=S/I';
-                        
-                        const novaFaturaAdicionadaPeloLapis = {
-                            id: Date.now().toString() + "-lapis-add-" + idx,
-                            descricao: modoEdicaoBanco,
-                            imagem: imagemGrupo,
-                            vencimento: vencimentosRepetidos[idx].value,
-                            valor: converterParaFloat(valoresRepetidos[idx].value),
-                            pago: false
-                        };
-                        estado.lancamentos.push(novaFaturaAdicionadaPeloLapis);
-                    }
-                });
-                               } else {
-            const descricao = document.getElementById('descricao').value;
-            const imagem = document.getElementById('imagem-url').value || 'https://via.placeholder.com/50?text=S/I';
-            const vencimentoInicial = document.getElementById('vencimento').value;
-            const valorPrincipal = converterParaFloat(document.getElementById('valor').value);
-
-            // PEGA A QUANTIDADE DE PARCELAS ADICIONADA NO NOVO CAMPO
-            const inputParcelas = document.getElementById('quantidade-parcelas-dividir');
-            const qtdParcelas = inputParcelas ? parseInt(inputParcelas.value) : 0;
-
-            if (qtdParcelas && qtdParcelas > 1) {
-                // LÓGICA DE DIVISÃO EM PARCELAS
-                const valorParcela = valorPrincipal / qtdParcelas;
-                let dataAtualLoop = new Date(vencimentoInicial);
-
-                for (let i = 1; i <= qtdParcelas; i++) {
-                    // Formata a descrição para mostrar a parcela, ex: "Internet (01/10)"
-                    const numeroParcelaFormatado = String(i).padStart(2, '0');
-                    const qtdTotalFormatado = String(qtdParcelas).padStart(2, '0');
-                    const descricaoComParcela = `${descricao} (${numeroParcelaFormatado}/${qtdTotalFormatado})`;
-
-                    const faturaParcelada = {
-                        id: Date.now().toString() + "-parcela-" + i,
-                        descricao: descricaoComParcela,
-                        imagem: imagem,
-                        vencimento: dataAtualLoop.toISOString().slice(0, 16),
-                        valor: valorParcela,
-                        pago: false
-                    };
-                    estado.lancamentos.push(faturaParcelada);
-
-                    // Avança 1 mês para a próxima parcela
-                    dataAtualLoop.setMonth(dataAtualLoop.getMonth() + 1);
-                }
-            } else {
-                // LÓGICA PADRÃO PADRÃO (SE NÃO FOR DIVIDIDO)
-                const primeiroLancamento = {
-                    id: Date.now().toString() + "-0",
-                    descricao: descricao,
-                    imagem: imagem,
-                    vencimento: vencimentoInicial,
-                    valor: valorPrincipal,
-                    pago: false
-                };
-                estado.lancamentos.push(primeiroLancamento);
-
-                // SE O BOTÃO DE REPETIR ESTIVER SELECIONADO
-                const repetirMensal = document.getElementById('repetir-mensal').checked;
-                const dataLimiteValue = document.getElementById('data-limite-repeticao').value;
-
-                if (repetirMensal && dataLimiteValue) {
-                    let dataAtualLoop = new Date(vencimentoInicial);
-                    const [anoLimite, mesLimite] = dataLimiteValue.split('-').map(Number);
-                    const dataLimite = new Date(anoLimite, mesLimite - 1, 31, 23, 59, 59);
-
-                    let contadorRepeticao = 1;
-                    
-                    while (true) {
-                        dataAtualLoop.setMonth(dataAtualLoop.getMonth() + 1);
-                        if (dataAtualLoop > dataLimite) break;
-
-                        const faturaAutomatica = {
-                            id: Date.now().toString() + "-auto-" + contadorRepeticao,
-                            descricao: descricao,
-                            imagem: imagem,
-                            vencimento: dataAtualLoop.toISOString().slice(0, 16),
-                            valor: valorPrincipal,
-                            pago: false
-                        };
-                        estado.lancamentos.push(faturaAutomatica);
-                        contadorRepeticao++;
-                    }
-                }
-            }
-
-            // Mantém os vencimentos manuais adicionais ativos no sistema
-            const vencimentosRepetidos = document.querySelectorAll('.vencimento-repetido');
-            const valoresRepetidos = document.querySelectorAll('.valor-repetido');
-
-        } else {
-            const descricao = document.getElementById('descricao').value;
-            const imagem = document.getElementById('imagem-url').value || 'https://via.placeholder.com/50?text=S/I';
-            const vencimentoInicial = document.getElementById('vencimento').value;
-            const valorPrincipal = converterParaFloat(document.getElementById('valor').value);
-
-            // PEGA A QUANTIDADE DE PARCELAS DO CAMPO
-            const inputParcelas = document.getElementById('quantidade-parcelas-dividir');
-            const qtdParcelas = inputParcelas ? parseInt(inputParcelas.value) : 0;
-
-            // Criamos a estrutura da conta única
-            const novaContaUnica = {
-                id: Date.now().toString() + "-0",
-                descricao: descricao,
-                imagem: imagem,
-                vencimento: vencimentoInicial,
-                valor: valorPrincipal, // Guarda o valor total (ex: 10 mil)
-                pago: false,
-                faturasInternas: [] // Array onde vão morar as faturas divididas
-            };
-
-            if (qtdParcelas && qtdParcelas > 1) {
-                // CALCULA O VALOR DIVIDIDO (ex: 10 mil / 10 = 1000)
-                const valorCadaFatura = valorPrincipal / qtdParcelas;
-                let dataAtualLoop = new Date(vencimentoInicial);
-
-                for (let i = 1; i <= qtdParcelas; i++) {
-                    const numeroParcelaFormatado = String(i).padStart(2, '0');
-                    const qtdTotalFormatado = String(qtdParcelas).padStart(2, '0');
-
-                    // Cria a fatura interna
-                    novaContaUnica.faturasInternas.push({
-                        idFatura: `${novaContaUnica.id}-fatura-${i}`,
-                        parcela: `${numeroParcelaFormatado}/${qtdTotalFormatado}`,
-                        vencimento: dataAtualLoop.toISOString().slice(0, 16),
-                        valor: valorCadaFatura, // Valor de 1 mil
-                        pago: false
-                    });
-
-                    // Avança o mês para a próxima fatura interna
-                    dataAtualLoop.setMonth(dataAtualLoop.getMonth() + 1);
-                }
-            } 
-                     } else {
-            const descricao = document.getElementById('descricao').value;
-            const imagem = document.getElementById('imagem-url').value || 'https://via.placeholder.com/50?text=S/I';
-            const vencimentoInicial = document.getElementById('vencimento').value;
-            const valorPrincipal = converterParaFloat(document.getElementById('valor').value);
-
-            // PEGA A QUANTIDADE DE PARCELAS DO CAMPO
-            const inputParcelas = document.getElementById('quantidade-parcelas-dividir');
-/* --- OPERAÇÃO DE SALVAMENTO --- */
-function salvarLancamento(event) {
     event.preventDefault();
     const modoEdicaoBanco = document.getElementById('modo-edicao-banco').value.trim();
 
@@ -2239,14 +2075,12 @@ function salvarLancamento(event) {
             if (!vencimento || valor <= 0) return;
 
             if (idLancamento !== "") {
-                // Atualiza existente
                 const index = estado.lancamentos.findIndex(item => item.id === idLancamento);
                 if (index !== -1) {
                     estado.lancamentos[index].vencimento = vencimento;
                     estado.lancamentos[index].valor = valor;
                 }
             } else {
-                // Adiciona nova parcela ao grupo
                 const imagem = estado.lancamentos.find(item => item.descricao === modoEdicaoBanco)?.imagem || 'https://via.placeholder.com/50?text=S/I';
                 estado.lancamentos.push({
                     id: Date.now().toString() + "-" + idx,
@@ -2296,7 +2130,6 @@ function salvarLancamento(event) {
         } 
         // 📌 Lançamento simples ou repetição mensal
         else {
-            // Primeira parcela
             estado.lancamentos.push({
                 id: Date.now().toString() + "-0",
                 descricao: descricao,
@@ -2306,7 +2139,6 @@ function salvarLancamento(event) {
                 pago: false
             });
 
-            // Repetição automática mensal
             if (repetirMensal && dataLimiteValue) {
                 let dataAtual = new Date(vencimentoInicial);
                 const [anoLimite, mesLimite] = dataLimiteValue.split('-').map(Number);
@@ -2349,25 +2181,29 @@ function salvarLancamento(event) {
         }
     }
 
-    // 💾 Salva e atualiza tela
-    atualizarLocalStorageLancamentos();
-    renderizarLancamentos();
-    fecharModal();
-
-    Swal.fire({
-        icon: 'success',
-        title: 'Salvo!',
-        text: 'Lançamento cadastrado com sucesso',
-        timer: 1500,
-        showConfirmButton: false
-    });
-}
-
+    // 💾 Salva de forma segura sem travar a tela
+    setTimeout(() => {
+        try {
             atualizarLocalStorageLancamentos();
             renderizarLancamentos();
             fecharModal();
+            Swal.fire({
+                icon: 'success',
+                title: 'Salvo!',
+                text: 'Lançamento cadastrado com sucesso',
+                timer: 1500,
+                showConfirmButton: false
+            });
+        } catch (erro) {
+            console.error('Erro ao salvar:', erro);
+            Swal.fire('Erro', 'Não foi possível salvar os dados', 'error');
         }
+    }, 10); // Executa em segundo plano
+}
 
+                    
+
+            
         function atualizarLocalStorageLancamentos() {
             localStorage.setItem('financas_lancamentos', JSON.stringify(estado.lancamentos));
         }
@@ -3451,7 +3287,51 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-    
+    // ==============================================
+// 📍 INÍCIO: Configuração da Tela de Abertura
+// ==============================================
+
+// 1. Primeiro: seleciona os elementos da página
+const splashScreen = document.getElementById('splash-screen');
+const splashVideo = document.getElementById('splash-video');
+const mainSystem = document.getElementById('sistema-principal');
+
+// 2. AQUI ESTÁ O SEU TRECHO, exatamente onde deve ficar
+//    Logo após selecionar os elementos, para "ouvir" quando o vídeo acabar
+splashVideo.addEventListener("ended", () => {
+    splashScreen.style.opacity = "0";
+    splashScreen.style.pointerEvents = "none"; 
+
+    const usuarioRegistrado = localStorage.getItem('usuario_nome_registrado');
+
+    setTimeout(() => {
+        splashScreen.remove();
+        if (usuarioRegistrado) {
+            if (mainSystem) mainSystem.style.display = "block";
+            document.body.style.overflow = "auto";
+            setTimeout(() => {
+                verificarPlanilhaEDoacao();
+                verificarTempoEExibirAlerta();
+            }, 50); // Espera a tela estabilizar
+        } else {
+            document.body.style.overflow = "hidden";
+            document.getElementById('tela-registro-usuario').style.display = 'flex';
+        }
+    }, 500); 
+});
+
+// 3. O que pode vir LOGO DEPOIS (exemplos comuns no seu sistema):
+// - Tratamento se o vídeo não carregar
+// - Outras configurações iniciais
+// - Chamada para iniciar o sistema quando a página carrega
+window.addEventListener('load', () => {
+    splashVideo.play().catch(err => console.log("Reprodução automática bloqueada:", err));
+});
+
+// ==============================================
+// 📌 FIM: Bloco da Tela de Abertura
+// ==============================================
+
     </script>
 </body>
 </html>
