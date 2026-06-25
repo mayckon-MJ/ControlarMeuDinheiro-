@@ -2220,91 +2220,148 @@ function copiarPix() {
 
             // PEGA A QUANTIDADE DE PARCELAS DO CAMPO
             const inputParcelas = document.getElementById('quantidade-parcelas-dividir');
-            const qtdParcelas = inputParcelas ? parseInt(inputParcelas.value) : 0;
+/* --- OPERAÇÃO DE SALVAMENTO --- */
+function salvarLancamento(event) {
+    event.preventDefault();
+    const modoEdicaoBanco = document.getElementById('modo-edicao-banco').value.trim();
 
-            if (qtdParcelas && qtdParcelas > 1) {
-                // CALCULA O VALOR DIVIDIDO (Ex: 10 mil / 10 = 1000)
-                const valorCadaFatura = valorPrincipal / qtdParcelas;
-                let dataAtualLoop = new Date(vencimentoInicial);
+    // 📝 MODO EDIÇÃO
+    if (modoEdicaoBanco !== "") {
+        const idsRepetidos = document.querySelectorAll('.id-repetido');
+        const vencimentosRepetidos = document.querySelectorAll('.vencimento-repetido');
+        const valoresRepetidos = document.querySelectorAll('.valor-repetido');
 
-                for (let i = 1; i <= qtdParcelas; i++) {
-                    const numeroParcelaFormatado = String(i).padStart(2, '0');
-                    const qtdTotalFormatado = String(qtdParcelas).padStart(2, '0');
-                    
-                    // Define o nome de cada fatura mostrando a parcela (Ex: Banco Itaú - 01/10)
-                    const descricaoComParcela = `${descricao} - Parcela ${numeroParcelaFormatado}/${qtdTotalFormatado}`;
+        idsRepetidos.forEach((elId, idx) => {
+            const idLancamento = elId.value.trim();
+            const valor = converterParaFloat(valoresRepetidos[idx].value);
+            const vencimento = vencimentosRepetidos[idx].value;
 
-                    const faturaParcelada = {
-                        id: Date.now().toString() + "-fatura-" + i + "-" + Math.random().toString(36).substr(2, 5),
-                        descricao: descricaoComParcela,
-                        imagem: imagem,
-                        vencimento: dataAtualLoop.toISOString().slice(0, 16),
-                        valor: valorCadaFatura, // Aqui entra o valor de 1 mil
-                        pago: false
-                    };
-                    estado.lancamentos.push(faturaParcelada);
+            if (!vencimento || valor <= 0) return;
 
-                    // Avança 1 mês para o vencimento da próxima parcela
-                    dataAtualLoop.setMonth(dataAtualLoop.getMonth() + 1);
+            if (idLancamento !== "") {
+                // Atualiza existente
+                const index = estado.lancamentos.findIndex(item => item.id === idLancamento);
+                if (index !== -1) {
+                    estado.lancamentos[index].vencimento = vencimento;
+                    estado.lancamentos[index].valor = valor;
                 }
             } else {
-                // SE NÃO TIVER PARCELAS, SEGUE O SEU FLUXO PADRÃO ORIGINAL
-                const primeiroLancamento = {
-                    id: Date.now().toString() + "-0",
-                    descricao: descricao,
+                // Adiciona nova parcela ao grupo
+                const imagem = estado.lancamentos.find(item => item.descricao === modoEdicaoBanco)?.imagem || 'https://via.placeholder.com/50?text=S/I';
+                estado.lancamentos.push({
+                    id: Date.now().toString() + "-" + idx,
+                    descricao: modoEdicaoBanco,
                     imagem: imagem,
-                    vencimento: vencimentoInicial,
-                    valor: valorPrincipal,
+                    vencimento: vencimento,
+                    valor: valor,
                     pago: false
-                };
-                estado.lancamentos.push(primeiroLancamento);
+                });
+            }
+        });
+    } 
+    // 🆕 MODO NOVO LANÇAMENTO
+    else {
+        const descricao = document.getElementById('descricao').value.trim();
+        const imagem = document.getElementById('imagem-url').value.trim() || 'https://via.placeholder.com/50?text=S/I';
+        const vencimentoInicial = document.getElementById('vencimento').value;
+        const valorPrincipal = converterParaFloat(document.getElementById('valor').value);
+        const qtdParcelas = parseInt(document.getElementById('quantidade-parcelas-dividir').value) || 1;
+        const repetirMensal = document.getElementById('repetir-mensal').checked;
+        const dataLimiteValue = document.getElementById('data-limite-repeticao').value;
 
-                const repetirMensal = document.getElementById('repetir-mensal').checked;
-                const dataLimiteValue = document.getElementById('data-limite-repeticao').value;
+        // ✅ Validações
+        if (!descricao || !vencimentoInicial || valorPrincipal <= 0) {
+            Swal.fire('Atenção', 'Preencha todos os campos corretamente!', 'warning');
+            return;
+        }
 
-                if (repetirMensal && dataLimiteValue) {
-                    let dataAtualLoop = new Date(vencimentoInicial);
-                    const [anoLimite, mesLimite] = dataLimiteValue.split('-').map(Number);
-                    const dataLimite = new Date(anoLimite, mesLimite - 1, 31, 23, 59, 59);
+        // 📌 Divisão em parcelas
+        if (qtdParcelas > 1) {
+            const valorParcela = Math.round((valorPrincipal / qtdParcelas) * 100) / 100;
+            let dataAtual = new Date(vencimentoInicial);
 
-                    let contadorRepeticao = 1;
-                    
-                    while (true) {
-                        dataAtualLoop.setMonth(dataAtualLoop.getMonth() + 1);
-                        if (dataAtualLoop > dataLimite) break;
+            for (let i = 1; i <= qtdParcelas; i++) {
+                const parcela = String(i).padStart(2, '0');
+                const total = String(qtdParcelas).padStart(2, '0');
+                estado.lancamentos.push({
+                    id: Date.now().toString() + "-par-" + i,
+                    descricao: `${descricao} (${parcela}/${total})`,
+                    imagem: imagem,
+                    vencimento: dataAtual.toISOString().slice(0, 16),
+                    valor: valorParcela,
+                    pago: false
+                });
+                dataAtual.setMonth(dataAtual.getMonth() + 1);
+            }
+        } 
+        // 📌 Lançamento simples ou repetição mensal
+        else {
+            // Primeira parcela
+            estado.lancamentos.push({
+                id: Date.now().toString() + "-0",
+                descricao: descricao,
+                imagem: imagem,
+                vencimento: vencimentoInicial,
+                valor: valorPrincipal,
+                pago: false
+            });
 
-                        const faturaAutomatica = {
-                            id: Date.now().toString() + "-auto-" + contadorRepeticao,
-                            descricao: descricao,
-                            imagem: imagem,
-                            vencimento: dataAtualLoop.toISOString().slice(0, 16),
-                            valor: valorPrincipal,
-                            pago: false
-                        };
-                        estado.lancamentos.push(faturaAutomatica);
-                        contadorRepeticao++;
-                    }
+            // Repetição automática mensal
+            if (repetirMensal && dataLimiteValue) {
+                let dataAtual = new Date(vencimentoInicial);
+                const [anoLimite, mesLimite] = dataLimiteValue.split('-').map(Number);
+                const dataLimite = new Date(anoLimite, mesLimite, 0, 23, 59, 59);
+
+                let contador = 1;
+                while (true) {
+                    dataAtual.setMonth(dataAtual.getMonth() + 1);
+                    if (dataAtual > dataLimite) break;
+
+                    estado.lancamentos.push({
+                        id: Date.now().toString() + "-auto-" + contador,
+                        descricao: descricao,
+                        imagem: imagem,
+                        vencimento: dataAtual.toISOString().slice(0, 16),
+                        valor: valorPrincipal,
+                        pago: false
+                    });
+                    contador++;
                 }
             }
 
-            // Mantém os seus vencimentos manuais adicionais funcionando
-            const vencimentosRepetidos = document.querySelectorAll('.vencimento-repetido');
-            const valoresRepetidos = document.querySelectorAll('.valor-repetido');
-
-            vencimentosRepetidos.forEach((elementoData, index) => {
-                const valorRep = converterParaFloat(valoresRepetidos[index].value);
-                const faturaAdicional = {
-                    id: Date.now().toString() + "-manual-" + (index + 1),
-                    descricao: descricao,
-                    imagem: imagem,
-                    vencimento: elementoData.value,
-                    valor: valorRep,
-                    pago: false
-                };
-                estado.lancamentos.push(faturaAdicional);
+            // 📌 Adiciona parcelas manuais extras
+            const vencimentosManuais = document.querySelectorAll('.vencimento-repetido');
+            const valoresManuais = document.querySelectorAll('.valor-repetido');
+            vencimentosManuais.forEach((elData, idx) => {
+                const val = converterParaFloat(valoresManuais[idx].value);
+                const dt = elData.value;
+                if (dt && val > 0) {
+                    estado.lancamentos.push({
+                        id: Date.now().toString() + "-man-" + idx,
+                        descricao: descricao,
+                        imagem: imagem,
+                        vencimento: dt,
+                        valor: val,
+                        pago: false
+                    });
+                }
             });
         }
-   
+    }
+
+    // 💾 Salva e atualiza tela
+    atualizarLocalStorageLancamentos();
+    renderizarLancamentos();
+    fecharModal();
+
+    Swal.fire({
+        icon: 'success',
+        title: 'Salvo!',
+        text: 'Lançamento cadastrado com sucesso',
+        timer: 1500,
+        showConfirmButton: false
+    });
+}
 
             atualizarLocalStorageLancamentos();
             renderizarLancamentos();
