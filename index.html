@@ -1,8 +1,4 @@
 
-
-
-
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -1704,19 +1700,106 @@
 
         /* --- EXCLUIR LANÇAMENTO INDIVIDUALMENTE --- */
         function excluirLancamentoIndividual(id, bancoAlvo) {
-            if(confirm("Tem certeza que deseja apagar permanentemente este registro?")) {
-                estado.lancamentos = estado.lancamentos.filter(item => item.id !== id);
-                atualizarLocalStorageLancamentos();
-                renderizarLancamentos();
-                
-                const restamRegistros = estado.lancamentos.some(item => item.descricao === bancoAlvo);
-                if (restamRegistros) {
-                    atualizarListaSubfaturasModal(bancoAlvo);
-                } else {
-                    fecharModalDetalhes();
-                }
-            }
-        }
+  // Cria dinamicamente todo o alerta, sem alterar o resto do HTML
+  const alerta = document.createElement('div');
+  alerta.style.cssText = `
+    position: fixed;
+    top: 200px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 99999;
+    background: #bdd6ff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+    width: 90%;
+    max-width: 380px;
+    text-align: center;
+    font-family: Arial, sans-serif;
+  `;
+
+  // Vídeo em loop
+  const video = document.createElement('video');
+  video.src = 'Triste.mp4'; // ⚠️ COLOQUE AQUI O LINK DO SEU VÍDEO
+  video.autoplay = true;
+  video.loop = true;
+  video.muted = true; // necessário para autoplay funcionar na maioria dos navegadores
+  video.style.cssText = `
+    width: 100;
+    max-height: 100px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    object-fit: cover;
+  `;
+
+  // Texto
+  const texto = document.createElement('p');
+  texto.textContent = 'Tem certeza que deseja apagar permanentemente este registro?';
+  texto.style.cssText = `
+    font-size: 16px;
+    color: #333333;
+    margin: 0 0 22px 0;
+    line-height: 1.4;
+  `;
+
+  // Botões
+  const botoesDiv = document.createElement('div');
+  botoesDiv.style.cssText = `
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  `;
+
+  const btnCancelar = document.createElement('button');
+  btnCancelar.textContent = 'Cancelar';
+  btnCancelar.style.cssText = `
+    padding: 10px 22px;
+    border: none;
+    border-radius: 6px;
+    background: #e5e7eb;
+    color: #333;
+    font-size: 15px;
+    cursor: pointer;
+    font-weight: 500;
+  `;
+
+  const btnApagar = document.createElement('button');
+  btnApagar.textContent = 'Sim, apagar';
+  btnApagar.style.cssText = `
+    padding: 10px 22px;
+    border: none;
+    border-radius: 6px;
+    background: #dc2626;
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+    font-weight: 500;
+  `;
+
+  // Monta a estrutura
+  botoesDiv.append(btnCancelar, btnApagar);
+  alerta.append(video, texto, botoesDiv);
+  document.body.appendChild(alerta);
+
+  // Ação ao cancelar
+  btnCancelar.onclick = () => alerta.remove();
+
+  // Ação ao confirmar → mantém TODA a sua lógica original
+  btnApagar.onclick = () => {
+    alerta.remove();
+    estado.lancamentos = estado.lancamentos.filter(item => item.id !== id);
+    atualizarLocalStorageLancamentos();
+    renderizarLancamentos();
+    
+    const restamRegistros = estado.lancamentos.some(item => item.descricao === bancoAlvo);
+    if (restamRegistros) {
+      atualizarListaSubfaturasModal(bancoAlvo);
+    } else {
+      fecharModalDetalhes();
+    }
+  };
+}
+
 
         /* --- EDITAR LANÇAMENTO INDIVIDUAL --- */
         function abrirEdicaoIndividual(id) {
