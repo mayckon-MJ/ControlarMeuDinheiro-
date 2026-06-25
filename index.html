@@ -1,4 +1,8 @@
 
+
+
+
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -1415,12 +1419,36 @@
     transition: background-color 0.2s, transform 0.1s;
     " onmouseover="this.style.backgroundColor='#0056b3'" onmouseout="this.style.backgroundColor='#007bff'">
     Logos</a>
-                    
+     <!-- 🆕 ÁREA PARA EXIBIR A IMAGEM SELECIONADA -->
+    <div id="preview-imagem-selecionada" style="
+        margin-top: 15px;
+        padding: 12px;
+        background: #f8fafc;
+        border-radius: 8px;
+        border: 1px dashed #cbd5e1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    ">
+        <p style="font-size: 0.85rem; color: #64748b; margin: 0;">Pré-visualização da logo</p>
+        <img id="img-preview" src="" alt="Logo selecionada" style="
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #e2e8f0;
+            display: none;
+        ">
+    </div>
+                   
 <div id="modal-galeria" class="modal-full">
     <div class="modal-content-galeria">
         <div class="modal-header">
             <h2>Escolha uma Logo</h2>
             <button type="button" class="btn-fechar-modal" style="font-size: 2rem;" onclick="fecharGaleria()">&times;</button>
+
         </div>
         <label for="imagem-url">Link da Imagem</label>
         <input type="url" id="imagem-url" class="form-control" placeholder="http://exemplo.com/imagem.jpg">
@@ -1447,7 +1475,7 @@
                     </div>
 
                     <div class="form-group secao-original-valores">
-                        <label>Valor (R$)</label>
+                        <label>Valor Principal da divida (R$)</label>
                         <input type="text" id="valor" class="form-control" placeholder="0,00" oninput="mascaraMoeda(this)">
                     </div>
                 </div>
@@ -1472,7 +1500,7 @@
 
 <!-- COLE ESTE BLOCO AQUI -->
 <div class="form-group">
-    <label for="quantidade-parcelas">Quantidade de Parcelas / Faturas</label>
+    <label for="quantidade-parcelas">Divida o valor principal:</label>
     <input type="number" id="quantidade-parcelas" class="form-control" min="1" max="120" value="1" placeholder="Ex: 10">
     <small style="color: #64748b; font-size: 0.8rem;">Deixe 1 para lançamento único</small>
 </div>
@@ -1673,14 +1701,20 @@
         }
 
         function fecharModal() {
-            document.getElementById('modal-cadastro').classList.remove('active');
-            document.getElementById('form-lancamento').reset();
-            document.getElementById('container-repeticoes').innerHTML = '';
-            document.getElementById('container-data-limite').style.display = 'none';
-            document.getElementById('repetir-mensal').checked = false;
+    document.getElementById('modal-cadastro').classList.remove('active');
+    document.getElementById('form-lancamento').reset();
+    document.getElementById('container-repeticoes').innerHTML = '';
+    document.getElementById('container-data-limite').style.display = 'none';
+    document.getElementById('repetir-mensal').checked = false;
 
-            resetarDataInputPrincipal();
-        }
+    // 🆕 Limpa a imagem ao fechar
+    document.getElementById('img-preview').style.display = 'none';
+    document.getElementById('img-preview').src = '';
+
+    resetarDataInputPrincipal();
+}
+
+            
 
         function fecharModalExterno(e, idModal) {
             if(e.target.id === idModal) {
@@ -2688,23 +2722,36 @@ function abrirGaleria(event) {
 }
 
 function selecionarFotoGaleria(url, nome) {
+    // Preenche os campos
     document.getElementById('imagem-url').value = url;
     document.getElementById('descricao').value = nome;
+
+    // 🆕 Exibe a imagem na pré-visualização
+    const imgPreview = document.getElementById('img-preview');
+    imgPreview.src = url;
+    imgPreview.style.display = 'block';
+
     fecharGaleria();
 }
+// 🆕 Atualiza a pré-visualização quando o usuário digita o link
+document.addEventListener('DOMContentLoaded', () => {
+    const campoImagem = document.getElementById('imagem-url');
+    if (campoImagem) {
+        campoImagem.addEventListener('input', () => {
+            const url = campoImagem.value.trim();
+            const imgPreview = document.getElementById('img-preview');
+            if (url) {
+                imgPreview.src = url;
+                imgPreview.style.display = 'block';
+            } else {
+                imgPreview.style.display = 'none';
+            }
+        });
+    }
+});
 
-function fecharGaleria() {
-    document.getElementById('modal-galeria').classList.remove('active');
-}
 
 
-
-function selecionarFotoGaleria(url, nome) {
-    // Insere automaticamente a URL e o Nome nos respectivos inputs do formulário
-    document.getElementById('imagem-url').value = url;
-    document.getElementById('descricao').value = nome;
-    fecharGaleria();
-}
 function fecharGaleria() {
     document.getElementById('modal-galeria').classList.remove('active');
 }
