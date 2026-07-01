@@ -1,0 +1,1443 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista Inteligente de Compras</title>
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
+    <style>
+        :root {
+            --bg-primary: #f1f5f9;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --accent-yellow: #facc15;
+            --accent-yellow-hover: #eab308;
+            --border: #e2e8f0;
+            --radius-lg: 20px;
+            --radius-md: 14px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --transition: all 0.25s ease-in-out;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 1rem;
+            padding-bottom: 140px; /* Ajustado para dar espaço ao novo rodapé */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Topo Fixo com Título e Barra de Pesquisa */
+        header {
+            width: 100%;
+            max-width: 550px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .search-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 0.85rem 1rem 0.85rem 2.8rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: var(--bg-card);
+            color: var(--text-main);
+            outline: none;
+            font-size: 1rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .search-container input:focus {
+            border-color: var(--text-muted);
+        }
+
+        .search-container i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1.2rem;
+        }
+
+        /* Container Principal Responsivo */
+        .main-container {
+            width: 100%;
+            max-width: 550px;
+        }
+
+        .products-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        /* Novo Design do Card: Mais fino e alinhado horizontalmente */
+        .product-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            padding: 0.3rem; /* Alterado aqui para ficar mais fino */
+            display: flex;
+            flex-direction: column; /* Alterado para empilhar topo de ações e conteúdo */
+            gap: 0.3rem;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        /* Container interno para alinhar imagem e dados lado a lado */
+        .card-body-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            width: 100%;
+        }
+
+        /* Botão de Lixeira no canto esquerdo superior */
+        .btn-delete {
+            position: absolute;
+            top: -6px;
+            left: -6px;
+            background: #ef4444; /* Vermelho */
+            color: white;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(239, 68, 68, 0.4);
+            z-index: 10;
+            transition: var(--transition);
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+            transform: scale(1.1);
+        }
+
+
+        /* Imagem Restrita ao Canto Esquerdo com Bordas Arredondadas */
+        .card-img-left {
+            width: 50px;       /* Alterado de 75px para 50px */
+            height: 50px;      /* Alterado de 75px para 50px */
+            object-fit: cover;
+            border-radius: var(--radius-md);
+            background: #cbd5e1;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        .card-img-placeholder-left {
+            width: 50px;       /* Alterado de 75px para 50px */
+            height: 50px;      /* Alterado de 75px para 50px */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #e2e8f0;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            border-radius: var(--radius-md);
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+
+        /* Informações ao lado da imagem */
+        .card-info {
+            flex: 1;
+            min-width: 0; /* Evita quebra por textos gigantes */
+        }
+
+        .card-market {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #3b82f6; /* Mantém o tom azul de destaque */
+            display: block;
+            margin-bottom: 0.1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .card-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--text-main);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 0.25rem;
+        }
+
+        .card-meta-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-price {
+            font-weight: 700;
+            color: #059669; /* Verde padrão */
+            font-size: 0.95rem;
+        }
+
+        .card-stock-tag {
+            font-size: 0.75rem;
+            background: #f1f5f9;
+            padding: 0.15rem 0.5rem;
+            border-radius: 20px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* Botão de Editar Lateral no Card */
+        .btn-edit {
+            background: #f1f5f9;
+            border: none;
+            color: var(--text-muted);
+            width: 28px; /* Reduzido levemente para o topo */
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+
+        .btn-edit:hover {
+            background: var(--accent-yellow);
+            color: #1e293b;
+        }
+
+        /* Botão Principal Flutuante Inferior */
+                /* Container dos Botões Flutuantes Inferiores */
+        .fab-container {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 999;
+        }
+
+        .fab-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .fab-btn-sub {
+            width: 62px;
+            height: 62px;
+            background-color: var(--accent-yellow);
+            color: #1e293b;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.8rem;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(250, 204, 21, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .fab-btn-sub:hover {
+            background-color: var(--accent-yellow-hover);
+            transform: scale(1.05);
+        }
+
+        .fab-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+
+        /* Modal Estruturado */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(6px);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-top-left-radius: var(--radius-lg);
+            border-top-right-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 500px;
+            transform: translateY(100%);
+            transition: var(--transition);
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        @media (min-width: 500px) {
+            .modal-overlay { align-items: center; }
+            .modal-content { border-radius: var(--radius-lg); transform: scale(0.9); }
+            .modal-overlay.active .modal-content { transform: scale(1); }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            margin-bottom: 1rem;
+        }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        input, select {
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: var(--bg-primary);
+            color: var(--text-main);
+            outline: none;
+            font-size: 1rem;
+        }
+
+        
+        .radio-tile-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            width: 100%; /* Garante que o grupo ocupe toda a largura */
+        }
+
+
+        .radio-label {
+            flex: 1;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .radio-label input {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .radio-tile {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: var(--bg-primary);
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .radio-label input:checked + .radio-tile {
+            border-color: var(--text-main);
+            background: var(--text-main);
+            color: white;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 0.85rem;
+            background: #1e293b;
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 0.5rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 4rem 1rem;
+        }
+
+        /* Estilos Novos para as Ideias */
+        .dashboard-container {
+            width: 100%;
+            max-width: 550px;
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            text-align: center;
+        }
+        .dashboard-box {
+            background: var(--bg-primary);
+            padding: 0.5rem;
+            border-radius: 10px;
+        }
+        .dashboard-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        .dashboard-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+        .filter-scroll-container {
+            width: 100%;
+            max-width: 550px;
+            display: flex;
+            flex-direction: column; /* Alterado para empilhar as linhas */
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .filter-scroll-container::-webkit-scrollbar {
+            height: 4px;
+        }
+        .filter-scroll-container::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+        .pill-filter {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            color: var(--text-muted);
+            transition: var(--transition);
+        }
+        .pill-filter.active {
+            background: var(--text-main);
+            color: white;
+            border-color: var(--text-main);
+        }
+        
+        /* Nova estilização do seletor/Card de Ordenação Padrão */
+        .toolbar-container {
+            width: 100%;
+            max-width: 550px;
+            margin-bottom: 0.75rem;
+        }
+        .sort-card-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 0.75rem 1rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            width: 100%;
+        }
+        .sort-card-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            color: var(--text-main);
+            font-size: 0.95rem;
+        }
+        .sort-card-info i {
+            font-size: 1.3rem;
+            color: var(--accent-yellow-hover);
+        }
+        .select-sort-custom {
+            border: 1px solid var(--border);
+            background: var(--bg-primary);
+            padding: 0.4rem 0.6rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-main);
+            outline: none;
+            cursor: pointer;
+        }
+        
+        .checked-card {
+            opacity: 0.55;
+            background: #f8fafc;
+        }
+        .checked-card .card-title {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+        .card-actions-right {
+            display: flex;
+            flex-direction: row; /* Alterado para exibir horizontalmente no topo */
+            gap: 0.4rem;
+            align-items: center;
+            justify-content: flex-end;
+            width: 100%;
+            border-bottom: 1px dashed var(--border); /* Linha divisória fina sutil */
+            padding-bottom: 0.2rem;
+        }
+        .inline-qty-control {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            background: #f1f5f9;
+            padding: 0.15rem;
+            border-radius: 20px;
+        }
+        .btn-qty-inline {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: none;
+            background: white;
+            font-weight: bold;
+            font-size: 0.75rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        /* Botão de Status Unificado (Vermelho por padrão / Verde se checado) */
+        .btn-status-toggle {
+            border: none;
+            width: 28px; /* Reduzido levemente para o topo */
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        .btn-status-toggle.unget {
+            background: #ef4444; /* Vermelho padrão */
+        }
+        .btn-status-toggle.get {
+            background: #10b981; /* Verde ao clicar */
+        }
+            /* Botão Comprar Hoje (Ícone de Carro +) */
+        .btn-today-toggle {
+            background: #e2e8f0;
+            border: none;
+            color: var(--text-muted);
+            padding: 0.2rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            transition: var(--transition);
+        }
+        .btn-today-toggle.active {
+            background: #3b82f6;
+            color: white;
+        }
+
+
+        /* Container Inferior / Rodapé de Utilitários e Backup */
+        .footer-toolbar {
+            width: 100%;
+            max-width: 550px;
+            margin-top: 2rem;
+            padding: 1rem;
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .footer-row {
+            display: flex;
+            gap: 0.5rem;
+            width: 100%;
+        }
+        .footer-row .btn-tool-foot {
+            flex: 1;
+            padding: 0.75rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            background: var(--bg-primary);
+            color: var(--text-main);
+            transition: var(--transition);
+        }
+        .footer-row .btn-tool-foot:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+            /* Modal de Tela Cheia do Sistema */
+        .system-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--bg-primary);
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+        .system-modal-overlay.active {
+            display: flex;
+        }
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .gallery-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 0.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .gallery-item:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 80px;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+        .gallery-item span {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+
+        /* Responsividade Impecável Avançada */
+        @media (min-width: 768px) {
+            body { padding: 2rem; padding-bottom: 160px; }
+            header h1 { font-size: 2rem; }
+            .main-container, header, .dashboard-container, .filter-scroll-container, .toolbar-container, .footer-toolbar { max-width: 700px; }
+            .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
+            .product-card { padding: 0.3rem; gap: 0.3rem; } /* Mantido o ajuste fino */
+        }
+        @media (min-width: 1024px) {
+            .main-container, header, .dashboard-container, .filter-scroll-container, .toolbar-container, .footer-toolbar { max-width: 850px; }
+            .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 480px) {
+            body { padding: 0.75rem; padding-bottom: 130px; }
+            .footer-row { flex-direction: column; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1><i class="uil uil-shopping-basket"></i> Lista de Compras</h1>
+        <div class="search-container">
+            <i class="uil uil-search"></i>
+            <input type="text" id="searchInput" placeholder="Pesquisar produto pelo nome..." oninput="renderProdutos()">
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        <div class="dashboard-grid">
+            <div class="dashboard-box">
+                <div class="dashboard-label">Total Geral</div>
+                <div class="dashboard-value" id="dashTotalGeral">R$ 0,00</div>
+            </div>
+            <div class="dashboard-box">
+                <div class="dashboard-label">Progresso da Lista</div>
+                <div class="dashboard-value" id="dashProgresso">0 / 0 pego</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="filter-scroll-container" id="filterContainer"></div>
+
+    <div class="toolbar-container">
+        <div class="sort-card-container">
+            <div class="sort-card-info">
+                <i class="uil uil-sort-amount-down"></i>
+                <span style="font-size: 10px;">Organização dos Itens</span>
+            </div>
+            <select id="sortSelect" class="select-sort-custom" onchange="renderProdutos()">
+                <option value="default">✨ Ordem Padrão</option>
+                <option value="alpha">🔤 Ordem Alfabética</option>
+                <option value="priceAsc">📈 Preço: Menor p/ Maior</option>
+                <option value="priceDesc">📉 Preço: Maior p/ Menor</option>
+            </select>
+        </div>
+    </div>
+
+    <main class="main-container">
+        <div class="products-list" id="productsContainer"></div>
+    </main>
+
+    <div class="footer-toolbar">
+        <div class="footer-row">
+            <button class="btn-tool-foot" onclick="exportToWhatsApp()" style="background: #e8fced; color: #25d366; border-color: #bbf7d0;">
+                <i class="uil uil-whatsapp"></i> Enviar WhatsApp
+            </button>
+            <button class="btn-tool-foot" onclick="clearAllProducts()" style="background: #fef2f2; color: #ef4444; border-color: #fecaca;">
+                <i class="uil uil-trash-alt"></i> Limpar Tudo
+            </button>
+        </div>
+        <div class="footer-row">
+            <button class="btn-tool-foot" onclick="downloadBackup()">
+                <i class="uil uil-download-alt"></i> Download Lista (JSON)
+            </button>
+            <button class="btn-tool-foot" onclick="triggerUpload()">
+                <i class="uil uil-upload-alt"></i> Upload Lista (JSON)
+            </button>
+            <input type="file" id="importFileInput" accept=".json" style="display: none;" onchange="uploadBackup(event)">
+        </div>
+    </div>
+
+        <div class="fab-container">
+        <div class="fab-wrapper">
+            <button class="fab-btn-sub" onclick="openTodayModal()" title="Ver Hoje">
+                <i class="uil uil-shopping-cart"></i>
+            </button>
+            <span class="fab-label">Hoje</span>
+        </div>
+            
+              
+  
+
+        <div class="fab-wrapper">
+            <button class="fab-btn-sub" onclick="openModal()" title="Adicionar Produto">
+                <i class="uil uil-plus"></i>
+            </button>
+            <span class="fab-label">Adicionar</span>
+        </div>
+    </div>
+
+
+    <div class="modal-overlay" id="formModal" onclick="closeModalViaOverlay(event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Novo Produto</h3>
+                <i class="uil uil-times" style="font-size: 1.5rem; cursor: pointer; color: var(--text-muted);" onclick="closeModal()"></i>
+            </div>
+            
+            <form id="productForm" onsubmit="saveProduct(event)">
+                <input type="hidden" id="editIndex">
+
+                <div class="form-group">
+                    <label for="prodCategoria">Categoria</label>
+                    <select id="prodCategoria">
+                        <option value="Alimentos">Alimentos Mercearia</option>
+                        <option value="Limpezas">Limpezas</option>
+                        <option value="Açougue">Açougue</option>
+                        <option value="Bebidas">Bebidas</option>
+                        <option value="Geral">Geral</option>
+                        <option value="Hortifrúti">Hortifrúti</option>
+                        <option value="Higiene">Higiene</option>
+                        <option value="Outros">Outros</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="prodMercado">Nome do Mercado</label>
+                    <input type="text" id="prodMercado" placeholder="Ex: Supermercado Central">
+                </div>
+
+                <div class="form-group">
+                    <label for="prodFoto">Link da Imagem do Produto</label>  
+                    <div style="display: flex; justify-content: center; width: 100%; padding: 0.4rem 0;">
+    
+    <a href="hospedagem.html" 
+       style="display: inline-flex; align-items: center; gap: 0.3rem; background-color: #3b82f6; color: #ffffff; text-decoration: none; padding: 0.35rem 0.7rem; font-family: 'Segoe UI', system-ui, sans-serif; font-size: 0.75rem; font-weight: 600; border-radius: 6px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); transition: all 0.2s ease-in-out; cursor: pointer;"
+       onmouseover="this.style.backgroundColor='#2563eb';"
+       onmouseout="this.style.backgroundColor='#3b82f6';">
+       
+       <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+           <polyline points="17 8 12 3 7 8"></polyline>
+           <line x1="12" y1="3" x2="12" y2="15"></line>
+       </svg>
+       
+       Pegar Imagem da Galeria
+    </a>
+</div>
+       <div style="display: flex; justify-content: center; width: 100%; padding: 0.4rem 0;">   
+       <a href="#" onclick="openSystemModal()" 
+       style="display: inline-flex; align-items: center; gap: 0.3rem; background-color: #f87171; color: #ffffff; text-decoration: none; padding: 0.35rem 0.7rem; font-family: 'Segoe UI', system-ui, sans-serif; font-size: 0.75rem; font-weight: 600; border-radius: 6px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); transition: all 0.2s ease-in-out; cursor: pointer;"
+       onmouseover="this.style.backgroundColor='#ef4444';"
+       onmouseout="this.style.backgroundColor='#f87171';">
+       Escolher Imagem do Sistema
+       </a>
+       </div>
+       <div class="system-modal-overlay" id="systemModal">
+        <div class="modal-header" style="max-width: 550px; width: 100%; margin: 0 auto 1.25rem auto;">
+            <h3>Imagens do Sistema</h3>
+            <i class="uil uil-times" style="font-size: 1.8rem; cursor: pointer; color: var(--text-muted);" onclick="closeSystemModal()"></i>
+        </div>
+        <div class="gallery-grid" id="galleryGrid" style="max-width: 550px; width: 100%; margin: 0 auto;">
+        </div>
+        </div>
+
+
+ 
+                    <input type="url" id="prodFoto" placeholder="https://exemplo.com/imagem.jpg">
+                </div>
+
+                <div class="form-group">
+                    <label for="prodNome">Nome do Produto</label>
+                    <input type="text" id="prodNome" placeholder="Ex: Arroz Integral" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="prodPreco">Valor (R$)</label>
+                    <input type="number" id="prodPreco" placeholder="0,00" step="0.01" min="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Medida do Produto</label>
+                    <div class="radio-tile-group">
+                        <label class="radio-label">
+                            <input type="radio" name="prodUnidade" value="Un" checked onchange="updateQtdLabel(this.value)">
+                            <div class="radio-tile">Quantidade (Un)</div>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="prodUnidade" value="Kg" onchange="updateQtdLabel(this.value)">
+                            <div class="radio-tile">Quilo (Kg)</div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label id="labelQuantidade" for="prodQtdEstoque">Quantidade Atual</label>
+                    <input type="number" id="prodQtdEstoque" placeholder="Ex: 2" step="any" min="0" required>
+                </div>
+
+                <button type="submit" class="btn-submit">Salvar na Lista</button>
+            </form>
+        </div>
+    </div>
+   <div class="system-modal-overlay" id="todayModal">
+        <div class="modal-header" style="max-width: 550px; width: 100%; margin: 0 auto 1.25rem auto;">
+            <h3>🛒 Compras de Hoje</h3>
+            <i class="uil uil-times" style="font-size: 1.8rem; cursor: pointer; color: var(--text-muted);" onclick="closeTodayModal()"></i>
+        </div>
+        <main class="main-container" style="margin: 0 auto; width: 100%;">
+            <div class="products-list" id="todayProductsContainer"></div>
+        </main>
+    </div>
+    <script>
+        let produtos = JSON.parse(localStorage.getItem('minha_lista_compras')) || [];
+        let filtroMercadoAtivo = "Todos";
+        let filtroCategoriaAtiva = "Todos";
+
+        function renderFiltros() {
+            const filterContainer = document.getElementById('filterContainer');
+            
+            const mercados = ["Todos", ...new Set(produtos.filter(p => p.mercado).map(p => p.mercado))];
+            const categorias = ["Todos", ...new Set(produtos.filter(p => p.categoria).map(p => p.categoria))];
+            
+            // Cria a primeira linha (Mercados) com rolagem horizontal própria
+            let htmlFiltros = '<div style="display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.25rem;">';
+            
+            mercados.forEach(m => {
+                const activeClass = filtroMercadoAtivo === m ? 'active' : '';
+                htmlFiltros += `<span class="pill-filter ${activeClass}" onclick="setFiltroMercado('${m}')"><i class="uil uil-store"></i> ${m}</span>`;
+            });
+            
+            htmlFiltros += '</div>'; // Fecha a linha de mercados
+            
+            // Se houver mais categorias além de "Todos", cria a segunda linha logo abaixo
+            if(categorias.length > 1) {
+                htmlFiltros += `<div style="display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.25rem;">`;
+                categorias.forEach(c => {
+                    const activeClass = filtroCategoriaAtiva === c ? 'active' : '';
+                    htmlFiltros += `<span class="pill-filter ${activeClass}" onclick="setFiltroCategoria('${c}')"><i class="uil uil-tag"></i> ${c}</span>`;
+                });
+                htmlFiltros += '</div>'; // Fecha a linha de categorias
+            }
+            
+            filterContainer.innerHTML = htmlFiltros;
+        }
+
+            // Banco de dados interno de imagens do sistema
+        const galeriaSistema = [
+            { nome: "Arroz", categoria: "Alimentos", url: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=150" },
+            { nome: "Feijão", categoria: "Alimentos", url: "https://images.unsplash.com/photo-1551462147-ff29053bfc14?w=150" },
+            { nome: "Detergente", categoria: "Limpezas", url: "https://images.unsplash.com/photo-1607344645866-009c320c5ab8?w=150" },
+            { nome: "Carne Bovina", categoria: "Açougue", url: "https://images.unsplash.com/photo-1603048588665-791ca8aea617?w=150" },
+            { nome: "Coca-Cola", categoria: "Bebidas", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTV6g886i_Riyx3uzMZfZep_XL92ARz6okr3Q&s" },
+            { nome: "Banana", categoria: "Hortifrúti", url: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=150" },
+            { nome: "Shampoo", categoria: "Higiene", url: "https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?w=150" }
+        ];
+
+        function openSystemModal() {
+            const grid = document.getElementById('galleryGrid');
+            grid.innerHTML = galeriaSistema.map(item => `
+                <div class="gallery-item" onclick="selectSystemImage('${item.url}', '${item.categoria}')">
+                    <img src="${item.url}" alt="${item.nome}">
+                    <span>${item.nome}</span>
+                </div>
+            `).join('');
+            document.getElementById('systemModal').classList.add('active');
+        }
+
+        function closeSystemModal() {
+            document.getElementById('systemModal').classList.remove('active');
+        }
+
+        function selectSystemImage(url, categoria) {
+            document.getElementById('prodFoto').value = url;
+            document.getElementById('prodCategoria').value = categoria;
+            closeSystemModal();
+        }
+//___________________
+
+        function setFiltroMercado(mercado) {
+            filtroMercadoAtivo = mercado;
+            renderProdutos();
+        }
+
+        function setFiltroCategoria(cat) {
+            filtroCategoriaAtiva = cat;
+            renderProdutos();
+        }
+
+                function calcularDashboard() {
+            let totalGeral = 0;
+            let itensPegos = 0;
+            let totalItensFiltrados = 0;
+            
+            const searchTerm = document.getElementById('searchInput') ? document.getElementById('searchInput').value.toLowerCase().trim() : '';
+
+            produtos.forEach(p => {
+                // Verifica quais produtos estão ativos de acordo com os filtros da tela
+                const matchSearch = p.nome.toLowerCase().includes(searchTerm);
+                const matchMercado = filtroMercadoAtivo === "Todos" || p.mercado === filtroMercadoAtivo;
+                const matchCat = filtroCategoriaAtiva === "Todos" || p.categoria === filtroCategoriaAtiva;
+
+                if (matchSearch && matchMercado && matchCat) {
+                    // MULTIPLICAÇÃO DO PREÇO PELA QUANTIDADE OU QUILO DO PRODUTO
+                    const subtotal = (parseFloat(p.preco) || 0) * (parseFloat(p.qtdEstoque) || 0);
+                    totalGeral += subtotal;
+                    
+                    totalItensFiltrados++;
+                    if (p.checked) {
+                        itensPegos++;
+                    }
+                }
+            });
+
+            document.getElementById('dashTotalGeral').innerText = formatBRL(totalGeral);
+            document.getElementById('dashProgresso').innerText = `${itensPegos} / ${totalItensFiltrados} pegos`;
+        }
+
+            
+        function toggleProductCheck(index) {
+            produtos[index].checked = !produtos[index].checked;
+            localStorage.setItem('minha_lista_compras', JSON.stringify(produtos));
+            renderProdutos();
+        }
+
+        function duplicateProduct(index, event) {
+            event.stopPropagation();
+            const clonado = { ...produtos[index], checked: false };
+            clonado.nome += " (Cópia)";
+            produtos.push(clonado);
+            localStorage.setItem('minha_lista_compras', JSON.stringify(produtos));
+            renderProdutos();
+        }
+
+        function changeQtyInline(index, val, event) {
+            event.stopPropagation();
+            let novaQtd = (parseFloat(produtos[index].qtdEstoque) || 0) + val;
+            if (novaQtd < 0) novaQtd = 0;
+            produtos[index].qtdEstoque = novaQtd;
+            localStorage.setItem('minha_lista_compras', JSON.stringify(produtos));
+            renderProdutos();
+        }
+
+        function clearAllProducts() {
+            const overlayHtml = `
+                <div id="clearOverlay" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 9999;">
+                    <div style="background: #ffffff; width: 90%; max-width: 380px; padding: 1.5rem; border-radius: 16px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.15);">
+                        <div style="background: #fee2e2; color: #ef4444; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem auto; font-size: 1.4rem;">
+                            <i class="uil uil-trash"></i>
+                        </div>
+                        <h3 style="font-size: 1.2rem; font-weight: 700; color: #1e293b; margin-bottom: 0.5rem;">Apagar Lista Toda?</h3>
+                        <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 1.5rem;">Essa ação irá remover de forma permanente todos os itens cadastrados.</p>
+                        <div style="display: flex; gap: 0.75rem;">
+                            <button onclick="document.getElementById('clearOverlay').remove()" style="flex: 1; padding: 0.75rem; background: #f1f5f9; color: #64748b; border: none; border-radius: 10px; font-weight: 600; cursor: pointer;">Cancelar</button>
+                            <button id="btnConfirmClear" style="flex: 1; padding: 0.75rem; background: #ef4444; color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer;">Sim, Limpar</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', overlayHtml);
+            document.getElementById('btnConfirmClear').onclick = () => {
+                produtos = [];
+                localStorage.setItem('minha_lista_compras', JSON.stringify(produtos));
+                filtroMercadoAtivo = "Todos";
+                filtroCategoriaAtiva = "Todos";
+                renderProdutos();
+                document.getElementById('clearOverlay').remove();
+            };
+        }
+
+        function exportToWhatsApp() {
+            if(produtos.length === 0) return alert("Sua lista está vazia!");
+            let texto = `🛒 *MINHA LISTA DE COMPRAS* 🛒\n\n`;
+            produtos.forEach((p, idx) => {
+                const status = p.checked ? "✅ [OK]" : "⬜ [ ]";
+                const mercadoStr = p.mercado ? ` _(${p.mercado})_` : "";
+                texto += `${status} *${p.qtdEstoque} ${p.unidade}* - ${p.nome}${mercadoStr} | Subtotal: ${formatBRL(p.preco * p.qtdEstoque)}\n`;
+            });
+            const total = produtos.reduce((acc, p) => acc + (p.preco * p.qtdEstoque), 0);
+            texto += `\n💰 *Total Estimado:* ${formatBRL(total)}`;
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`, '_blank');
+        }
+
+        /* Novas Funções Adicionadas para Download/Upload de Backup */
+        function downloadBackup() {
+            if(produtos.length === 0) return alert("Não há dados para exportar.");
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(produtos, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "backup_lista_compras.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function triggerUpload() {
+            document.getElementById('importFileInput').click();
+        }
+
+        function uploadBackup(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if (Array.isArray(importedData)) {
+                        produtos = importedData;
+                        localStorage.setItem('minha_lista_compras', JSON.stringify(produtos));
+                        renderProdutos();
+                        alert("Lista importada com sucesso!");
+                    } else {
+                        alert("Formato de arquivo inválido.");
+                    }
+                } catch (err) {
+                    alert("Erro ao ler o arquivo JSON.");
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = ''; // Limpa o input
+        }
+
+        function renderProdutos() {
+            calcularDashboard();
+            renderFiltros();
+
+            const container = document.getElementById('productsContainer');
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+            
+            let produtosFiltrados = produtos.filter(p => {
+                const matchSearch = p.nome.toLowerCase().includes(searchTerm);
+                const matchMercado = filtroMercadoAtivo === "Todos" || p.mercado === filtroMercadoAtivo;
+                const matchCat = filtroCategoriaAtiva === "Todos" || p.categoria === filtroCategoriaAtiva;
+                return matchSearch && matchMercado && matchCat;
+            });
+
+            const sortVal = document.getElementById('sortSelect').value;
+            if (sortVal === "alpha") {
+                produtosFiltrados.sort((a, b) => a.nome.localeCompare(b.nome));
+            } else if (sortVal === "priceAsc") {
+                produtosFiltrados.sort((a, b) => (a.preco * a.qtdEstoque) - (b.preco * b.qtdEstoque));
+            } else if (sortVal === "priceDesc") {
+                produtosFiltrados.sort((a, b) => (b.preco * b.qtdEstoque) - (a.preco * a.qtdEstoque));
+            }
+
+            if (produtosFiltrados.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="uil uil-receipt" style="font-size: 3rem;"></i>
+                        <p style="margin-top: 0.5rem;">Nenhum produto encontrado.</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = produtosFiltrados.map((p, index) => {
+                const realIndex = produtos.indexOf(p);
+                const isCheckedClass = p.checked ? 'checked-card' : '';
+                const statusBtnClass = p.checked ? 'get' : 'unget';
+                const statusIcon = p.checked ? 'uil-check' : 'uil-shopping-cart';
+                
+                const imgElement = p.foto 
+                    ? `<img src="${p.foto}" class="card-img-left" alt="${p.nome}" onclick="toggleProductCheck(${realIndex})" onerror="this.onerror=null; this.parentElement.insertAdjacentHTML('afterbegin', '<div class=\'card-img-placeholder-left\' onclick=\'toggleProductCheck(${realIndex})\'><i class=\'uil uil-image-broken\'></i></div>'); this.remove();">` 
+                    : `<div class="card-img-placeholder-left" onclick="toggleProductCheck(${realIndex})"><i class="uil uil-image"></i></div>`;
+
+                return `
+                    <div class="product-card ${isCheckedClass}">
+                                                <div class="card-actions-right">
+                            <button class="btn-today-toggle ${p.today ? 'active' : ''}" onclick="event.stopPropagation(); toggleTodayProduct(${realIndex})" title="Comprar Hoje">
+                                <i class="uil uil-truck"></i>+
+                            </button>
+                            <div class="inline-qty-control">
+                                <button class="btn-qty-inline" onclick="changeQtyInline(${realIndex}, -1, event)">-</button>
+                                <button class="btn-qty-inline" onclick="changeQtyInline(${realIndex}, 1, event)">+</button>
+                            </div>
+                            <button class="btn-edit" onclick="event.stopPropagation(); editProduct(${realIndex})" title="Editar">
+                                <i class="uil uil-pen"></i>
+                            </button>
+                            <button class="btn-edit" onclick="duplicateProduct(${realIndex}, event)" title="Duplicar" style="font-size: 0.8rem;">
+                                <i class="uil uil-copy"></i>
+                            </button>
+                            <button class="btn-status-toggle ${statusBtnClass}" onclick="event.stopPropagation(); toggleProductCheck(${realIndex})" title="Alternar Estado">
+                                <i class="uil ${statusIcon}"></i>
+                            </button>
+                        </div>
+
+
+                        <div class="card-body-wrapper">
+                            <button class="btn-delete" onclick="deleteProduct(${realIndex})" title="Excluir">
+                                <i class="uil uil-trash-alt"></i>
+                            </button>
+                            ${imgElement}
+
+                            <div class="card-info" onclick="toggleProductCheck(${realIndex})" style="cursor: pointer;">
+                                ${p.mercado ? `<span class="card-market"><i class="uil uil-store"></i> ${p.mercado} ${p.categoria ? `• [${p.categoria}]` : ''}</span>` : (p.categoria ? `<span class="card-market">[${p.categoria}]</span>` : '')}
+                                <h3 class="card-title">${p.nome}</h3>
+                                <div class="card-meta-info">
+                                    <span class="card-price">${formatBRL(p.preco)}</span>
+                                    <span class="card-stock-tag">${p.qtdEstoque || 0} ${p.unidade}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function saveProduct(e) {
+            e.preventDefault();
+
+            const index = document.getElementById('editIndex').value;
+            const mercado = document.getElementById('prodMercado').value.trim();
+            const foto = document.getElementById('prodFoto').value.trim();
+            const nome = document.getElementById('prodNome').value.trim();
+            const preco = parseFloat(document.getElementById('prodPreco').value) || 0;
+            const unidade = document.querySelector('input[name="prodUnidade"]:checked').value;
+            const qtdEstoque = parseFloat(document.getElementById('prodQtdEstoque').value) || 0;
+            const categoria = document.getElementById('prodCategoria').value;
+            
+            // DEIXE APENAS ISTO:
+const novoProduto = { 
+    mercado, 
+    foto, 
+    nome, 
+    preco, 
+    unidade, 
+    qtdEstoque, 
+    categoria, 
+    checked: index !== "" ? (produtos[index].checked || false) : false,
+    today: index !== "" ? (produtos[index].today || false) : false 
+};
+
+            if (index === "") {
+                produtos.push(novoProduto);
+            } else {
+                produtos[index] = novoProduto;
+            }
+
+            localStorage.setItem('minha_lista_compras', JSON.stringify(produtos));
+            renderProdutos();
+            closeModal();
+        }
+
+        function editProduct(index) {
+            openModal();
+            const p = produtos[index];
+            
+            document.getElementById('modalTitle').innerText = "Editar Produto";
+            document.getElementById('editIndex').value = index;
+            document.getElementById('prodMercado').value = p.mercado || '';
+            document.getElementById('prodFoto').value = p.foto || '';
+            document.getElementById('prodNome').value = p.nome;
+            document.getElementById('prodPreco').value = p.preco;
+            document.getElementById('prodQtdEstoque').value = p.qtdEstoque || 0;
+            if(p.categoria) document.getElementById('prodCategoria').value = p.categoria;
+            
+            const rButtons = document.querySelectorAll('input[name="prodUnidade"]');
+            rButtons.forEach(rb => {
+                if(rb.value === p.unidade) {
+                    rb.checked = true;
+                    updateQtdLabel(p.unidade);
+                }
+            });
+        }
+
+        function openModal() {
+            document.getElementById('productForm').reset();
+            document.getElementById('editIndex').value = "";
+            document.getElementById('modalTitle').innerText = "Novo Produto";
+            updateQtdLabel("Un");
+            document.getElementById('formModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('formModal').classList.remove('active');
+        }
+
+        function closeModalViaOverlay(e) {
+            if (e.target.id === 'formModal') closeModal();
+        }
+
+        function updateQtdLabel(val) {
+            const label = document.getElementById('labelQuantidade');
+            label.innerText = val === "Kg" ? "Peso Atual (em Kg)" : "Quantidade Atual (Unidades)";
+        }
+
+        function formatBRL(value) {
+            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+        }
+
+        function deleteProduct(index) {
+            const p = produtos[index];
+            
+            const modalHtml = `
+                <div id="customAlertOverlay" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 9999; animation: fadeInAlert 0.2s ease-out;">
+                    <style>
+                        @keyframes fadeInAlert { from { opacity: 0; } to { opacity: 1; } }
+                        @keyframes scaleUpAlert { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+                    </style>
+                    <div style="background: #ffffff; width: 90%; max-width: 380px; padding: 1.5rem; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.15); text-align: center; animation: scaleUpAlert 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);">
+                        
+                        <div style="background: #fee2e2; color: #ef4444; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem auto; font-size: 1.4rem;">
+                            <i class="uil uil-exclamation-triangle"></i>
+                        </div>
+                        
+                        <h3 style="font-size: 1.2rem; font-weight: 700; color: #1e293b; margin-bottom: 0.5rem;">Remover Produto?</h3>
+                        <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 1.25rem; padding: 0 0.5rem;">Tem certeza que deseja excluir este item da sua lista?</p>
+                        
+                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 0.6rem; display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; text-align: left;">
+                            ${p.foto 
+                                ? `<img src="${p.foto}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px; background: #cbd5e1;" onerror="this.src=''; this.parentElement.firstChild.style.display='flex';">` 
+                                : `<div style="width: 50px; height: 50px; background: #e2e8f0; color: #64748b; font-size: 1.2rem; border-radius: 8px; display: flex; align-items: center; justify-content: center;"><i class="uil uil-image"></i></div>`
+                            }
+                            <div style="flex: 1; min-width: 0;">
+                                <h4 style="font-size: 0.95rem; font-weight: 600; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0;">${p.nome}</h4>
+                                <span style="font-size: 0.85rem; font-weight: 700; color: #059669;">${formatBRL(p.preco)}</span>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 0.75rem;">
+                            <button id="btnCancelDelete" style="flex: 1; padding: 0.75rem; background: #f1f5f9; color: #64748b; border: none; border-radius: 10px; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: background 0.2s;">
+                                Cancelar
+                            </button>
+                            <button id="btnConfirmDelete" style="flex: 1; padding: 0.75rem; background: #ef4444; color: #ffffff; border: none; border-radius: 10px; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: background 0.2s;">
+                                Sim, Excluir
+                            </button>
+                        </div>
+                        
+                    </div>
+                </div>
+            `;
+
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+            const overlay = document.getElementById('customAlertOverlay');
+            const btnCancel = document.getElementById('btnCancelDelete');
+            const btnConfirm = document.getElementById('btnConfirmDelete');
+
+            const fecharModal = () => overlay.remove();
+
+            btnCancel.onmouseover = () => btnCancel.style.background = '#e2e8f0';
+            btnCancel.onmouseout = () => btnCancel.style.background = '#f1f5f9';
+            btnConfirm.onmouseover = () => btnConfirm.style.background = '#dc2626';
+            btnConfirm.onmouseout = () => btnConfirm.style.background = '#ef4444';
+
+            btnCancel.onclick = fecharModal;
+            
+            btnConfirm.onclick = () => {
+                produtos.splice(index, 1);
+                localStorage.setItem('minha_lista_compras', JSON.stringify(produtos));
+                renderProdutos();
+                fecharModal();
+            };
+        }
+
+    
+            function toggleTodayProduct(index) {
+            produtos[index].today = !produtos[index].today;
+            localStorage.setItem('minha_lista_compras', JSON.stringify(produtos));
+            renderProdutos();
+            if (document.getElementById('todayModal').classList.contains('active')) {
+                renderProdutosHoje();
+            }
+        }
+
+        function openTodayModal() {
+            document.getElementById('todayModal').classList.add('active');
+            renderProdutosHoje();
+        }
+
+        function closeTodayModal() {
+            document.getElementById('todayModal').classList.remove('active');
+            renderProdutos();
+        }
+
+        function renderProdutosHoje() {
+            const container = document.getElementById('todayProductsContainer');
+            let produtosHoje = produtos.filter(p => p.today === true);
+
+            if (produtosHoje.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="uil uil-truck" style="font-size: 3rem;"></i>
+                        <p style="margin-top: 0.5rem;">Nenhum produto adicionado para hoje.</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = produtosHoje.map((p) => {
+                const realIndex = produtos.indexOf(p);
+                const isCheckedClass = p.checked ? 'checked-card' : '';
+                const statusBtnClass = p.checked ? 'get' : 'unget';
+                const statusIcon = p.checked ? 'uil-check' : 'uil-shopping-cart';
+                
+                const imgElement = p.foto 
+                    ? `<img src="${p.foto}" class="card-img-left" alt="${p.nome}" onclick="toggleProductCheck(${realIndex}); renderProdutosHoje();" onerror="this.onerror=null; this.parentElement.insertAdjacentHTML('afterbegin', '<div class=\'card-img-placeholder-left\' onclick=\'toggleProductCheck(${realIndex}); renderProdutosHoje();\'><i class=\'uil uil-image-broken\'></i></div>'); this.remove();">` 
+                    : `<div class="card-img-placeholder-left" onclick="toggleProductCheck(${realIndex}); renderProdutosHoje();"><i class="uil uil-image"></i></div>`;
+
+                return `
+                    <div class="product-card ${isCheckedClass}">
+                        <div class="card-actions-right">
+                            <button class="btn-today-toggle active" onclick="event.stopPropagation(); toggleTodayProduct(${realIndex})" title="Remover de Hoje">
+                                <i class="uil uil-truck"></i> Remover
+                            </button>
+                            <div class="inline-qty-control">
+                                <button class="btn-qty-inline" onclick="changeQtyInline(${realIndex}, -1, event); renderProdutosHoje();">-</button>
+                                <button class="btn-qty-inline" onclick="changeQtyInline(${realIndex}, 1, event); renderProdutosHoje();">+</button>
+                            </div>
+                            <button class="btn-edit" onclick="event.stopPropagation(); editProduct(${realIndex})" title="Editar">
+                                <i class="uil uil-pen"></i>
+                            </button>
+                            <button class="btn-status-toggle ${statusBtnClass}" onclick="event.stopPropagation(); toggleProductCheck(${realIndex}); renderProdutosHoje();" title="Alternar Estado">
+                                <i class="uil ${statusIcon}"></i>
+                            </button>
+                        </div>
+                        <div class="card-body-wrapper">
+                            <button class="btn-delete" onclick="deleteProduct(${realIndex}); setTimeout(renderProdutosHoje, 300);" title="Excluir">
+                                <i class="uil uil-trash-alt"></i>
+                            </button>
+                            ${imgElement}
+                            <div class="card-info" onclick="toggleProductCheck(${realIndex}); renderProdutosHoje();" style="cursor: pointer;">
+                                ${p.mercado ? `<span class="card-market"><i class="uil uil-store"></i> ${p.mercado}</span>` : ''}
+                                <h3 class="card-title">${p.nome}</h3>
+                                <div class="card-meta-info">
+                                    <span class="card-price">${formatBRL(p.preco)}</span>
+                                    <span class="card-stock-tag">${p.qtdEstoque || 0} ${p.unidade}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        window.onload = renderProdutos;
+    </script>
+</body>
+</html>
