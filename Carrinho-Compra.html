@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -952,14 +953,65 @@
 
             // Banco de dados interno de imagens do sistema
         const galeriaSistema = [
-            { nome: "Arroz", categoria: "Alimentos", url: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=150" },
-            { nome: "Feijão", categoria: "Alimentos", url: "https://images.unsplash.com/photo-1551462147-ff29053bfc14?w=150" },
-            { nome: "Detergente", categoria: "Limpezas", url: "https://images.unsplash.com/photo-1607344645866-009c320c5ab8?w=150" },
-            { nome: "Carne Bovina", categoria: "Açougue", url: "https://images.unsplash.com/photo-1603048588665-791ca8aea617?w=150" },
-            { nome: "Coca-Cola", categoria: "Bebidas", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTV6g886i_Riyx3uzMZfZep_XL92ARz6okr3Q&s" },
+            { nome: "Arroz", categoria: "Alimentos", url: "https://i.ibb.co/9mBy8rPB/1782932669496.png" },
+            { nome: "Café", categoria: "Alimentos", url: "https://i.ibb.co/ksYq8Sjr/1782932674334.png" },
+            { nome: "Macarrão", categoria: "Alimentos", url: "https://i.ibb.co/q3TrCQKg/1782932713078.png" },
+            { nome: "Macarrão", categoria: "Alimentos", url: "https://i.ibb.co/C36y4RKX/1782932676078.png" },           
+            { nome: "Óleo", categoria: "Alimentos", url: "https://i.ibb.co/VpNLvr9z/images.jpg" },
+            { nome: "Tang", categoria: "Alimentos", url: "https://i.ibb.co/NbRRByQ/images-1.jpg" },
+            { nome: "Bolacha G", categoria: "Alimentos", url: "https://i.ibb.co/67DwxCj2/155597-800-auto.png" },
+            { nome: "Bolqcha P", categoria: "Alimentos", url: "https://i.ibb.co/B2mq5J2Z/783-3-a8wgbzecdc.png" },
+            { nome: "Bulachinha", categoria: "Alimentos", url: "https://i.ibb.co/8nGJxSF4/MOCKUP-ROSQUINHA-CHOCOLATE-300-G-1000-X1000.png" },
+            { nome: "Ovos", categoria: "Alimentos", url: "https://i.ibb.co/B5q2BT9j/images-4.jpg" },
+            { nome: "Seleta", categoria: "Alimentos", url: "https://i.ibb.co/yckNRrnX/images-1.jpg" },
+            { nome: "Milho", categoria: "Alimentos", url: "https://i.ibb.co/1tWyvXf8/937572-25-01-2023-17-16-55-801.jpg" },
+            { nome: "Ervilha", categoria: "Alimentos", url: "https://i.ibb.co/rRhQFZ7d/ervilha-fugini-170g-sc-98966.png" },
+            { nome: "Ameixa", categoria: "Alimentos", url: "https://i.ibb.co/VWBCbV29/images-2.jpg" },
+    
+            { nome: "Tomate", categoria: "Hortifrúti", url: "https://i.ibb.co/LXDmnx4J/images-3.jpg" },
+            { nome: "Cebola", categoria: "Hortifrúti", url: "https://i.ibb.co/zWqwBc72/29636-0000000004062-cebola-kg-flv-1.jpg" },
+            { nome: "Alho", categoria: "Hortifrúti", url: "https://i.ibb.co/YTb4H6Pc/alho-a-granel-50g-32.jpg" },
+            { nome: "Batata", categoria: "Hortifrúti", url: "https://i.ibb.co/PJs2Jz2/44ad680e-Batata-Lavada-Kg-26206.png" },
+            { nome: "Cenoura", categoria: "Hortifrúti", url: "https://i.ibb.co/Q7DwmT6p/507117e0-55d5-11f1-8460-a930e6b798b0-CENOURAkg.jpg" },
             { nome: "Banana", categoria: "Hortifrúti", url: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=150" },
-            { nome: "Shampoo", categoria: "Higiene", url: "https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?w=150" }
-        ];
+            { nome: "Melancua", categoria: "Hortifrúti", url: "https://i.ibb.co/d4tjWQcF/images-5.jpg" },
+            { nome: "Uva", categoria: "Hortifrúti", url: "https://i.ibb.co/MkR4D7Yq/images.jpg" },            
+            { nome: "Maça", categoria: "Hortifrúti", url: "https://i.ibb.co/rfMQ5Fwt/images-3.jpg" },
+            { nome: "Abacaixi", categoria: "Hortifrúti", url: "https://i.ibb.co/6RPD5s8S/images-4.jpg" },
+          
+            { nome: "Coca-Cola", categoria: "Bebidas", url: "https://i.ibb.co/57nqGSX/images-2.jpg" },
+            { nome: "Ice 51", categoria: "Bebidas", url: "https://i.ibb.co/DDmf2chz/images.jpg" },
+            { nome: "Pepsi", categoria: "Bebidas", url: "https://i.ibb.co/RT52C2vd/304879-800-1067.jpg" },
+            { nome: "Red Bul", categoria: "Bebidas", url: "https://i.ibb.co/j9KR99mg/images-1.jpg" },
+    
+            { nome: "Picanha", categoria: "Açougue", url: "https://i.ibb.co/bjq2gmNW/wessel-origens5509-picanha-min.jpg" },
+            { nome: "Custela", categoria: "Açougue", url: "https://i.ibb.co/x81Vz2Wp/Carne-Bovina-Costela-kg.jpg" },
+            { nome: "Contea Fi", categoria: "Açougue", url: "https://i.ibb.co/yFxm46nh/images-5.jpg" },
+            { nome: "Filé Suino", categoria: "Açougue", url: "https://i.ibb.co/5hQWzv8N/File-Mignon-Suino-Especial-Kg.png" },
+            { nome: "Frango", categoria: "Açougue", url: "https://i.ibb.co/5xMtyxz7/421.jpg" },
+            { nome: "Linguiça", categoria: "Açougue", url: "https://i.ibb.co/R4MDqP0M/linguica-toscana-aurora.jpg" },
+            { nome: "Calabresa", categoria: "Açougue", url: "https://i.ibb.co/4nx1GQGB/images.webp" },
+            { nome: "Mortadela", categoria: "Açougue", url: "https://i.ibb.co/MDnTKRt5/mortadela-confianca-mini-frango-1kg.jpg" },
+            { nome: "Sardinha", categoria: "Açougue", url: "https://i.ibb.co/PsCKtfh2/images.jpg" },
+            { nome: "Salsicha", categoria: "Açougue", url: "https://i.ibb.co/bj7tdY4g/salsicha-sadia-kg-118789.jpg" },
+            { nome: "", categoria: "Açougue", url: "" },
+               
+            { nome: "Detergente", categoria: "Limpezas", url: "https://images.unsplash.com/photo-1607344645866-009c320c5ab8?w=150" },
+            { nome: "", categoria: "Limpezas", url: "" },
+            { nome: "", categoria: "Limpezas", url: "" },
+            { nome: "", categoria: "Limpezas", url: "" },
+            { nome: "", categoria: "Limpezas", url: "" },
+            { nome: "", categoria: "Limpezas", url: "" },
+            { nome: "", categoria: "Limpezas", url: "" },
+            { nome: "", categoria: "Limpezas", url: "" },
+            { nome: "", categoria: "Limpezas", url: "" },
+            { nome: "", categoria: "Limpezas", url: "" },
+            
+            { nome: "Pasta de Dente", categoria: "Higiene", url: "https://i.ibb.co/8L7LsN3b/9777082.jpg" },
+            { nome: "Papel Higiênico", categoria: "Higiene", url: "https://i.ibb.co/yHyFR0b/images.jpg" },
+            { nome: "", categoria: "Higiene", url: "" }
+            
+    ];
 
         function openSystemModal() {
             const grid = document.getElementById('galleryGrid');
