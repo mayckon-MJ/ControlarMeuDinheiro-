@@ -3410,6 +3410,52 @@ document.addEventListener("DOMContentLoaded", () => {
     verificarTempoEExibirAlerta();
 }
 
+//🗿🗿
+/* --- LÓGICA DE NOTIFICAÇÕES AUTOMÁTICAS --- */
+function solicitarPermissaoNotificacao() {
+    if ("Notification" in window && Notification.permission !== "granted") {
+        Notification.requestPermission();
+    }
+}
+
+function verificarEEnviarNotificacao() {
+    if (Notification.permission !== "granted") return;
+
+    const agora = new Date();
+    const hoje = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate());
+    
+    // Filtra apenas as faturas não pagas
+    const faturasPendente = estado.lancamentos.filter(f => !f.pago);
+
+    faturasPendente.forEach(f => {
+        const dataVenc = new Date(f.vencimento);
+        const dataVencSemHora = new Date(dataVenc.getFullYear(), dataVenc.getMonth(), dataVenc.getDate());
+        
+        // Calcula a diferença em dias
+        const diffTime = dataVencSemHora - hoje;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        // Envia notificação se faltam 2 dias ou se vence hoje
+        if (diffDays === 2 || diffDays === 0) {
+            new Notification("Lembrete EmunaH 📲", {
+                body: `Atenção! A fatura "${f.descricao}" ${diffDays === 0 ? "vence HOJE!" : "vence em 2 dias."}`,
+                icon: 'https://i.ibb.co/PvM0nN1X/108828.png', // A logo do seu app
+                tag: f.id // Evita notificações duplicadas para a mesma fatura
+            });
+        }
+    });
+}
+
+// Verifica todo dia às 22:00 (A cada 60 segundos ele checa se chegou no horário)
+setInterval(() => {
+    const agora = new Date();
+    if (agora.getHours() === 22 && agora.getMinutes() === 0) {
+        verificarEEnviarNotificacao();
+    }
+}, 60000);
+
+// Solicita permissão assim que o usuário entra no sistema
+solicitarPermissaoNotificacao();
 
 
     
