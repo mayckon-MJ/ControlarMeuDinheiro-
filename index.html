@@ -3445,20 +3445,25 @@ function verificarEEnviarNotificacao() {
         }
     });
 }
+/* --- CORREÇÃO DA LÓGICA DE TEMPO --- */
+let ultimaNotificacao = localStorage.getItem('ultimaNotificacaoData') || "";
 
-// Verifica todo dia às 22:00 (A cada 60 segundos ele checa se chegou no horário)
 setInterval(() => {
     const agora = new Date();
-    if (agora.getHours() === 22 && agora.getMinutes() === 0) {
-        verificarEEnviarNotificacao();
-    }
-}, 60000);
-
-// Solicita permissão assim que o usuário entra no sistema
-solicitarPermissaoNotificacao();
-
-
+    const dataHoje = agora.toLocaleDateString(); // Ex: "07/07/2026"
     
+    // Verifica se passou das 23:30 e se ainda não notificamos hoje
+    // (agora.getHours() > 23) cobre qualquer hora após 23h
+    // (agora.getHours() === 23 && agora.getMinutes() >= 30) cobre o intervalo específico das 23:30 em diante
+    if (((agora.getHours() > 23) || (agora.getHours() === 23 && agora.getMinutes() >= 30)) && ultimaNotificacao !== dataHoje) {
+        verificarEEnviarNotificacao();
+        
+        // Marca que a notificação de hoje já foi enviada
+        localStorage.setItem('ultimaNotificacaoData', dataHoje);
+        ultimaNotificacao = dataHoje;
+    }
+}, 30000); 
+
     </script>
 </body>
 </html>
