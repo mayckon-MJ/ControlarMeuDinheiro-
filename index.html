@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -81,7 +82,7 @@
         .container {
             width: 100%;
             max-width: 600px;
-            padding-bottom: 100px;
+            padding-bottom:none;
         }
 
                 /* ==========================================
@@ -92,8 +93,8 @@
             padding: 20px 25px;
             border-radius: var(--border-radius);
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            margin-bottom: 25px;
-            display: flex;
+            margin-bottom: 2px;
+            display: flex;            
             align-items: center;
             justify-content: space-between; /* Logo na esquerda, Saldo na direita */
             gap: 15px;
@@ -1287,7 +1288,7 @@
 
 
         <main>
-            <h2 class="lista-titulo">Minhas Dívidas</h2>
+            <h2 style="text-align:center;" class="lista-titulo">Minhas Dívidas</h2>
             <div id="lista-lancamentos" class="grid-lancamentos"></div>
         </main>
 
@@ -2403,8 +2404,8 @@ function mostrarNomeNoTopo() {
                       gap: 4px;
                       background-color: #f1f5f9; 
                       color: #475569; 
-                      padding: 4px 10px; 
-                      font-size: 0.65rem; 
+                      padding: 10px 10px; 
+                      font-size: 10px; 
                       font-weight: 700; 
                       text-transform: uppercase;
                       letter-spacing: 0.5px;
@@ -2414,13 +2415,14 @@ function mostrarNomeNoTopo() {
                       border: 1px solid #cbd5e1;
                       transition: all 0.2s;
                     " onmouseover="this.style.background='#e2e8f0'; this.style.color='#1e293b'" onmouseout="this.style.background='#f1f5f9'; this.style.color='#475569'">
-                      📊 Detalhe Deste Mês
+                      ​Ver Relatório Mensal
                     </a><br>
-            <a href="Carrinho-Compra.html" style="display: inline-block; text-decoration: none; border-radius: 50%; overflow: hidden; width: 60px; height: 60px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: transform 0.2s;">
-            <img src="https://i.ibb.co/vCDc51Yd/1782902075198.png" alt="Botão" style="width: 100%; height: 100%; object-fit: cover; display: block;">
-            </a>
-
-                </div>
+            
+<a href="Carrinho-Compra.html" style="display: inline-block; text-decoration: none; border: 2px solid #e0e0e0; border-radius: 15px; padding: 10px; transition: 0.3s; margin: 10px;">
+    <img src="https://i.ibb.co/vCDc51Yd/1782902075198.png" style="width: 50px; height: 50px; display: block; border-radius: 10px;">
+    <span style="display: block; text-align: center; font-size: 12px; color: #777; margin-top: 5px;">Organizar<br>Compras</span>
+</a>                                                                                
+            </div>
             `;
 
             // --- INICIALIZAÇÃO / ATUALIZAÇÃO DO GRÁFICO DONUT COM VALOR CENTRAL ---
@@ -3411,7 +3413,7 @@ document.addEventListener("DOMContentLoaded", () => {
 }
 
 //🗿🗿
-/* --- LÓGICA DE NOTIFICAÇÕES AUTOMÁTICAS --- */
+
 function solicitarPermissaoNotificacao() {
     if ("Notification" in window && Notification.permission !== "granted") {
         Notification.requestPermission();
@@ -3445,24 +3447,24 @@ function verificarEEnviarNotificacao() {
         }
     });
 }
-
-/* --- CORREÇÃO DA LÓGICA DE TEMPO --- */
+  
 let ultimaNotificacao = localStorage.getItem('ultimaNotificacaoData') || "";
 
 setInterval(() => {
     const agora = new Date();
     const dataHoje = agora.toLocaleDateString();
     
-    // Verifica se passou das 23:05 e se ainda não notificamos hoje
-    if (((agora.getHours() > 23) || (agora.getHours() === 23 && agora.getMinutes() >= 5)) && ultimaNotificacao !== dataHoje) {
+    // Verifica se já são 23:59 ou mais
+    const isHoraCerta = (agora.getHours() === 23 && agora.getMinutes() >= 59);
+
+    if (isHoraCerta && ultimaNotificacao !== dataHoje) {
+        console.log("Horário atingido: 23:59. Disparando...");
         verificarEEnviarNotificacao();
         
-        // Marca que a notificação de hoje já foi enviada
         localStorage.setItem('ultimaNotificacaoData', dataHoje);
         ultimaNotificacao = dataHoje;
     }
-}, 30000); 
-
+}, 30000); // Checa a cada 30 segundos
 
     </script>
 </body>
