@@ -3445,17 +3445,16 @@ function verificarEEnviarNotificacao() {
         }
     });
 }
+
 /* --- CORREÇÃO DA LÓGICA DE TEMPO --- */
 let ultimaNotificacao = localStorage.getItem('ultimaNotificacaoData') || "";
 
 setInterval(() => {
     const agora = new Date();
-    const dataHoje = agora.toLocaleDateString(); // Ex: "07/07/2026"
+    const dataHoje = agora.toLocaleDateString();
     
-    // Verifica se passou das 23:30 e se ainda não notificamos hoje
-    // (agora.getHours() > 23) cobre qualquer hora após 23h
-    // (agora.getHours() === 23 && agora.getMinutes() >= 30) cobre o intervalo específico das 23:30 em diante
-    if (((agora.getHours() > 23) || (agora.getHours() === 23 && agora.getMinutes() >= 30)) && ultimaNotificacao !== dataHoje) {
+    // Verifica se passou das 23:05 e se ainda não notificamos hoje
+    if (((agora.getHours() > 23) || (agora.getHours() === 23 && agora.getMinutes() >= 5)) && ultimaNotificacao !== dataHoje) {
         verificarEEnviarNotificacao();
         
         // Marca que a notificação de hoje já foi enviada
@@ -3463,6 +3462,7 @@ setInterval(() => {
         ultimaNotificacao = dataHoje;
     }
 }, 30000); 
+
 
     </script>
 </body>
