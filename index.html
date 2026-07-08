@@ -3448,23 +3448,26 @@ function verificarEEnviarNotificacao() {
     });
 }
   
+
 let ultimaNotificacao = localStorage.getItem('ultimaNotificacaoData') || "";
 
 setInterval(() => {
     const agora = new Date();
     const dataHoje = agora.toLocaleDateString();
     
-    // Verifica se já são 23:59 ou mais
-    const isHoraCerta = (agora.getHours() === 23 && agora.getMinutes() >= 59);
+    // Verifica se já são 00:05 ou mais (na madrugada)
+    const isHoraCerta = (agora.getHours() === 0 && agora.getMinutes() >= 5);
 
     if (isHoraCerta && ultimaNotificacao !== dataHoje) {
-        console.log("Horário atingido: 23:59. Disparando...");
+        console.log("Horário atingido: 00:05. Disparando...");
         verificarEEnviarNotificacao();
         
         localStorage.setItem('ultimaNotificacaoData', dataHoje);
         ultimaNotificacao = dataHoje;
     }
 }, 30000); // Checa a cada 30 segundos
+
+
 
     </script>
 </body>
