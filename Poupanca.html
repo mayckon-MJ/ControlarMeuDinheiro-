@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Depósitos - Meta R$10.000</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            padding: 20px 15px 140px 15px; /* Padding extra no final para os botões fixos */
+            color: #f8fafc;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        /* ---------------- PERFIL REDONDO NO TOPO ---------------- */
+        .perfil-area {
+            text-align: center;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .foto-perfil {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.8rem;
+            font-weight: bold;
+            color: white;
+            border: 4px solid rgba(255,255,255,0.2);
+            box-shadow: 0 8px 25px rgba(34, 197, 94, 0.35);
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        .foto-perfil img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .nome-controle {
+            font-size: 1.3rem;
+            font-weight: 600;
+            opacity: 0.95;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        /* ---------------- RESUMO GERAL ---------------- */
+        .resumo-geral {
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            padding: 18px;
+            text-align: center;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .meta-texto {
+            font-size: 0.95rem;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .valor-total {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #22c55e;
+        }
+
+        .progresso-barra {
+            width: 100%;
+            height: 10px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 5px;
+            margin-top: 12px;
+            overflow: hidden;
+        }
+
+        .progresso-preencher {
+            height: 100%;
+            background: linear-gradient(90deg, #16a34a, #22c55e);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 5px;
+        }
+
+        /* CSS IDEIA 1: Estatísticas de Progresso */
+        .estatisticas-progresso {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 12px;
+            font-size: 0.78rem;
+            opacity: 0.85;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 8px;
+        }
+        .estatisticas-progresso span {
+            font-weight: 600;
+        }
+
+        /* CSS IDEIA 2: Filtros de Visualização */
+        .filtros-container {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 12px;
+            justify-content: center;
+        }
+        .btn-filtro {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #f8fafc;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-filtro.ativo {
+            background: #22c55e;
+            border-color: #22c55e;
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+        }
+
+        /* CSS IDEIA 3: Histórico de Depósitos */
+        .historico-container {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        .historico-titulo {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .historico-lista {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+                .historico-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            padding: 6px 8px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 3px solid #22c55e;
+            align-items: center; /* Garante alinhamento vertical com o botão */
+        }
+        /* ADICIONE ESTAS DUAS REGRAS ABAIXO: */
+        .historico-conteudo {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-right: 10px;
+        }
+        .btn-excluir-historico {
+            background: none;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 2px 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.1s;
+        }
+        .btn-excluir-historico:active {
+            transform: scale(0.85);
+        }
+
+        .historico-item.removido {
+            border-left-color: #ef4444;
+        }
+        .historico-vazio {
+            font-size: 0.75rem;
+            opacity: 0.5;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        /* CSS IDEIA 10: Botão de Compartilhar e Modal */
+        .btn-compartilhar {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        .btn-compartilhar:active {
+            transform: scale(0.9);
+        }
+        .fundo-card-share {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        .card-print {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            border: 2px solid #22c55e;
+            border-radius: 20px;
+            padding: 25px;
+            width: 100%;
+            max-width: 360px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+        }
+        .card-print .foto-perfil-card {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            border: 3px solid rgba(255,255,255,0.2);
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+        .card-print .foto-perfil-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .card-print .nome-perfil-card {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        .card-print .linha-status {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 8px;
+        }
+
+        /* ---------------- BLOCOS DOS VALORES COMPACTADOS (6 COLUNAS) ---------------- */
+        .grade-valores {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr); /* Força a caber 6 um abaixo do outro */
+            gap: 6px;
+            margin-bottom: 30px;
+        }
+
+        .bloco-valor {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 8px; /* Borboletas / cantos um pouco arredondados */
+            padding: 10px 2px;
+            text-align: center;
+            font-size: 0.75rem; /* Letras menores para caber perfeitamente no espaço compacto */
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #f8fafc;
+        }
+
+        .bloco-valor:active { transform: scale(0.92); }
+
+        .bloco-valor.depositado {
+            background: rgba(34, 197, 94, 0.25);
+            border-color: #22c55e;
+            color: #86efac;
+            box-shadow: 0 0 6px rgba(34, 197, 94, 0.2);
+        }
+
+        /* ---------------- ÁREA DE CONTROLES FIXA NO RODAPÉ ---------------- */
+        .area-botoes-rodape {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            z-index: 100;
+        }
+
+        .rodape-container {
+            max-width: 500px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Botão do Lápis */
+        .btn-lapis {
+            align-self: center;
+            background: #e2e8f0;
+            color: #0f172a;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: all 0.2s ease;
+        }
+
+        .btn-lapis:active {
+            transform: scale(0.9);
+        }
+
+        /* Botões de Backup */
+        .botoes-backup {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-backup {
+            flex: 1;
+            padding: 12px 8px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-download {
+            background: #1d4ed8;
+            color: white;
+        }
+        .btn-download:active { transform: scale(0.97); background: #1e40af; }
+
+        .btn-carregar {
+            background: #475569;
+            color: white;
+        }
+        .btn-carregar:active { transform: scale(0.97); background: #334155; }
+
+        /* ---------------- CAIXA DE ALERTA PERSONALIZADA ---------------- */
+        .fundo-alerta {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.75);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            padding: 20px;
+        }
+
+        .caixa-alerta {
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            border-radius: 18px;
+            padding: 25px 20px;
+            max-width: 380px;
+            width: 100%;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.15);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+        }
+
+        .caixa-alerta h3 {
+            margin-bottom: 12px;
+            font-size: 1.15rem;
+        }
+
+        .caixa-alerta p {
+            font-size: 0.95rem;
+            opacity: 0.85;
+            margin-bottom: 18px;
+            line-height: 1.5;
+        }
+
+        /* Inputs para editar Perfil */
+        .input-perfil {
+            width: 100%;
+            padding: 10px 14px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 8px;
+            color: white;
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+            outline: none;
+        }
+        .input-perfil:focus {
+            border-color: #22c55e;
+        }
+
+        .botoes-alerta {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-alerta {
+            flex: 1;
+            padding: 13px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-cancelar {
+            background: rgba(255,255,255,0.12);
+            color: white;
+        }
+        .btn-cancelar:active { background: rgba(255,255,255,0.2); }
+
+        .btn-confirmar {
+            background: #22c55e;
+            color: white;
+        }
+        .btn-confirmar:active { background: #16a34a; }
+
+        .btn-apagar {
+            background: #ef4444;
+            color: white;
+        }
+        .btn-apagar:active { background: #dc2626; }
+
+        /* Esconde input invisível de backup */
+        #inputArquivo { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- PERFIL REDONDO NO TOPO -->
+    <div class="perfil-area">
+        <div class="foto-perfil" id="avatarPerfil">👤</div>
+        <div class="nome-controle">
+            <span id="nomePerfil">Seu Nome</span>
+            <button class="btn-compartilhar" onclick="gerarCardProgresso()" title="Gerar Card para Print">📸</button>
+        </div>
+    </div>
+
+    <!-- RESUMO E META -->
+    <div class="resumo-geral">
+        <div class="meta-texto">Meta Total: R$ 10.000,00</div>
+        <div class="valor-total" id="valorAcumulado">R$ 0,00</div>
+        <div class="meta-texto">acumulados até agora</div>
+        <div class="progresso-barra">
+            <div class="progresso-preencher" id="barraProgresso"></div>
+        </div>
+        <!-- ESTATÍSTICAS (IDEIA 1) -->
+        <div class="estatisticas-progresso">
+            <div>Progresso: <span id="numMarcados">0</span>/365</div>
+            <div>Média: R$ <span id="mediaValor">0,00</span></div>
+            <div>Porcentagem: <span id="textoPorcentagem">0%</span></div>
+        </div>
+    </div>
+
+    <!-- FILTROS DE VISUALIZAÇÃO (IDEIA 2) -->
+    <div class="filtros-container">
+        <button class="btn-filtro ativo" id="filtroTodos" onclick="alterarFiltro('todos')">Todos</button>
+        <button class="btn-filtro" id="filtroPendentes" onclick="alterarFiltro('pendentes')">Pendentes</button>
+        <button class="btn-filtro" id="filtroDepositados" onclick="alterarFiltro('depositados')">Depositados</button>
+    </div>
+
+    <!-- GRADE COM TODOS OS VALORES (COMPACTADA EM 6 COLUNAS) -->
+    <div class="grade-valores" id="listaValores"></div>
+
+    <!-- HISTÓRICO DE DEPÓSITOS RECENTES (IDEIA 3) -->
+    <div class="historico-container">
+        <div class="historico-titulo">Últimas Atividades</div>
+        <ul class="historico-lista" id="historicoLista">
+            <li class="historico-vazio">Nenhum depósito registrado recentemente.</li>
+        </ul>
+    </div>
+</div>
+
+<!-- CONTAINER DE CONTROLES FIXO NO RODAPÉ -->
+<div class="area-botoes-rodape">
+    <div class="rodape-container">
+        <!-- BOTÃO DE LÁPIS -->
+        <button class="btn-lapis" onclick="abrirConfigPerfil()" title="Configurar Perfil">✏️</button>
+        
+        <!-- BOTÕES DE BACKUP -->
+        <div class="botoes-backup">
+            <button class="btn-backup btn-download" onclick="fazerBackup()">💾 Baixar Backup</button>
+            <button class="btn-backup btn-carregar" onclick="document.getElementById('inputArquivo').click()">📂 Carregar Backup</button>
+            <input type="file" id="inputArquivo" accept=".json" onchange="carregarBackup(event)">
+        </div>
+    </div>
+</div>
+
+<!-- CAIXA DE ALERTA PARA CONFIRMAR DEPOSITO -->
+<div class="fundo-alerta" id="alertaDeposito">
+    <div class="caixa-alerta">
+        <h3>💵 Confirmar Depósito</h3>
+        <p id="textoAlertaDeposito">Você realmente vai depositar esse valor?</p>
+        <div class="botoes-alerta">
+            <button class="btn-alerta btn-cancelar" onclick="fecharAlerta()">Cancelar</button>
+            <button class="btn-alerta btn-confirmar" onclick="confirmarDeposito()">Confirmar</button>
+        </div>
+    </div>
+</div>
+
+<!-- CAIXA DE ALERTA PARA APAGAR DEPOSITO -->
+<div class="fundo-alerta" id="alertaApagar">
+    <div class="caixa-alerta">
+        <h3>⚠️ Desfazer Depósito</h3>
+        <p>Tem certeza que quer remover esse valor? Ele voltará a estar disponível para depósito novamente.</p>
+        <div class="botoes-alerta">
+            <button class="btn-alerta btn-cancelar" onclick="fecharAlertaApagar()">Cancelar</button>
+            <button class="btn-alerta btn-apagar" onclick="confirmarApagar()">Apagar</button>
+        </div>
+    </div>
+</div>
+
+<!-- CAIXA DE ALERTA PARA CONFIGURAR PERFIL (LÁPIS) -->
+<div class="fundo-alerta" id="alertaConfigPerfil">
+    <div class="caixa-alerta">
+        <h3>✏️ Configurar Perfil</h3>
+        <p>Insira o link da sua foto e seu nome abaixo para personalizar seu controle.</p>
+        <input type="text" id="editLinkImg" class="input-perfil" placeholder="Cole o link da imagem aqui...">
+        <input type="text" id="editNome" class="input-perfil" placeholder="Nome do Controle...">
+        <div class="botoes-alerta">
+            <button class="btn-alerta btn-cancelar" onclick="fecharConfigPerfil()">Cancelar</button>
+            <button class="btn-alerta btn-confirmar" onclick="salvarConfigPerfil()">Salvar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DE COMPARTILHAMENTO (IDEIA 10) -->
+<div class="fundo-card-share" id="modalShare" onclick="fecharCardProgresso()">
+    <div class="card-print" onclick="event.stopPropagation()">
+        <div class="foto-perfil-card" id="avatarCard">👤</div>
+        <div class="nome-perfil-card" id="nomeCard">Seu Nome</div>
+        
+        <div class="linha-status">
+            <span>Meta Alvo:</span>
+            <strong>R$ 10.000,00</strong>
+        </div>
+        <div class="linha-status">
+            <span>Total Economizado:</span>
+            <strong style="color: #22c55e;" id="totalCard">R$ 0,00</strong>
+        </div>
+        <div class="linha-status">
+            <span>Progresso da Meta:</span>
+            <strong id="porcentagemCard">0%</strong>
+        </div>
+        <div class="linha-status" style="margin-bottom: 25px;">
+            <span>Retângulos Preenchidos:</span>
+            <strong id="retangulosCard">0 de 365</strong>
+        </div>
+
+        <p style="font-size: 0.75rem; opacity: 0.7; margin-bottom: 15px;">Tire um print para salvar e compartilhar seu progresso! 📸</p>
+        
+        <button class="btn-alerta btn-cancelar" style="width: 100%;" onclick="fecharCardProgresso()">Fechar Visualização</button>
+    </div>
+</div>
+
+
+<script>
+   // Distribuição exata de blocos que somam exatamente R$ 10.000,00 reais.
+   // Usamos índices separados para que você possa marcar individualmente cada bloco, mesmo com valores iguais!
+   // Distribuição exata de 365 blocos que somam exatamente R$ 10.000,00 reais.
+    const listaValoresDesafio = [
+        ...Array(25).fill(5),    // 125
+        ...Array(135).fill(10),  // 1350  <-- Aumentamos bastante os de 10 reais
+        ...Array(40).fill(15),   // 600
+        ...Array(40).fill(20),   // 800
+        ...Array(40).fill(30),   // 1200
+        ...Array(25).fill(40),   // 1000
+        ...Array(25).fill(50),   // 1250
+        ...Array(10).fill(60),   // 600   <-- Reduzido
+        ...Array(10).fill(70),   // 700   <-- Reduzido
+        ...Array(5).fill(80),    // 400   <-- Reduzido
+        ...Array(5).fill(90),    // 450   <-- Reduzido
+        ...Array(5).fill(100)    // 500   <-- Reduzido
+        // Soma Total Exata: 10.000 (Quantidade total de blocos: 365)
+    ];
+
+
+    const META_FINAL = 10000;
+
+    // Estado dos depósitos (agora mapeado pelo índice único de 0 a 364 do bloco)
+    let statusDepositos = JSON.parse(localStorage.getItem('controle_depositos_10k')) || {};
+    
+    // Dados de personalização de perfil
+    let dadosPerfil = JSON.parse(localStorage.getItem('dados_perfil_usuario')) || {
+        imagem: "",
+        nome: "Seu Nome"
+    };
+
+    // Histórico de atividades
+    let historicoAtividades = JSON.parse(localStorage.getItem('historico_depositos_10k')) || [];
+
+    let indiceSelecionadoAgora = null;
+    let filtroAtual = 'todos'; // Variavel global para o filtro ativo
+
+    // Inicia tudo ao carregar
+    iniciarSistema();
+    carregarEstiloPerfil();
+    renderizarHistorico();
+
+
+    function iniciarSistema() {
+        const grade = document.getElementById('listaValores');
+        grade.innerHTML = '';
+
+        listaValoresDesafio.forEach((valor, index) => {
+            const bloco = document.createElement('div');
+            // Mantendo a cor verde se estiver marcado como depositado
+            bloco.className = `bloco-valor ${statusDepositos[index] ? 'depositado' : ''}`;
+            bloco.textContent = `R$ ${valor}`;
+            bloco.dataset.index = index;
+
+            // Filtro dinâmico (Ideia 2)
+            if (filtroAtual === 'pendentes' && statusDepositos[index]) {
+                bloco.style.display = 'none';
+            } else if (filtroAtual === 'depositados' && !statusDepositos[index]) {
+                bloco.style.display = 'none';
+            } else {
+                bloco.style.display = 'block';
+            }
+
+            bloco.addEventListener('click', () => cliqueiNoValor(index, valor));
+            grade.appendChild(bloco);
+        });
+
+        atualizarTotalAcumulado();
+    }
+
+
+    function cliqueiNoValor(index, valor) {
+        indiceSelecionadoAgora = index;
+
+        // Se ainda NÃO foi depositado: pede confirmação
+        if (!statusDepositos[index]) {
+            document.getElementById('textoAlertaDeposito').textContent = 
+                `Você realmente vai depositar R$ ${valor},00?`;
+            document.getElementById('alertaDeposito').style.display = 'flex';
+        } 
+        // Se JÁ foi depositado: opção de apagar
+        else {
+            document.getElementById('alertaApagar').style.display = 'flex';
+        }
+    }
+
+
+    function confirmarDeposito() {
+        statusDepositos[indiceSelecionadoAgora] = true;
+        
+        // Registra histórico (Ideia 3)
+        const valorAdicionado = listaValoresDesafio[indiceSelecionadoAgora];
+        adicionarAoHistorico(valorAdicionado, 'Adicionado');
+
+        salvarDados();
+        fecharAlerta();
+        iniciarSistema();
+    }
+
+
+    function confirmarApagar() {
+        // Registra histórico (Ideia 3) antes de remover
+        const valorRemovido = listaValoresDesafio[indiceSelecionadoAgora];
+        adicionarAoHistorico(valorRemovido, 'Removido');
+
+        delete statusDepositos[indiceSelecionadoAgora];
+        salvarDados();
+        fecharAlertaApagar();
+        iniciarSistema();
+    }
+
+
+    function fecharAlerta() {
+        document.getElementById('alertaDeposito').style.display = 'none';
+        indiceSelecionadoAgora = null;
+    }
+
+
+    function fecharAlertaApagar() {
+        document.getElementById('alertaApagar').style.display = 'none';
+        indiceSelecionadoAgora = null;
+    }
+
+
+    function atualizarTotalAcumulado() {
+        let total = 0;
+        let contagemMarcados = 0;
+
+        listaValoresDesafio.forEach((valor, index) => {
+            if (statusDepositos[index]) {
+                total += valor;
+                contagemMarcados++;
+            }
+        });
+
+        document.getElementById('valorAcumulado').textContent = 
+            `R$ ${total.toFixed(2).replace('.', ',')}`;
+
+        const porcentagem = (total / META_FINAL) * 100;
+        document.getElementById('barraProgresso').style.width = `${Math.min(porcentagem, 100)}%`;
+
+        // Estatísticas do Progresso Rápido (Ideia 1)
+        const media = contagemMarcados > 0 ? (total / contagemMarcados) : 0;
+        document.getElementById('numMarcados').textContent = contagemMarcados;
+        document.getElementById('mediaValor').textContent = media.toFixed(2).replace('.', ',');
+        document.getElementById('textoPorcentagem').textContent = `${porcentagem.toFixed(1).replace('.', ',')}%`;
+    }
+
+
+    function salvarDados() {
+        localStorage.setItem('controle_depositos_10k', JSON.stringify(statusDepositos));
+    }
+
+    // --- SISTEMA DE CONFIGURAÇÃO DO PERFIL (LÁPIS) ---
+    function carregarEstiloPerfil() {
+        const divAvatar = document.getElementById('avatarPerfil');
+        const divNome = document.getElementById('nomePerfil');
+
+        if(dadosPerfil.imagem && dadosPerfil.imagem.trim() !== "") {
+            divAvatar.innerHTML = `<img src="${dadosPerfil.imagem}" alt="Foto de Perfil" onerror="this.outerHTML='👤'">`;
+        } else {
+            divAvatar.innerHTML = "👤";
+        }
+        divNome.textContent = dadosPerfil.nome || "Meu Controle de Economia";
+    }
+
+    function abrirConfigPerfil() {
+        document.getElementById('editLinkImg').value = dadosPerfil.imagem || "";
+        document.getElementById('editNome').value = dadosPerfil.nome || "";
+        document.getElementById('alertaConfigPerfil').style.display = 'flex';
+    }
+
+    function fecharConfigPerfil() {
+        document.getElementById('alertaConfigPerfil').style.display = 'none';
+    }
+
+    function salvarConfigPerfil() {
+        dadosPerfil.imagem = document.getElementById('editLinkImg').value;
+        dadosPerfil.nome = document.getElementById('editNome').value;
+
+        localStorage.setItem('dados_perfil_usuario', JSON.stringify(dadosPerfil));
+        carregarEstiloPerfil();
+        fecharConfigPerfil();
+    }
+
+
+    // --- FUNÇÕES DE BACKUP ---
+    function fazerBackup() {
+        const dados = {
+            data: new Date().toLocaleString('pt-BR'),
+            meta: META_FINAL,
+            depositos: statusDepositos,
+            perfil: dadosPerfil,
+            historico: historicoAtividades // Inclui o histórico no arquivo
+        };
+
+        const arquivo = new Blob([JSON.stringify(dados, null, 2)], {type: 'application/json'});
+        const url = URL.createObjectURL(arquivo);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `meu-backup-economia-${new Date().toLocaleDateString('pt-BR')}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        alert('✅ Backup salvo com sucesso! Guarde esse arquivo em um lugar seguro.');
+    }
+
+
+    function carregarBackup(evento) {
+        const arquivo = evento.target.files[0];
+        if(!arquivo) return;
+
+        if(confirm('Tem certeza? Os dados atuais serão substituídos por esse backup!')) {
+            const leitor = new FileReader();
+            
+            leitor.onload = function(e) {
+                try {
+                    const conteudo = JSON.parse(e.target.result);
+                    statusDepositos = conteudo.depositos || {};
+                    historicoAtividades = conteudo.historico || [];
+                    
+                    if(conteudo.perfil) {
+                        dadosPerfil = conteudo.perfil;
+                        localStorage.setItem('dados_perfil_usuario', JSON.stringify(dadosPerfil));
+                    }
+                    
+                    salvarDados();
+                    localStorage.setItem('historico_depositos_10k', JSON.stringify(historicoAtividades));
+                    carregarEstiloPerfil();
+                    iniciarSistema();
+                    renderizarHistorico();
+                    alert('✅ Backup carregado com sucesso!');
+                } catch {
+                    alert('❌ Esse arquivo não é um backup válido!');
+                }
+            }
+
+            leitor.readAsText(arquivo);
+        }
+        evento.target.value = '';
+    }
+
+    // --- FUNÇÕES DOS FILTROS RÁPIDOS (IDEIA 2) ---
+    function alterarFiltro(tipo) {
+        filtroAtual = tipo;
+        
+        // Remove a classe ativa de todos e adiciona no correto
+        document.getElementById('filtroTodos').classList.remove('ativo');
+        document.getElementById('filtroPendentes').classList.remove('ativo');
+        document.getElementById('filtroDepositados').classList.remove('ativo');
+
+        if(tipo === 'todos') document.getElementById('filtroTodos').classList.add('ativo');
+        if(tipo === 'pendentes') document.getElementById('filtroPendentes').classList.add('ativo');
+        if(tipo === 'depositados') document.getElementById('filtroDepositados').classList.add('ativo');
+
+        iniciarSistema();
+    }
+
+    // --- FUNÇÕES DE HISTÓRICO DE DEPÓSITOS (IDEIA 3) ---
+    function adicionarAoHistorico(valor, tipo) {
+        const agora = new Date();
+        const dataFormatada = agora.toLocaleDateString('pt-BR');
+        const horaFormatada = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+        const atividade = {
+            tipo: tipo, // 'Adicionado' ou 'Removido'
+            valor: valor,
+            data: `${dataFormatada} às ${horaFormatada}`
+        };
+
+        // Adiciona ao topo do array
+        historicoAtividades.unshift(atividade);
+
+        // Limita o histórico guardado a 30 itens para desempenho
+        if (historicoAtividades.length > 30) {
+            historicoAtividades.pop();
+        }
+
+        localStorage.setItem('historico_depositos_10k', JSON.stringify(historicoAtividades));
+        renderizarHistorico();
+    }
+
+    
+    function renderizarHistorico() {
+        const container = document.getElementById('historicoLista');
+        container.innerHTML = '';
+
+        if (historicoAtividades.length === 0) {
+            container.innerHTML = `<li class="historico-vazio">Nenhum depósito registrado recentemente.</li>`;
+            return;
+        }
+
+        historicoAtividades.forEach((ativ, index) => {
+            const item = document.createElement('li');
+            item.className = `historico-item ${ativ.tipo === 'Removido' ? 'removido' : ''}`;
+            
+            // Container para os textos de informações do item
+            const conteudo = document.createElement('div');
+            conteudo.className = 'historico-conteudo';
+
+            if (ativ.tipo === 'Adicionado') {
+                conteudo.innerHTML = `<span>📥 Guardou <strong>R$ ${ativ.valor},00</strong></span> <span>${ativ.data}</span>`;
+            } else {
+                conteudo.innerHTML = `<span>📤 Retirou <strong>R$ ${ativ.valor},00</strong></span> <span>${ativ.data}</span>`;
+            }
+
+            // Botão da lixeira vermelha
+            const botaoExcluir = document.createElement('button');
+            botaoExcluir.className = 'btn-excluir-historico';
+            botaoExcluir.innerHTML = '🗑️';
+            botaoExcluir.title = 'Excluir do histórico';
+            botaoExcluir.onclick = () => excluirItemHistorico(index);
+
+            item.appendChild(conteudo);
+            item.appendChild(botaoExcluir);
+            container.appendChild(item);
+        });
+    }
+
+    // ADICIONE ESTA NOVA FUNÇÃO ABAIXO:
+    function excluirItemHistorico(index) {
+        if (confirm('Deseja realmente excluir este item do histórico? (Isso não altera o saldo dos blocos)')) {
+            historicoAtividades.splice(index, 1);
+            localStorage.setItem('historico_depositos_10k', JSON.stringify(historicoAtividades));
+            renderizarHistorico();
+        }
+    }
+
+
+    // --- GERADOR DE CARD DE PROGRESSO (IDEIA 10) ---
+    function gerarCardProgresso() {
+        const divAvatarCard = document.getElementById('avatarCard');
+        const divNomeCard = document.getElementById('nomeCard');
+
+        // Sincroniza foto e nome atuais do perfil
+        if(dadosPerfil.imagem && dadosPerfil.imagem.trim() !== "") {
+            divAvatarCard.innerHTML = `<img src="${dadosPerfil.imagem}" alt="Foto de Perfil" onerror="this.outerHTML='👤'">`;
+        } else {
+            divAvatarCard.innerHTML = "👤";
+        }
+        divNomeCard.textContent = dadosPerfil.nome || "Meu Controle de Economia";
+
+        // Calcula dados de progresso
+        let total = 0;
+        let contagemMarcados = 0;
+        listaValoresDesafio.forEach((valor, index) => {
+            if (statusDepositos[index]) {
+                total += valor;
+                contagemMarcados++;
+            }
+        });
+
+        const porcentagem = (total / META_FINAL) * 100;
+
+        document.getElementById('totalCard').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+        document.getElementById('porcentagemCard').textContent = `${porcentagem.toFixed(1).replace('.', ',')}%`;
+        document.getElementById('retangulosCard').textContent = `${contagemMarcados} de 365`;
+
+        // Exibe o modal para print
+        document.getElementById('modalShare').style.display = 'flex';
+    }
+
+    function fecharCardProgresso() {
+        document.getElementById('modalShare').style.display = 'none';
+    }
+</script>
+
+</body>
+</html>
