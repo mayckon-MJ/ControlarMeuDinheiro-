@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -16,7 +17,7 @@
         body {
             min-height: 100vh;
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            padding: 20px 15px 140px 15px; /* Padding extra no final para os botões fixos */
+            padding: 20px 15px 180px 15px; /* Padding extra no final para acomodar os botões e informações */
             color: #f8fafc;
         }
 
@@ -63,6 +64,74 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* CHAVE PIX ABAIXO DO NOME */
+        .area-pix-topo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 6px;
+            font-size: 0.9rem;
+            color: #22c55e;
+            font-weight: bold;
+            background: rgba(34, 197, 94, 0.1);
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            display: inline-flex;
+        }
+
+        .btn-copiar-pix {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2px;
+            transition: transform 0.1s;
+        }
+
+        .btn-copiar-pix:active {
+            transform: scale(0.85);
+        }
+
+        /* PAINEL DE CONTROLE DE DATAS E CRONOGRAMA */
+        .status-datas-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 20px;
+            font-size: 0.8rem;
+        }
+
+        .linha-data-status {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 4px;
+        }
+
+        .linha-data-status:last-child {
+            margin-bottom: 0;
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .status-positivo {
+            color: #22c55e;
+            font-weight: bold;
+        }
+
+        .status-negativo {
+            color: #ef4444;
+            font-weight: bold;
         }
 
         /* ---------------- RESUMO GERAL ---------------- */
@@ -106,18 +175,37 @@
         }
 
         /* CSS IDEIA 1: Estatísticas de Progresso */
-        .estatisticas-progresso {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 12px;
-            font-size: 0.78rem;
-            opacity: 0.85;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            padding-top: 8px;
-        }
-        .estatisticas-progresso span {
-            font-weight: 600;
-        }
+        /* CSS IDEIA 1: Estatísticas de Progresso */
+.estatisticas-progresso {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 12px;
+}
+.estatisticas-coluna {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 8px 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+.estatisticas-label {
+    font-size: 0.65rem;
+    opacity: 0.6;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.estatisticas-valor {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #f8fafc;
+}
+
 
         /* CSS IDEIA 2: Filtros de Visualização */
         .filtros-container {
@@ -168,7 +256,7 @@
             max-height: 150px;
             overflow-y: auto;
         }
-                .historico-item {
+        .historico-item {
             display: flex;
             justify-content: space-between;
             font-size: 0.75rem;
@@ -476,6 +564,33 @@
 
         /* Esconde input invisível de backup */
         #inputArquivo { display: none; }
+
+        /* ---------------- SUPORTE A MAIS TELAS (RESPONSIVIDADE EXTRA) ---------------- */
+        @media (min-width: 768px) {
+            body {
+                padding-top: 40px;
+            }
+            .container {
+                max-width: 600px;
+            }
+            .grade-valores {
+                grid-template-columns: repeat(8, 1fr); /* 8 Colunas em telas maiores para melhor aproveitamento de espaço */
+                gap: 8px;
+            }
+            .bloco-valor {
+                font-size: 0.85rem;
+                padding: 12px 4px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .container {
+                max-width: 700px;
+            }
+            .grade-valores {
+                grid-template-columns: repeat(10, 1fr); /* 10 Colunas em Notebooks/PCs */
+            }
+        }
     </style>
 </head>
 <body>
@@ -483,10 +598,31 @@
 <div class="container">
     <!-- PERFIL REDONDO NO TOPO -->
     <div class="perfil-area">
-        <div class="foto-perfil" id="avatarPerfil">👤</div>
+        <div class="foto-perfil" id="avatarPerfil">o</div>
         <div class="nome-controle">
             <span id="nomePerfil">Seu Nome</span>
             <button class="btn-compartilhar" onclick="gerarCardProgresso()" title="Gerar Card para Print">📸</button>
+        </div>
+        <br>
+        <div class="area-pix-topo" id="areaPixTopo" style="display: none;">
+            <span>Pix: <span id="chavePixTexto"></span></span>
+            <button class="btn-copiar-pix" onclick="copiarPixManual()" title="Copiar Chave Pix">📋</button>
+        </div>
+    </div>
+
+    <!-- SEÇÃO DE STATUS DE DATAS -->
+    <div class="status-datas-container">
+        <div class="linha-data-status">
+            <span>Início do Desafio:</span>
+            <strong id="dataInicioTexto">Não Iniciado</strong>
+        </div>
+        <div class="linha-data-status">
+            <span>Fim do Desafio (365 dias):</span>
+            <strong id="dataFimTexto">--/--/----</strong>
+        </div>
+        <div class="linha-data-status">
+            <span>Status de Depósitos Diários:</span>
+            <span id="statusControleDias">Aguardando primeiro depósito</span>
         </div>
     </div>
 
@@ -499,11 +635,21 @@
             <div class="progresso-preencher" id="barraProgresso"></div>
         </div>
         <!-- ESTATÍSTICAS (IDEIA 1) -->
-        <div class="estatisticas-progresso">
-            <div>Progresso: <span id="numMarcados">0</span>/365</div>
-            <div>Média: R$ <span id="mediaValor">0,00</span></div>
-            <div>Porcentagem: <span id="textoPorcentagem">0%</span></div>
-        </div>
+<div class="estatisticas-progresso">
+    <div class="estatisticas-coluna">
+        <span class="estatisticas-label">Progresso</span>
+        <span class="estatisticas-valor"><span id="numMarcados">0</span>/365</span>
+    </div>
+    <div class="estatisticas-coluna">
+        <span class="estatisticas-label">Média</span>
+        <span class="estatisticas-valor">R$ <span id="mediaValor">0,00</span></span>
+    </div>
+    <div class="estatisticas-coluna">
+        <span class="estatisticas-label">Porcentagem</span>
+        <span class="estatisticas-valor" style="color: #22c55e;"><span id="textoPorcentagem">0%</span></span>
+    </div>
+</div>
+
     </div>
 
     <!-- FILTROS DE VISUALIZAÇÃO (IDEIA 2) -->
@@ -568,9 +714,10 @@
 <div class="fundo-alerta" id="alertaConfigPerfil">
     <div class="caixa-alerta">
         <h3>✏️ Configurar Perfil</h3>
-        <p>Insira o link da sua foto e seu nome abaixo para personalizar seu controle.</p>
+        <p>Insira o link da sua foto, seu nome e sua chave Pix abaixo para personalizar seu controle.</p>
         <input type="text" id="editLinkImg" class="input-perfil" placeholder="Cole o link da imagem aqui...">
         <input type="text" id="editNome" class="input-perfil" placeholder="Nome do Controle...">
+        <input type="text" id="editChavePix" class="input-perfil" placeholder="Digite sua Chave Pix...">
         <div class="botoes-alerta">
             <button class="btn-alerta btn-cancelar" onclick="fecharConfigPerfil()">Cancelar</button>
             <button class="btn-alerta btn-confirmar" onclick="salvarConfigPerfil()">Salvar</button>
@@ -609,10 +756,7 @@
 
 
 <script>
-   // Distribuição exata de blocos que somam exatamente R$ 10.000,00 reais.
-   // Usamos índices separados para que você possa marcar individualmente cada bloco, mesmo com valores iguais!
-   // Distribuição exata de 365 blocos que somam exatamente R$ 10.000,00 reais.
-    const listaValoresDesafio = [
+  const listaValoresDesafio = [
         ...Array(25).fill(5),    // 125
         ...Array(135).fill(10),  // 1350  <-- Aumentamos bastante os de 10 reais
         ...Array(40).fill(15),   // 600
@@ -634,11 +778,15 @@
     // Estado dos depósitos (agora mapeado pelo índice único de 0 a 364 do bloco)
     let statusDepositos = JSON.parse(localStorage.getItem('controle_depositos_10k')) || {};
     
-    // Dados de personalização de perfil
+    // Dados de personalização de perfil (incluindo chavePix)
     let dadosPerfil = JSON.parse(localStorage.getItem('dados_perfil_usuario')) || {
         imagem: "",
-        nome: "Seu Nome"
+        nome: "Seu Nome",
+        chavePix: ""
     };
+
+    // Data de início do primeiro depósito
+    let dataPrimeiroDeposito = localStorage.getItem('data_primeiro_deposito_10k') || null;
 
     // Histórico de atividades
     let historicoAtividades = JSON.parse(localStorage.getItem('historico_depositos_10k')) || [];
@@ -650,6 +798,7 @@
     iniciarSistema();
     carregarEstiloPerfil();
     renderizarHistorico();
+    atualizarCronogramaDatas();
 
 
     function iniciarSistema() {
@@ -697,15 +846,32 @@
 
 
     function confirmarDeposito() {
+        // Grava a data se for o primeiro depósito absoluto no sistema
+        if (!dataPrimeiroDeposito) {
+            const agora = new Date();
+            dataPrimeiroDeposito = agora.toISOString();
+            localStorage.setItem('data_primeiro_deposito_10k', dataPrimeiroDeposito);
+        }
+
         statusDepositos[indiceSelecionadoAgora] = true;
         
         // Registra histórico (Ideia 3)
         const valorAdicionado = listaValoresDesafio[indiceSelecionadoAgora];
         adicionarAoHistorico(valorAdicionado, 'Adicionado');
 
+        // Copia o Pix se ele existir e estiver configurado
+        if (dadosPerfil.chavePix && dadosPerfil.chavePix.trim() !== "") {
+            navigator.clipboard.writeText(dadosPerfil.chavePix).then(() => {
+                console.log("Pix Copiado!");
+            }).catch(err => {
+                console.error("Erro ao copiar Pix: ", err);
+            });
+        }
+
         salvarDados();
         fecharAlerta();
         iniciarSistema();
+        atualizarCronogramaDatas();
     }
 
 
@@ -714,11 +880,38 @@
         const valorRemovido = listaValoresDesafio[indiceSelecionadoAgora];
         adicionarAoHistorico(valorRemovido, 'Removido');
 
+        // --- NOVO CÓDIGO PARA APAGAR DO HISTÓRICO ---
+        // Filtra o histórico removendo todos os registros de "Adicionado" que tenham o mesmo valor correspondente
+        // Encontra o índice da última adição desse valor específico e o remove
+        const indexHistorico = historicoAtividades.findIndex(ativ => ativ.tipo === 'Adicionado' && ativ.valor === valorRemovido);
+        if (indexHistorico !== -1) {
+            historicoAtividades.splice(indexHistorico, 1);
+            localStorage.setItem('historico_depositos_10k', JSON.stringify(historicoAtividades));
+            renderizarHistorico();
+        }
+        // --------------------------------------------
+
         delete statusDepositos[indiceSelecionadoAgora];
+        
+        // Se após apagar não houver mais nenhum marcado, reinicia a data de início
+        let nenhumMarcado = true;
+        for (let k in statusDepositos) {
+            if (statusDepositos[k]) {
+                nenhumMarcado = false;
+                break;
+            }
+        }
+        if (nenhumMarcado) {
+            dataPrimeiroDeposito = null;
+            localStorage.removeItem('data_primeiro_deposito_10k');
+        }
+
         salvarDados();
         fecharAlertaApagar();
         iniciarSistema();
+        atualizarCronogramaDatas();
     }
+    
 
 
     function fecharAlerta() {
@@ -766,6 +959,8 @@
     function carregarEstiloPerfil() {
         const divAvatar = document.getElementById('avatarPerfil');
         const divNome = document.getElementById('nomePerfil');
+        const areaPix = document.getElementById('areaPixTopo');
+        const chavePixTexto = document.getElementById('chavePixTexto');
 
         if(dadosPerfil.imagem && dadosPerfil.imagem.trim() !== "") {
             divAvatar.innerHTML = `<img src="${dadosPerfil.imagem}" alt="Foto de Perfil" onerror="this.outerHTML='👤'">`;
@@ -773,11 +968,20 @@
             divAvatar.innerHTML = "👤";
         }
         divNome.textContent = dadosPerfil.nome || "Meu Controle de Economia";
+
+        // Gerencia exibição do campo Pix
+        if (dadosPerfil.chavePix && dadosPerfil.chavePix.trim() !== "") {
+            chavePixTexto.textContent = dadosPerfil.chavePix;
+            areaPix.style.display = "inline-flex";
+        } else {
+            areaPix.style.display = "none";
+        }
     }
 
     function abrirConfigPerfil() {
         document.getElementById('editLinkImg').value = dadosPerfil.imagem || "";
         document.getElementById('editNome').value = dadosPerfil.nome || "";
+        document.getElementById('editChavePix').value = dadosPerfil.chavePix || "";
         document.getElementById('alertaConfigPerfil').style.display = 'flex';
     }
 
@@ -788,11 +992,81 @@
     function salvarConfigPerfil() {
         dadosPerfil.imagem = document.getElementById('editLinkImg').value;
         dadosPerfil.nome = document.getElementById('editNome').value;
+        dadosPerfil.chavePix = document.getElementById('editChavePix').value;
 
         localStorage.setItem('dados_perfil_usuario', JSON.stringify(dadosPerfil));
         carregarEstiloPerfil();
         fecharConfigPerfil();
     }
+
+
+    // --- COPÍA MANUAL DA CHAVE PIX ---
+    function copiarPixManual() {
+        if (dadosPerfil.chavePix && dadosPerfil.chavePix.trim() !== "") {
+            navigator.clipboard.writeText(dadosPerfil.chavePix).then(() => {
+                alert("✨ Chave Pix copiada com sucesso!");
+            }).catch(() => {
+                alert("❌ Erro ao copiar a Chave Pix.");
+            });
+        }
+    }
+
+    // --- CRONOGRAMA DE DATAS E MONITORAMENTO DIÁRIO ---
+    function atualizarCronogramaDatas() {
+        const dataInicioTexto = document.getElementById('dataInicioTexto');
+        const dataFimTexto = document.getElementById('dataFimTexto');
+        const statusControleDias = document.getElementById('statusControleDias');
+
+        if (!dataPrimeiroDeposito) {
+            dataInicioTexto.textContent = "Não Iniciado";
+            dataFimTexto.textContent = "--/--/----";
+            statusControleDias.innerHTML = "Aguardando primeiro depósito";
+            return;
+        }
+
+        const dataInicio = new Date(dataPrimeiroDeposito);
+        const dataFormatadaInicio = dataInicio.toLocaleDateString('pt-BR');
+        const horaFormatadaInicio = dataInicio.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+        dataInicioTexto.textContent = `${dataFormatadaInicio} às ${horaFormatadaInicio}`;
+
+        // Calcula a data de fim estimada (+365 dias)
+        const dataFim = new Date(dataInicio);
+        dataFim.setDate(dataFim.getDate() + 365);
+        dataFimTexto.textContent = dataFim.toLocaleDateString('pt-BR');
+
+        // Calcula dias decorridos desde o primeiro depósito
+        const hoje = new Date();
+        const diferencaTempo = hoje - dataInicio;
+        // Transforma a diferença em dias inteiros decorridos (mínimo de 1 dia, que é o dia atual)
+        const diasDecorridos = Math.max(1, Math.floor(diferencaTempo / (1000 * 60 * 60 * 24)) + 1);
+
+        // Conta quantos foram depositados até o momento
+        let totalDepositados = 0;
+        for (let k in statusDepositos) {
+            if (statusDepositos[k]) {
+                totalDepositados++;
+            }
+        }
+
+        // Calcula a diferença real de depósitos em relação aos dias que já se passaram
+        const diferencaDias = totalDepositados - diasDecorridos;
+
+        if (diferencaDias < 0) {
+            // Se o saldo de dias adiantados for menor que zero, significa que realmente está devendo dias
+            const diasFaltando = Math.abs(diferencaDias);
+            statusControleDias.innerHTML = `<span class="status-negativo">⚠️ Você deixou de depositar ${diasFaltando} dia(s)</span>`;
+        } 
+        else if (diferencaDias > 0) {
+            // Se o saldo for maior que zero, mostra o saldo positivo já com o abatimento automático feito
+            statusControleDias.innerHTML = `<span class="status-positivo" style="font-size:10px;">Saldo de dias adiantados: ${diferencaDias}</span>`;
+        } 
+        else {
+            // Se a diferença for zero, significa que está exatamente em dia (o adiantamento cobriu perfeitamente os dias sem depósito)
+            statusControleDias.innerHTML = `<span class="status-positivo" style="font-size:10px;">Em dia com seus depósitos</span>`;
+        }
+    }
+
 
 
     // --- FUNÇÕES DE BACKUP ---
@@ -802,7 +1076,8 @@
             meta: META_FINAL,
             depositos: statusDepositos,
             perfil: dadosPerfil,
-            historico: historicoAtividades // Inclui o histórico no arquivo
+            historico: historicoAtividades, // Inclui o histórico no arquivo
+            dataInicio: dataPrimeiroDeposito // Salva a data de início no backup
         };
 
         const arquivo = new Blob([JSON.stringify(dados, null, 2)], {type: 'application/json'});
@@ -828,6 +1103,13 @@
                     const conteudo = JSON.parse(e.target.result);
                     statusDepositos = conteudo.depositos || {};
                     historicoAtividades = conteudo.historico || [];
+                    dataPrimeiroDeposito = conteudo.dataInicio || null;
+
+                    if (dataPrimeiroDeposito) {
+                        localStorage.setItem('data_primeiro_deposito_10k', dataPrimeiroDeposito);
+                    } else {
+                        localStorage.removeItem('data_primeiro_deposito_10k');
+                    }
                     
                     if(conteudo.perfil) {
                         dadosPerfil = conteudo.perfil;
@@ -839,6 +1121,7 @@
                     carregarEstiloPerfil();
                     iniciarSistema();
                     renderizarHistorico();
+                    atualizarCronogramaDatas();
                     alert('✅ Backup carregado com sucesso!');
                 } catch {
                     alert('❌ Esse arquivo não é um backup válido!');
@@ -964,7 +1247,7 @@
 
         document.getElementById('totalCard').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
         document.getElementById('porcentagemCard').textContent = `${porcentagem.toFixed(1).replace('.', ',')}%`;
-        document.getElementById('retangulosCard').textContent = `${contagemMarcados} de 365`;
+        document.getElementById('retangulosCard').textContent = `${contagemMarcados} de222 365`;
 
         // Exibe o modal para print
         document.getElementById('modalShare').style.display = 'flex';
