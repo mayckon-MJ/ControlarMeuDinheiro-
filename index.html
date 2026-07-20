@@ -1296,12 +1296,19 @@ animation: piscarNomeCartao 2.5s infinite ease-in-out;
 
 <p id="texto-topo-frase" style="font-size: 1.1rem; font-weight: bold; color: red; margin-bottom: 4px; font-family: sans-serif;">Dinheiro</p>
 <div id="main-system" class="container" style="display: none;">
-
-    
-    <div class="saldo-container" style="justify-content: space-between; width: 100%;">
-        <span id="saldo-exibicao" class="saldo-valor">R$ 0,00</span>
-        <button id="btn-editar-saldo" class="btn-edit" onclick="alternarEdicaoSaldo()">✏️</button>
+<div class="header-saldo-area">
+    <h1 style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 2px;">Meu Saldo</h1>
+    <div class="saldo-container">
+        <span id="saldo-exibicao" class="saldo-valor" style="font-size: 1.6rem; font-weight: 700; color: #1e293b;">R$ 0,00</span>
+        <button id="btn-editar-saldo" class="btn-edit" onclick="alternarEdicaoSaldo()" style="display: flex; align-items: center; justify-content: center; background: none; border: none; padding: 4px; cursor: pointer;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 20h9"></path>
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+            </svg>
+        </button>
     </div>
+</div>
+        
                
 <div class="painel-topo-dados">
     <div id="status-topo-mes" class="status-topo-container"></div>
