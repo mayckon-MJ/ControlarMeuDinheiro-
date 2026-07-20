@@ -3621,6 +3621,81 @@ setInterval(() => {
 
 
 
+
+
+
+
+
+
+
+
+
+        
+/* ==========================================
+   NOTIFICAÇÃO DIÁRIA DE FATURAS (EMUNAH)
+   ========================================== */
+
+// 1. Solicita permissão ao usuário para enviar notificações na tela do celular
+if ("Notification" in window && Notification.permission !== "granted") {
+    Notification.requestPermission();
+}
+
+// 2. Função que verifica as faturas e dispara a notificação
+function verificarNotificacaoFaturas() {
+    if (!("Notification" in window) || Notification.permission !== "granted") return;
+
+    const hoje = new Date();
+    
+    // Verifica se é o horário exato de 20:30
+    if (hoje.getHours() === 20 && hoje.getMinutes() === 30) {
+        
+        // Data alvo: Amanhã (1 dia antes de vencer)
+        const amanha = new Date();
+        amanha.setDate(hoje.getDate() + 1);
+
+        // Filtra os bancos que possuem faturas a vencer amanhã
+        const bancosA Vencer = [];
+
+        estado.lancamentos.forEach(item => {
+            if (!item.pago) {
+                const dataVenc = new Date(item.vencimento);
+                
+                // Compara dia, mês e ano para garantir que faltam exatamente 24 horas/1 dia
+                if (
+                    dataVenc.getDate() === amanha.getDate() &&
+                    dataVenc.getMonth() === amanha.getMonth() &&
+                    dataVenc.getFullYear() === amanha.getFullYear()
+                ) {
+                    if (!bancosAVencer.includes(item.descricao)) {
+                        bancosAVencer.push(item.descricao);
+                    }
+                }
+            }
+        });
+
+        // Se houver faturas a vencer amanhã, dispara a notificação
+        if (bancosAVencer.length > 0) {
+            const listaBancos = bancosAVencer.join(", ");
+            const chaveNotificacao = `notificado_${hoje.toISOString().slice(0, 10)}`;
+
+            // Evita disparar a notificação repetidas vezes dentro do mesmo minuto de 20:30
+            if (!localStorage.getItem(chaveNotificacao)) {
+                new Notification("Emunah", {
+                    body: `Fatura a vencer: ${listaBancos}`,
+                    icon: "https://i.ibb.co/PvM0nN1X/108828.png", // Ícone do Emunah
+                    vibrate: [200, 100, 200]
+                });
+                
+                // Marca no sistema que a notificação de hoje já foi enviada
+                localStorage.setItem(chaveNotificacao, "true");
+            }
+        }
+    }
+}
+
+// 3. Executa a checagem a cada 30 segundos no sistema
+setInterval(verificarNotificacaoFaturas, 30000);
+
     </script>
 </body>
 </html>
