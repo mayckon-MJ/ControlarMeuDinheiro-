@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -238,7 +239,7 @@
 
         @media (max-width: 480px) {
     .grid-lancamentos {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
         gap: 10px;
     }
     /* ADICIONE ESTE BLOCO AQUI DENTRO: */
@@ -270,10 +271,21 @@
             transform: translateY(-5px);
         }
 
+  .banco-item-compacto .nome-usuario-card {
+    position: absolute;
+    bottom: 35px; /* Ajuste essa altura se ficar em cima do nome do banco (h3) */
+    right: 10px;
+    font-size: 0.55rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #a0aec0; /* Cor cinza discreta estilo gravação de cartão */
+    font-weight: bold;
+}
+
         .banco-grid-img {
-            width: 65px;
-            height: 65px;
-            border-radius: 50%;
+            width: 140px;
+            height: 85px;
+            border-radius: 10px;
             object-fit: cover;
             background-color: #eee;
             border: 3px solid #e2e8f0;
@@ -282,6 +294,7 @@
         }
 
         .banco-item-compacto {
+          position: relative; 
     display: flex;
     flex-direction: column;
     align-items: center;       /* Alinha a foto e o h3 no centro horizontal */
@@ -292,7 +305,25 @@
     position: relative;
     width: 100%;               /* Garante que o item ocupe o espaço do grid */
         }
-          
+     .banco-nome-cartao {
+    position: absolute;
+    color: red;
+    bottom: 25px;       /* Distância da borda de baixo */
+    right: 19px;       /* Distância da borda da direita */
+    font-size: 11px;   /* Letra miudinha igual de cartão */
+    font-weight: bold; /* Letra em negrito */
+    text-transform: uppercase; /* Nome sempre em MAIÚSCULO */
+    opacity: 0.8;      /* Um pouco transparente para dar estilo */
+animation: piscarNomeCartao 2.5s infinite ease-in-out;
+}
+  @keyframes piscarNomeCartao {
+    0%, 100% {
+        opacity: 0.4;
+    }
+    50% {
+        opacity: 0.9;
+    }
+}
 
         /* Animação Pulsar para faturas Urgentes */
         .urgente .banco-grid-img {
@@ -330,9 +361,9 @@
         }
 
         .detalhe-banco-topo img {
-            width: 65px;
-            height: 65px;
-            border-radius: 50%;
+            width: 100px;
+            height: 55px;
+            border-radius: 10px;
             object-fit: cover;
             border: 2px solid #ddd;
         }
@@ -344,7 +375,7 @@
         }
 
         .detalhe-info-valores .label-total {
-            font-size: 0.8rem;
+            font-size: 0.5rem;
             color: #7f8c8d;
             text-transform: uppercase;
         }
@@ -823,24 +854,24 @@
 /* GRID DAS IMAGENS */
 .galeria-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr); /* 4 colunas de imagens */
+    grid-template-columns: repeat(2, 1fr); /* 4 colunas de imagens */
     gap: 15px;
     margin-top: 20px;
     max-height: 300px;
     overflow-y: auto; /* Barra de rolagem se houver muitas fotos */
     padding: 5px;
 }
-
 /* CADA IMAGEM REDONDA E PEQUENA */
 .galeria-item {
-    width: 55px;
-    height: 55px;
-    border-radius: 50%; /* Torna redondo */
+    width: 110px;          /* Aumentado para dar o formato retangular */
+    height: 65px;         /* Proporção aproximada de um cartão */
+    border-radius: 6px;   /* Cantos levemente arredondados como cartão */
     object-fit: cover;
     cursor: pointer;
     border: 2px solid #e2e8f0;
     transition: var(--transition);
 }
+
     /* Adicione esta nova classe para envelopar a imagem e o texto */
 .galeria-item-container {
     display: flex;
@@ -922,9 +953,9 @@
 }
 
 .img-item-geral {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
+    width: 60px;
+    height: 35px;
+    border-radius: 6px;
     object-fit: cover;
 }
 
@@ -934,13 +965,13 @@
 }
 
 .txt-item-geral p {
-    font-size: 0.8rem;
+    font-size: 0.8px;
     color: #64748b;
 }
 
 .valor-item-geral {
     font-weight: bold;
-    font-size: 1rem;
+    font-size: 9px;
 }
 
 .direita-item-geral {
@@ -953,7 +984,7 @@
 .banco-item-compacto .check-pago {
     position: absolute;
     top: 0;
-    left: calc(50% - 32px); /* Alinha exatamente no canto superior esquerdo da imagem redonda */
+    left: 0; /* Alinha exatamente no canto superior esquerdo da imagem redonda */
     background: var(--success-color);
     color: white;
     width: 20px;
@@ -1431,9 +1462,9 @@
     ">
         <p style="font-size: 0.85rem; color: #64748b; margin: 0;">Pré-visualização da logo</p>
         <img id="img-preview" src="" alt="Logo selecionada" style="
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
+            width: 130px;
+            height: 75px;
+            border-radius: 10px;
             object-fit: cover;
             border: 2px solid #e2e8f0;
             display: none;
@@ -1984,12 +2015,12 @@
               <div class="subfaturas-lista-modal"></div>
 
             <div style="margin-top: 25px; text-align: center; border-top: 1px dashed #e2e8f0; padding-top: 20px; display: block; clear: both;">
-                <h4 style="font-size: 13px; color: #64748b; margin-bottom: 5px;">Progresso do Desta Conta</h4>
+                <h4 style="font-size: 13px; color: #64748b; margin-bottom: 5px;">Progresso Desta Conta</h4>
                 <p id="texto-parcelas-restantes" style="font-size: 11px; color: #94a3b; margin-bottom: 12px;"></p>
                 
                 <div style="position: relative; width: 140px; height: 140px; margin: 0 auto; display: block;">
                     <canvas id="graficoDetalheBanco" width="140" height="140"></canvas>
-                    <img src="${faturaExibicaoBase.imagem}" onerror="this.src='https://via.placeholder.com/50?text=Erro'" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 2px solid #cbd5e1; z-index: 10;">
+                    <img src="${faturaExibicaoBase.imagem}" onerror="this.src='https://via.placeholder.com/50?text=Erro'" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100px; height: 60px; border-radius: 10px; object-fit: cover; border: 2px solid #cbd5e1; z-index: 10;">
                 </div>
                 
                 <p id="texto-previsao-termino" style="font-size: 12px; font-weight: bold; margin-top: 12px; color: #4a90e2;"></p>
@@ -2359,75 +2390,117 @@ function mostrarNomeNoTopo() {
                 }
             });                    
 
-            // Determina a tag de status visual para o mês atual
-            const situacaoHTML = faturasAbertasMesAtual > 0 
-                ? `<span class="status-indicador status-alerta"><span class="status-foguete"></span>Atenção</span>`
-                : `<span class="status-indicador status-ok"><span class="status-foguete"></span>Em Dia</span>`;
+            // 🦧🚗🦧🚗Determina a tag de status visual para o mês atual
+// 1. Determina a tag de status visual para o mês atual
+const situacaoHTML = faturasAbertasMesAtual > 0 
+    ? `<span class="status-indicador status-alerta"><span class="status-foguete"></span>Atenção</span>`
+    : `<span class="status-indicador status-ok"><span class="status-foguete"></span>Em Dia</span>`;
 
-            // INJETA O STATUS CENTRALIZADO NO TOPO
-            document.getElementById('status-topo-mes').innerHTML = situacaoHTML;
+// INJETA O STATUS CENTRALIZADO NO TOPO
+document.getElementById('status-topo-mes').innerHTML = situacaoHTML;
 
-            // INJEÇÃO DAS MÉTRICAS ESQUERDA (Sem a tag antiga embaixo)
-            document.getElementById('info-contas-parcelas').innerHTML = `
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px 10px;">
-                    <div>
-                        <div class="label-sistema">Minhas Dívidas</div>
-                        <div class="valor-sistema" style="color: var(--primary-color);">${totalContas}  <p style="font-size: 12px;">Contas</p></div>
-                    </div>
-                    <div>
-                        <div class="label-sistema">Total Geral</div>
-                       <div class="valor-sistema" style="color: var(--primary-color);">${totalParcelasPendentes}  <p style="font-size: 12px;">Parcelas</p></div>
-                    </div>
+// 2. INJEÇÃO DAS MÉTRICAS ESQUERDA (Dívidas, Parcelas e Faturas)
+document.getElementById('info-contas-parcelas').innerHTML = `
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div style="background: #f8fafc; padding: 8px 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                <div class="label-sistema" style="font-size: 10px; color: #64748b; font-weight: 600; text-transform: uppercase;">Dívidas</div>
+                <div class="valor-sistema" style="color: var(--primary-color); font-weight: 800; font-size: 1.1rem; display: flex; align-items: baseline; gap: 3px;">
+                    ${totalContas} <span style="font-size: 10px; color: #64748b; font-weight: 500;">contas</span>
                 </div>
-                <div style="margin-top: 6px;">
-                    <span class="label-sistema">Faturas a pagar:</span>
-                    <span class="valor-sistema" style="color: ${faturasAbertasMesAtual > 0 ? 'var(--danger-color)' : 'var(--success-color)'};">${faturasAbertasMesAtual} em aberto</span>
-                </div>
-            `;
-
-            // INJEÇÃO DAS MÉTRICAS DIREITA (Valores e Botão de Ação)
-            document.getElementById('info-valores-mes').innerHTML = `
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; margin-bottom: 4px;">
-                    <div>
-                        <div class="label-sistema" style="font-size:10px;">Debito Deste Mês:</div>
-                        <div class="valor-sistema" style="color: var(--danger-color); font-weight: 800;">${totalDevidoMes.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</div>
-                    </div>
-                    <div>
-                        <div class="label-sistema" style="font-size:10px;">Valor Pago deste mês</div>
-                        <div class="valor-sistema" style="color: var(--success-color); font-weight: 800;">${totalPagoMes.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</div>
-                    </div>
-                </div>
-                <div style="margin-top: 10px; text-align: right;">
-                    <a href="#" onclick="abrirModalGeral(event)" style="
-                      display: inline-flex;
-                      align-items: center;
-                      gap: 4px;
-                      background-color: #f1f5f9; 
-                      color: #475569; 
-                      padding: 10px 10px; 
-                      font-size: 10px; 
-                      font-weight: 700; 
-                      text-transform: uppercase;
-                      letter-spacing: 0.5px;
-                      text-decoration: none; 
-                      border-radius: 6px; 
-                      cursor: pointer;
-                      border: 1px solid #cbd5e1;
-                      transition: all 0.2s;
-                    " onmouseover="this.style.background='#e2e8f0'; this.style.color='#1e293b'" onmouseout="this.style.background='#f1f5f9'; this.style.color='#475569'">
-                      ​Ver Relatório Mensal
-                    </a><br>
-            
-<a href="Carrinho-Compra.html" style="display: inline-block; text-decoration: none; border: 2px solid #e0e0e0; border-radius: 15px; padding: 1px; transition: 0.3s; margin: 10px;">
-    <img src="https://i.ibb.co/vCDc51Yd/1782902075198.png" style="width: 70px; height: 70px; display: block; border-radius: 10px;">
-    <span style="display: block; text-align: center; font-size: 12px; color: #777; margin-top: 5px;">Organizar<br>Compras</span>
-</a>
-<a href="Poupanca.html" style="display: inline-block; text-decoration: none; border: 2px solid #e0e0e0; border-radius: 15px; padding: 1px; transition: 0.3s; margin: 10px;">
-    <img src="https://i.ibb.co/jP08s1Jy/17547.png" style="width: 70px; height: 70px; display: block; border-radius: 10px;">
-    <span style="display: block; text-align: center; font-size: 12px; color: #777; margin-top: 5px;">Organizar<br>Poupança</span>
-</a>
             </div>
-            `;
+            <div style="background: #f8fafc; padding: 8px 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                <div class="label-sistema" style="font-size: 10px; color: #64748b; font-weight: 600; text-transform: uppercase;">Parcelas</div>
+                <div class="valor-sistema" style="color: var(--primary-color); font-weight: 800; font-size: 1.1rem; display: flex; align-items: baseline; gap: 3px;">
+                    ${totalParcelasPendentes} <span style="font-size: 10px; color: #64748b; font-weight: 500;">restantes</span>
+                </div>
+            </div>
+        </div>
+        <div style="background: ${faturasAbertasMesAtual > 0 ? '#fef2f2' : '#f0fdf4'}; padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; color: ${faturasAbertasMesAtual > 0 ? 'var(--danger-color)' : 'var(--success-color)'}; display: flex; justify-content: space-between; align-items: center;">
+            <span>Faturas a pagar:</span>
+            <span style="font-weight: 800;">${faturasAbertasMesAtual} ${faturasAbertasMesAtual === 1 ? 'em aberto' : 'em aberto'}</span>
+        </div>
+    </div>
+`;
+
+// 3. INJEÇÃO DAS MÉTRICAS DIREITA (Valores, Relatório e Ações do App)
+document.getElementById('info-valores-mes').innerHTML = `
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: #f8fafc; padding: 8px 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
+            <div>
+                <div class="label-sistema" style="font-size: 10px; color: #64748b; font-weight: 600; text-transform: uppercase;">Débito Mês</div>
+                <div class="valor-sistema" style="color: var(--danger-color); font-weight: 800; font-size: 0.95rem;">
+                    ${totalDevidoMes.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                </div>
+            </div>
+            <div style="border-left: 1px solid #e2e8f0; padding-left: 8px;">
+                <div class="label-sistema" style="font-size: 10px; color: #64748b; font-weight: 600; text-transform: uppercase;">Pago Mês</div>
+                <div class="valor-sistema" style="color: var(--success-color); font-weight: 800; font-size: 0.95rem;">
+                    ${totalPagoMes.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                </div>
+            </div>
+        </div>
+
+        <a href="#" onclick="abrirModalGeral(event)" style="
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background-color: #f1f5f9; 
+            color: #334155; 
+            padding: 8px 12px; 
+            font-size: 10px; 
+            font-weight: 700; 
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-decoration: none; 
+            border-radius: 8px; 
+            cursor: pointer;
+            border: 1px solid #cbd5e1;
+            transition: all 0.2s;
+        " onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='#f1f5f9'">
+            📊 Ver Relatório Mensal
+        </a>
+
+        <div style="display: flex; gap: 8px; justify-content: space-between; margin-top: 2px;">
+            <a href="Carrinho-Compra.html" style="
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 4px;
+                text-decoration: none;
+                background: #ffffff;
+                border: 1px solid #e2e8f0;
+                border-radius: 10px;
+                padding: 6px 4px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+                transition: transform 0.2s, box-shadow 0.2s;
+            " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                <img src="https://i.ibb.co/vCDc51Yd/1782902075198.png" style="width: 32px; height: 32px; border-radius: 6px; object-fit: contain;">
+                <span style="font-size: 9px; font-weight: 700; color: #475569; text-align: center; line-height: 1.1;">Compras</span>
+            </a>
+
+            <a href="Poupanca.html" style="
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 4px;
+                text-decoration: none;
+                background: #ffffff;
+                border: 1px solid #e2e8f0;
+                border-radius: 10px;
+                padding: 6px 4px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+                transition: transform 0.2s, box-shadow 0.2s;
+            " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                <img src="https://i.ibb.co/jP08s1Jy/17547.png" style="width: 32px; height: 32px; border-radius: 6px; object-fit: contain;">
+                <span style="font-size: 9px; font-weight: 700; color: #475569; text-align: center; line-height: 1.1;">Poupança</span>
+            </a>
+        </div>
+    </div>
+`;
 
             // --- INICIALIZAÇÃO / ATUALIZAÇÃO DO GRÁFICO DONUT COM VALOR CENTRAL ---
             setTimeout(() => {
@@ -2552,11 +2625,15 @@ function mostrarNomeNoTopo() {
 
                 const iconePagoHTML = (faturaMesAtual && faturaMesAtual.pago) ? '<div class="check-pago">✓</div>' : '';
 
+              const nomeUsuarioCard = localStorage.getItem('usuario_nome_registrado') || '';
+
                 const blocoGridHTML = `
                     <div class="banco-item-compacto ${classeUrgente}" onclick="abrirModalDetalhes('${banco.replace(/'/g, "\\'")}')">
                         ${iconePagoHTML}
                         <img src="${faturaReferencia.imagem}" alt="${banco}" class="banco-grid-img" onerror="this.src='https://via.placeholder.com/50?text=Erro'">
                         <h3>${banco}</h3>
+                        <span class="banco-nome-cartao">${nomeUsuarioCard}</span>
+                        
                     </div>
                 `;
                 container.insertAdjacentHTML('beforeend', blocoGridHTML);
@@ -2648,27 +2725,42 @@ const galeriaFotos = [
     { nome: "Creche", url: "https://i.ibb.co/hFxkJD6Z/107620.jpg" },
     { nome: "Beleto 1", url: "https://i.ibb.co/v6bW5yFx/107616.jpg" },
     { nome: "Boleto 2", url: "https://i.ibb.co/n8C6mwpF/107615.png" },
-    { nome: "Habitação da Casa", url: "https://i.ibb.co/C5j6wVd9/107494.jpg" },
-    { nome: "Nubank", url: "https://i.ibb.co/0ySTpRQ2/107445.png" },
-    { nome: "Mercado Pago", url: "https://i.ibb.co/PG1RZfJ7/107493.png" },
-    { nome: "Caixa Econômica", url: "https://i.ibb.co/jYCFDjS/107578.png" },
-    { nome: "Itaū", url: "https://i.ibb.co/mC4JWjjJ/107576.png" },
-    { nome: "Inter", url: "https://i.ibb.co/JRkwn6x9/107617.webp" },
+  
+  { nome: "Habitação da Caixa", url: "https://i.ibb.co/67hcGLVq/22003.png" }, 
+    { nome: "Nubank", url: "https://i.ibb.co/s9C1zRtk/21686.png" },  
+    { nome: "Banco BV", url: "https://i.ibb.co/0pyns8M7/21852.png" },
+    { nome: "Mercado Pago", url: "https://i.ibb.co/TBSjBq4F/21687.png" },
+    { nome: "Santander", url: "https://i.ibb.co/rRY4sC25/21875.png" },
+    { nome: "Caixa Econômica Federal", url: "https://i.ibb.co/jkdpPJ9q/22020.png" },
+    { nome: "Itaū", url: "https://i.ibb.co/nMKYdb0L/21906.png" },
+    { nome: "Inter", url: "https://i.ibb.co/q3ddFWsh/22053.png" },
     { nome: "Bradesco", url: "https://i.ibb.co/VY37s0Cj/107577.jpg" },
-    { nome: "Banco BV", url: "https://i.ibb.co/gCpBBNs/107593.jpg" },
-    { nome: "Netflex", url: "https://i.ibb.co/wT3yRJJ/107602.jpg" },
+    { nome: "Digio", url: "https://i.ibb.co/XZ2qhGgD/22064.jpg" },
+    { nome: "Banco do Brasil", url: "https://i.ibb.co/dJxBVsB1/22066.png" },
+    { nome: "C6 Banck", url: "https://i.ibb.co/vxgp3L9H/22069.png" },
+    { nome: "PicPay", url: "https://i.ibb.co/h1gCfR0w/22079.png" },
+    { nome: "PagBank", url: "https://i.ibb.co/8LrWSgLC/22087.png" },
+    { nome: "Banco Pan", url: "https://i.ibb.co/Q7bHKSV7/22097.png" },
+    { nome: "Neon", url: "https://i.ibb.co/ym5nxqdv/22100.webp" },
+    { nome: "Sicredi", url: "https://i.ibb.co/3YcVBNb5/22101.jpg" },
+    { nome: "Sicoobcard Vooz", url: "https://i.ibb.co/gFDVBdvh/22103.jpg" },
+  
+  { nome: "Netflex", url: "https://i.ibb.co/wT3yRJJ/107602.jpg" },
     { nome: "Disney", url: "https://i.ibb.co/yFqG9624/107603.jpg" },
     { nome: "HBO", url: "https://i.ibb.co/HTt34tNM/107604.jpg" },
     { nome: "Apple TV", url: "https://i.ibb.co/0pHb6sWw/107614.jpg" },
-    { nome: "Claro", url: "https://i.ibb.co/RpnS9mwr/107605.jpg" },
+  
+  { nome: "Claro", url: "https://i.ibb.co/RpnS9mwr/107605.jpg" },
     { nome: "Tim", url: "https://i.ibb.co/9HZPJwx8/107606.jpg" },
     { nome: "Vivo", url: "https://i.ibb.co/sJXnpbxf/107611.png" },
     { nome: "Oi", url: "https://i.ibb.co/gZFDv4JM/107612.jpg" },
-    { nome: "Fulano 1", url: "https://i.ibb.co/LDh1NCCG/107607.png" },
+  
+  { nome: "Fulano 1", url: "https://i.ibb.co/LDh1NCCG/107607.png" },
     { nome: "Fulano 2", url: "https://i.ibb.co/sdRMh5Cv/107610.png" },
     { nome: "Fulana 1", url: "https://i.ibb.co/Q7qyc1Bg/107608.png" },
     { nome: "Fulana 2", url: "https://i.ibb.co/QjPSL8Fd/107628.png" },
-    { nome: "Transporte", url: "https://i.ibb.co/SXT0Y22v/107626.jpg" },
+  
+  { nome: "Transporte", url: "https://i.ibb.co/SXT0Y22v/107626.jpg" },
     { nome: "Nubank Empréstimo", url: "https://i.ibb.co/RT1shbwX/file-00000000a0a4720e8c25cb96e2cb9217.png" },    
     { nome: "Combustível", url: "https://i.ibb.co/7NvKcXX7/107625.jpg" },
     { nome: "Seguro da Moto", url: "https://i.ibb.co/RT8rM452/107624.jpg" },    
@@ -2688,7 +2780,7 @@ function abrirGaleria(event) {
 
     const categorias = {
         "Contas Fixas e Boletos": "Financiamento do Carro",
-        "Bancos e Cartões": "Habitação da Casa",
+        "Bancos e Cartões": "Habitação da Caixa",
         "Streamings e TV": "Netflex",
         "Operadoras de Telefonia": "Claro",
         "Pessoas": "Fulano 1",
@@ -2816,21 +2908,22 @@ function fecharGaleria() {
                     const dt = new Date(f.vencimento).toLocaleDateString('pt-BR');
                     const vl = f.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
                     
-                    container.insertAdjacentHTML('beforeend', `
-                        <div class="linha-item-generic linha-item-geral">
-                            <div class="info-item-geral">
-                                <img src="${f.imagem}" class="img-item-geral" onerror="this.src='https://via.placeholder.com/50?text=Erro'">
-                                <div class="txt-item-geral">
-                                    <h4>${f.descricao}</h4>
-                                    <p>Vencimento: ${dt}</p>
-                                </div>
-                            </div>
-                            <div class="direita-item-geral">
-                                <span class="valor-item-geral" style="color: var(--danger-color);">${vl}</span>
-                                <button class="btn-status btn-pagar" style="padding: 6px 12px; font-size: 0.8rem;" onclick="fecharModalGeral(); pagarLancamento('${f.id}')">Pagar</button>
-                            </div>
-                        </div>
-                    `);
+ container.insertAdjacentHTML('beforeend', `
+    <div class="linha-item-generic linha-item-geral">
+        <div class="info-item-geral">
+            <img src="${f.imagem}" class="img-item-geral" onerror="this.src='https://via.placeholder.com/50?text=Erro'">
+            <div class="txt-item-geral">
+                <h4>${f.descricao}</h4>
+                <p>Vencimento: ${dt}</p>
+                <span class="valor-item-geral" style="color: var(--danger-color); font-weight: bold; font-size: 0.9rem; display: block; margin-top: 2px;">${vl}</span>
+            </div>
+        </div>
+        <div class="direita-item-geral">
+            <button class="btn-status btn-pagar" style="padding: 6px 12px; font-size: 0.8rem;" onclick="fecharModalGeral(); pagarLancamento('${f.id}')">Pagar</button>
+        </div>
+    </div>
+`);
+
                 });
             } else {
                 // Extrato do que já foi pago ordenado por data
@@ -2851,12 +2944,14 @@ function fecharGaleria() {
                                 <img src="${f.imagem}" class="img-item-geral" onerror="this.src='https://via.placeholder.com/50?text=Erro'">
                                 <div class="txt-item-geral">
                                     <h4>${f.descricao}</h4>
-                                    <p>Pago em conta</p>
+                                 <p>Valor Pago desse mês: </p> 
+                                    <span class="valor-item-geral" style="color: var(--success-color); font-size: 15px;">
+                                    ${vl}
+                                    </span>
+                                
                                 </div>
                             </div>
-                            <div>
-                                <span class="valor-item-geral" style="color: var(--success-color);">${vl}</span>
-                            </div>
+                         
                         </div>
                     `);
                 });
