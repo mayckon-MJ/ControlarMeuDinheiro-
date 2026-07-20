@@ -3629,8 +3629,6 @@ setInterval(() => {
 
 
 
-
-        
 /* ==========================================
    NOTIFICAÇÃO DIÁRIA DE FATURAS (EMUNAH)
    ========================================== */
@@ -3654,24 +3652,26 @@ function verificarNotificacaoFaturas() {
         amanha.setDate(hoje.getDate() + 1);
 
         // Filtra os bancos que possuem faturas a vencer amanhã
-        const bancosA Vencer = [];
+        const bancosAVencer = [];
 
-        estado.lancamentos.forEach(item => {
-            if (!item.pago) {
-                const dataVenc = new Date(item.vencimento);
-                
-                // Compara dia, mês e ano para garantir que faltam exatamente 24 horas/1 dia
-                if (
-                    dataVenc.getDate() === amanha.getDate() &&
-                    dataVenc.getMonth() === amanha.getMonth() &&
-                    dataVenc.getFullYear() === amanha.getFullYear()
-                ) {
-                    if (!bancosAVencer.includes(item.descricao)) {
-                        bancosAVencer.push(item.descricao);
+        if (typeof estado !== 'undefined' && estado.lancamentos) {
+            estado.lancamentos.forEach(item => {
+                if (!item.pago) {
+                    const dataVenc = new Date(item.vencimento);
+                    
+                    // Compara dia, mês e ano para garantir que faltam exatamente 24 horas/1 dia
+                    if (
+                        dataVenc.getDate() === amanha.getDate() &&
+                        dataVenc.getMonth() === amanha.getMonth() &&
+                        dataVenc.getFullYear() === amanha.getFullYear()
+                    ) {
+                        if (!bancosAVencer.includes(item.descricao)) {
+                            bancosAVencer.push(item.descricao);
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
 
         // Se houver faturas a vencer amanhã, dispara a notificação
         if (bancosAVencer.length > 0) {
@@ -3695,6 +3695,9 @@ function verificarNotificacaoFaturas() {
 
 // 3. Executa a checagem a cada 30 segundos no sistema
 setInterval(verificarNotificacaoFaturas, 30000);
+
+        
+
 
     </script>
 </body>
