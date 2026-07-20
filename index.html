@@ -1330,6 +1330,12 @@ animation: piscarNomeCartao 2.5s infinite ease-in-out;
             <div id="lista-lancamentos" class="grid-lancamentos"></div>
         </main>
 
+        
+        <div style="margin-top: 30px; background: var(--card-bg); padding: 20px; border-radius: var(--border-radius); box-shadow: 0 4px 6px rgba(0,0,0,0.02); text-align: center;">
+        <h1>Estatística geral</h1>
+            <!-- 🆕 Minilogs com Nome e Gráfico de Gastos por Banco -->
+        <div id="container-gastos-bancos-backup" style="margin-bottom: 20px; text-align: left; display: flex; flex-direction: column; gap: 12px;"></div>
+            
         <div style="margin-top: 30px; background: var(--card-bg); padding: 20px; border-radius: var(--border-radius); box-shadow: 0 4px 6px rgba(0,0,0,0.02); text-align: center;">
             <h3 style="font-size: 1rem; color: var(--text-color); margin-bottom: 15px; font-weight: 600;">Backup do Sistema</h3>
             <div style="display: flex; gap: 10px; justify-content: center;">
@@ -2367,6 +2373,46 @@ function mostrarNomeNoTopo() {
         function renderizarLancamentos() {
             const container = document.getElementById('lista-lancamentos');
             container.innerHTML = '';
+            const containerGastosBackup = document.getElementById('container-gastos-bancos-backup');
+            if (containerGastosBackup) {
+                containerGastosBackup.innerHTML = '';
+                
+                // Agrupa os gastos acumulados totais (ou apenas pendentes) por banco e captura a imagem correspondente
+                const dadosBancos = {};
+                estado.lancamentos.forEach(item => {
+                    if (!dadosBancos[item.descricao]) {
+                        dadosBancos[item.descricao] = { nome: item.descricao, imagem: item.imagem, totalGasto: 0 };
+                    }
+                    dadosBancos[item.descricao].totalGasto += item.valor;
+                });
+
+                // Converte em array e ordena do maior gasto para o menor
+                const listaOrdenadaBancos = Object.values(dadosBancos).sort((a, b) => b.totalGasto - a.totalGasto);
+                
+                // Identifica o maior gasto absoluto para servir de base 100% na proporção da barra
+                const maiorGastoAbsoluto = listaOrdenadaBancos.length > 0 ? listaOrdenadaBancos[0].totalGasto : 1;
+
+                listaOrdenadaBancos.forEach(banco => {
+                    const percentualBarra = (banco.totalGasto / maiorGastoAbsoluto) * 100;
+                    const valorFormatado = banco.totalGasto.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+                    const elementoBanco = document.createElement('div');
+                    elementoBanco.style.cssText = "display: flex; flex-direction: column; gap: 4px; padding: 6px; border-bottom: 1px dashed #e2e8f0;";
+                    elementoBanco.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 8px; justify-content: space-between;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <img src="${banco.imagem}" onerror="this.src='https://via.placeholder.com/50?text=Erro'" style="width: 35px; height: 22px; border-radius: 4px; object-fit: cover; border: 1px solid #cbd5e1;">
+                                <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-color);">${banco.nome}</span>
+                            </div>
+                            <span style="font-size: 0.8rem; font-weight: bold; color: var(--text-color);">${valorFormatado}</span>
+                        </div>
+                        <div style="width: 100%; height: 6px; background-color: #f1f5f9; border-radius: 3px; overflow: hidden; margin-top: 2px;">
+                            <div style="width: ${percentualBarra}%; height: 100%; background-color: var(--primary-color); border-radius: 3px; transition: width 0.5s ease;"></div>
+                        </div>
+                    `;
+                    containerGastosBackup.appendChild(elementoBanco);
+                });
+            }
 
             // --- CÁLCULOS DOS NOVOS DADOS DA INTERFACE ---
             const agora = new Date();
