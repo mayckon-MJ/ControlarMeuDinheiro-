@@ -1612,6 +1612,7 @@ animation: piscarNomeCartao 2.5s infinite ease-in-out;
             renderizarSaldo();
             renderizarLancamentos();
             resetarDataInputPrincipal();
+            verificarEAgendarNotificacoes();
         });
 
         function resetarDataInputPrincipal() {
@@ -3581,8 +3582,8 @@ function verificarNotificacaoFaturas() {
 
     const hoje = new Date();
     
-    // Verifica se é o horário exato de 20:30
-    if (hoje.getHours() === 20 && hoje.getMinutes() === 30) {
+    // Verifica se é o horário exato de 21:20
+    if (hoje.getHours() === 21 && hoje.getMinutes() === 20) {
         
         // Data alvo: Amanhã (1 dia antes de vencer)
         const amanha = new Date();
@@ -3633,6 +3634,37 @@ function verificarNotificacaoFaturas() {
 // 3. Executa a checagem a cada 30 segundos no sistema
 setInterval(verificarNotificacaoFaturas, 30000);
 
+function verificarEAgendarNotificacoes() {
+    if (!("Notification" in window) || Notification.permission !== "granted") return;
+
+    const agora = new Date();
+
+    estado.lancamentos.forEach(item => {
+        if (item.pago) return;
+
+        const dataVenc = new Date(item.vencimento);
+        const amanha = new Date();
+        amanha.setDate(agora.getDate() + 1);
+
+        // Verifica se o vencimento é exatamente no dia de amanhã
+        const ehAmanha = dataVenc.getDate() === amanha.getDate() &&
+                         dataVenc.getMonth() === amanha.getMonth() &&
+                         dataVenc.getFullYear() === amanha.getFullYear();
+
+        if (ehAmanha) {
+            const chaveNotif = `notif_${item.id}_${amanha.toISOString().slice(0, 10)}`;
+            
+            // Se ainda não enviou a notificação de hoje para esta fatura
+            if (!localStorage.getItem(chaveNotif)) {
+                new Notification(`Aviso de Vencimento: ${item.descricao}`, {
+                    body: `Sua fatura no valor de R$ ${item.valor.toFixed(2)} vence amanhã!`,
+                    icon: item.imagem || "https://i.ibb.co/r2vbPd5w/favicon-32x32.png"
+                });
+                localStorage.setItem(chaveNotif, "enviado");
+            }
+        }
+    });
+}
 
 
 
