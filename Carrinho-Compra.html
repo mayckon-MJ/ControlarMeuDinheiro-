@@ -1,6 +1,4 @@
 
-
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -1599,7 +1597,7 @@ function renderEconomia() {
             mercadosAgrupados[item.mercado] = { produtos: [], total: 0 };
         }
         mercadosAgrupados[item.mercado].produtos.push(item);
-        mercadosAgrupados[item.mercado].total += (item.preco * item.qtd);
+        mercadosAgrupados[item.mercado].total += item.preco;
     });
 
     // 3. Ordenar supermercados por maior quantidade de itens vantajosos / menor total
@@ -1624,7 +1622,7 @@ function renderEconomia() {
         const listaItens = r.produtos.map(p => `
             <div style="display:flex; justify-content:space-between; align-items:center; padding: 0.4rem 0; border-bottom: 1px dashed var(--border);">
                 <span>${p.nomeOriginal} (${p.qtd} ${p.unidade})</span>
-                <strong style="color: #059669;">${formatBRL(p.preco * p.qtd)}</strong>
+                <strong style="color: #059669;">${formatBRL(p.preco)}</strong>
             </div>
         `).join('');
 
