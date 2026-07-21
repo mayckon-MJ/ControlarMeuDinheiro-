@@ -1,6 +1,3 @@
-
-
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -1086,7 +1083,7 @@ animation: piscarNomeCartao 2.5s infinite ease-in-out;
     
     .painel-topo-dados {
         /* No celular vira uma coluna única, empilhando tudo dentro do card */
-        grid-template-columns: 1fr; 
+        grid-template-columns: 1fr;
         justify-items: center;
         text-align: center;
         gap: 10px;
@@ -1201,6 +1198,114 @@ animation: piscarNomeCartao 2.5s infinite ease-in-out;
     max-width: 120px;
 }
 
+/* --- BOTÃO HAMBÚRGUER --- */
+.btn-hamburguer {
+    display: none;
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1000;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.btn-hamburguer span {
+    width: 22px;
+    height: 3px;
+    background-color: var(--text-color);
+    border-radius: 2px;
+}
+
+/* --- OVERLAY ESCURO ATRÁS DA ABA --- */
+.menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 10002;
+    display: none;
+}
+
+.menu-overlay.ativo {
+    display: block;
+}
+
+/* --- ABA LATERAL (METADE DA TELA) --- */
+.aba-lateral {
+    position: fixed;
+    top: 0;
+    left: -70vw; /* Escondido fora da tela */
+    width: 70vw; /* Metade da largura da tela */
+    height: 100vh; /* Altura inteira */
+    background-color: #ffffff;
+    z-index: 10003;
+    box-shadow: 4px 0 15px rgba(0,0,0,0.2);
+    transition: left 0.3s ease; 
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-sizing: border-box;
+}
+
+.aba-lateral.ativo {
+    left: 0; /* Desliza para dentro da tela */
+}
+
+/* --- ESTILO DAS PASTAS INTERNAS --- */
+.item-pasta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.75rem;
+    cursor: pointer;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+}
+
+/* Pasta Rosa */
+.pasta-1 {
+    color: #e84393;
+}
+
+.pasta-1 svg {
+    fill: #e84393;
+    stroke: #e84393;
+}
+
+/* Pasta com Relógio Azul */
+.pasta-2 {
+    color: #0984e3;
+}
+
+.pasta-2 svg {
+    fill: #0984e3;
+    stroke: #0984e3;
+}
+    
+.pasta-3 {
+    color: #78ad15;
+}
+
+.pasta-3 svg {
+    fill: #78ad15;
+    stroke: #78ad15;
+}
 
         
     </style>
@@ -1271,27 +1376,141 @@ animation: piscarNomeCartao 2.5s infinite ease-in-out;
     </div>
 
 
-    <div class="container">
+<div class="container">
 <header>
+<!-- BOTÃO HAMBÚRGUER (3 PALITOS) NO CANTO SUPERIOR ESQUERDO -->
+<button class="btn-hamburguer" onclick="alternarAbaLateral()">
+    <span></span>
+    <span></span>
+    <span></span>
+</button>
+
+<!-- OVERLAY ESCURO PARA FECHAR AO CLICAR FORA -->
+<div id="menu-overlay" class="menu-overlay" onclick="fecharAbaLateral()"></div>
+
+    
+<!-- ABA LATERAL (METADE DA TELA DE LARGURA / TELA INTEIRA DE ALTURA) -->
+<aside id="aba-lateral" class="aba-lateral">
+<div style="display: flex; justify-content: center; align-items: center;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>     
+    </svg>    
+</div>
+<div style="display: flex; gap: 8px; justify-content: space-between; margin-top: 2px;">
+            <a href="Carrinho-Compra.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 6px 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.03); transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                <img src="https://i.ibb.co/vCDc51Yd/1782902075198.png" style="width: 32px; height: 32px; border-radius: 6px; object-fit: contain;">
+                <span style="font-size: 9px; font-weight: 700; color: #475569; text-align: center; line-height: 1.1;">
+                    Compras
+                </span>
+            </a>
+
+            <a href="Poupanca.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 6px 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.03); transition: transform 0.2s, box-shadow 0.2s; " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                <img src="https://i.ibb.co/jP08s1Jy/17547.png" style="width: 32px; height: 32px; border-radius: 6px; object-fit: contain;">
+                <span style="font-size: 9px; font-weight: 700; color: #475569; text-align: center; line-height: 1.1;">
+                    Poupança
+                </span>
+            </a>
+        </div>    
+
+    
+
+    <!-- PASTA COM A COR ROSA -->
+    <div class="item-pasta pasta-1">
+        <a href="Poupanca.html" class="pasta-rosa" style="text-decoration: none;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+            <path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/>
+        </svg>
+        <span>Teste: Pasta-1</span>
+        </a>
+    </div>
+
+    <!-- PASTA COM ÍCONE DE RELÓGIO COM A COR AZUL -->
+    <div class="item-pasta pasta-2">
+        <a href="Poupanca.html" class="pasta-relogio-azul" style="text-decoration: none;">     
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" fill="#0984e3" stroke="none"></path>
+            <circle cx="12" cy="13" r="3" stroke="#ffffff" fill="none"></circle>
+            <polyline points="12 11 12 13 13 14" stroke="#ffffff"></polyline>
+        </svg>
+        <span>Teste: Pasta-2</span>
+        </a>     
+    </div>
+    
+    <div class="item-pasta pasta-3">
+        <a href="Poupanca.html" class="pasta-relogio-azul" style="text-decoration: none;">     
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" fill="#78ad15" stroke="none"></path>
+            <circle cx="12" cy="13" r="3" stroke="#ffffff" fill="none"></circle>
+            <polyline points="12 11 12 13 13 14" stroke="#ffffff"></polyline>
+        </svg>
+        <span>Teste: Pasta-3</span>
+        </a>     
+    </div>
+    
+    
+    
+    
+    
+    
+    
+<!-- Painel de Apoio / Doação ao Criador (Versão Compacta) -->
+<div style="background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%); border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 12px; max-width: 320px; margin: 10px auto; text-align: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);">
+    
+    <!-- Cabeçalho e Texto Compactos -->
+    <div style="display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 6px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#2563eb">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+        </svg>
+        <span style="font-size: 0.8rem; color: #1e293b; font-weight: 700;">Apoie o Criador</span>
+    </div>
+
+    <p style="margin: 0 0 8px 0; font-size: 0.72rem; color: #64748b; line-height: 1.2;">
+        Ajude a manter o Aplicativo com uma contribuição de qualquer valor copiando nosso Pix abaixo!
+    </p>
+
+    <!-- Botão Compacto -->
+    <button id="btnCopiarPix" onclick="copiarChavePix()" style="background-color: #2563eb; color: #ffffff; border: none; padding: 6px 10px; font-size: 0.75rem; font-weight: 600; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; width: 100%; transition: background-color 0.2s ease;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 2 0 0 1-2-2V4a2 2 2 0 0 1 2-2h9a2 2 2 0 0 1 2 2v1"></path>
+        </svg>
+        <span id="textoBtnPix">Copiar Pix</span>
+    </button>
+    <p style="padding:5px; margin: 0 0 8px 0; font-size: 0.72rem; color: #64748b; line-height: 1.2;">
+       Pix: 62 99567-9219<br>
+        Nome: Mayckon Jhonatas Silva Ramos
+    </p>
+</div>
+
+<!-- Lógica em JS para Copiar a Chave Pix -->
+<script>
+    function copiarChavePix() {
+        const chavePix = '62995679219';
+        navigator.clipboard.writeText(chavePix).then(() => {
+            const btn = document.getElementById('btnCopiarPix');
+            const texto = document.getElementById('textoBtnPix');
+            
+            btn.style.backgroundColor = '#16a34a';
+            texto.innerText = 'Pix Copiado!';
+            
+            setTimeout(() => {
+                btn.style.backgroundColor = '#2563eb';
+                texto.innerText = 'Copiar Pix';
+            }, 2500);
+        }).catch(err => {
+            alert('Chave Pix: ' + chavePix);
+        });
+    }
+</script>
+
+
+    
+</aside>
+    
+
 
   <video
-    src="logo.mp4"
-    autoplay
-    loop
-    muted
-    playsinline
-    style="
-      width: 100px;
-      height: 100px;
-      object-fit: cover;
-      border-radius: 30px;
-      background: rgba(255,255,255,0.05);
-      padding: 8px;
-      border: 2px solid rgba(255,255,255,0.15);
-      box-shadow:
-        0 0 25px rgba(59,130,246,0.4),
-        0 8px 25px rgba(0,0,0,0.4);
-    ">
+    src="logo.mp4"autoplay loop muted playsinline style="width: 100px; height: 100px; object-fit: cover; border-radius: 30px; background: rgba(255,255,255,0.05); padding: 1px; border: 2px solid rgba(255,255,255,0.15); box-shadow: 0 0 25px rgba(59,130,246,0.4), 0 8px 25px rgba(0,0,0,0.4);">
   </video>
 
 <p id="texto-topo-frase" style="font-size: 1.1rem; font-weight: bold; color: red; margin-bottom: 4px; font-family: sans-serif;">Dinheiro</p>
@@ -1614,6 +1833,17 @@ animation: piscarNomeCartao 2.5s infinite ease-in-out;
             resetarDataInputPrincipal();
             verificarEAgendarNotificacoes();
         });
+    /* --- FUNÇÕES DA ABA LATERAL (MENU HAMBÚRGUER) --- */
+function alternarAbaLateral() {
+    document.getElementById('aba-lateral').classList.toggle('ativo');
+    document.getElementById('menu-overlay').classList.toggle('ativo');
+}
+
+function fecharAbaLateral() {
+    document.getElementById('aba-lateral').classList.remove('ativo');
+    document.getElementById('menu-overlay').classList.remove('ativo');
+}
+
 
         function resetarDataInputPrincipal() {
             const agora = new Date();
@@ -2443,6 +2673,19 @@ function mostrarNomeNoTopo() {
                     }
                 }
             });                    
+// Obtém o mês e ano do próximo mês
+const proximoMesData = new Date(anoAtual, mesAtual + 1, 1);
+const mesProximo = proximoMesData.getMonth();
+const anoProximo = proximoMesData.getFullYear();
+
+let totalProximoMes = 0;
+
+estado.lancamentos.forEach(item => {
+    const dataVencimento = new Date(item.vencimento);
+    if (dataVencimento.getMonth() === mesProximo && dataVencimento.getFullYear() === anoProximo) {
+        totalProximoMes += item.valor;
+    }
+});
 
             // 🦧🚗🦧🚗Determina a tag de status visual para o mês atual
 // 1. Determina a tag de status visual para o mês atual
@@ -2471,7 +2714,7 @@ document.getElementById('info-contas-parcelas').innerHTML = `
             </div>
         </div>
         <div style="background: ${faturasAbertasMesAtual > 0 ? '#fef2f2' : '#f0fdf4'}; padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; color: ${faturasAbertasMesAtual > 0 ? 'var(--danger-color)' : 'var(--success-color)'}; display: flex; justify-content: space-between; align-items: center;">
-            <span>Faturas a pagar:</span>
+            <span>Faturas a pagar deste mês:</span>
             <span style="font-weight: 800;">${faturasAbertasMesAtual} ${faturasAbertasMesAtual === 1 ? 'em aberto' : 'em aberto'}</span>
         </div>
     </div>
@@ -2492,9 +2735,18 @@ document.getElementById('info-valores-mes').innerHTML = `
                 <div class="valor-sistema" style="color: var(--success-color); font-weight: 800; font-size: 0.95rem;">
                     ${totalPagoMes.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                 </div>
-            </div>
-        </div>
-
+            </div>   
+       </div>
+            
+   <div style="margin-top: 6px; padding: 4px 8px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; text-align: right;">
+        <span style="font-size: 0.65rem; color: #64748b; text-transform: uppercase; font-weight: bold; display: block;">
+  ​A Pagar no Próximo Mês
+        </span>
+        <span style="font-size: 0.85rem; color: #1e293b; font-weight: 700;">
+            ${totalProximoMes.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+        </span>
+    </div>
+            
         <a href="#" onclick="abrirModalGeral(event)" style="
             display: flex;
             align-items: center;
@@ -2513,46 +2765,12 @@ document.getElementById('info-valores-mes').innerHTML = `
             border: 1px solid #cbd5e1;
             transition: all 0.2s;
         " onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='#f1f5f9'">
-            📊 Ver Relatório Mensal
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+    <path d="M5 9.2h3V19H5zM10.6 5h2.8v14h-2.8zM16.2 13H19v6h-2.8z"/>
+</svg>
+<br>
+        Ver Relatório Mensal Deste Mês
         </a>
-
-        <div style="display: flex; gap: 8px; justify-content: space-between; margin-top: 2px;">
-            <a href="Carrinho-Compra.html" style="
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 4px;
-                text-decoration: none;
-                background: #ffffff;
-                border: 1px solid #e2e8f0;
-                border-radius: 10px;
-                padding: 6px 4px;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.03);
-                transition: transform 0.2s, box-shadow 0.2s;
-            " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-                <img src="https://i.ibb.co/vCDc51Yd/1782902075198.png" style="width: 32px; height: 32px; border-radius: 6px; object-fit: contain;">
-                <span style="font-size: 9px; font-weight: 700; color: #475569; text-align: center; line-height: 1.1;">Compras</span>
-            </a>
-
-            <a href="Poupanca.html" style="
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 4px;
-                text-decoration: none;
-                background: #ffffff;
-                border: 1px solid #e2e8f0;
-                border-radius: 10px;
-                padding: 6px 4px;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.03);
-                transition: transform 0.2s, box-shadow 0.2s;
-            " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-                <img src="https://i.ibb.co/jP08s1Jy/17547.png" style="width: 32px; height: 32px; border-radius: 6px; object-fit: contain;">
-                <span style="font-size: 9px; font-weight: 700; color: #475569; text-align: center; line-height: 1.1;">Poupança</span>
-            </a>
-        </div>
     </div>
 `;
 
