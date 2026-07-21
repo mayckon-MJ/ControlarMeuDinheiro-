@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -719,6 +720,51 @@
             body { padding: 0.75rem; padding-bottom: 130px; }
             .footer-row { flex-direction: column; }
         }
+.btn-sacola-roxa {
+    margin-top: 0.75rem;
+    width: 100%;
+    background-color: #8b5cf6;
+    color: #ffffff;
+    border: none;
+    padding: 0.65rem 1rem;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(139, 92, 246, 0.3);
+    transition: var(--transition);
+}
+
+.btn-sacola-roxa:hover {
+    background-color: #7c3aed;
+    transform: translateY(-1px);
+}
+
+.ranking-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow);
+}
+
+.ranking-badge {
+    display: inline-block;
+    padding: 0.25rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+.badge-first { background: #8b5cf6; }
+.badge-second { background: #64748b; }
 
     </style>
 </head>
@@ -733,6 +779,10 @@
     </header>
 
     <div class="dashboard-container">
+        <button class="btn-sacola-roxa" onclick="openEconomiaModal()" title="Comparar Preços">
+        <i class="uil uil-shopping-bag"></i> Economia por Supermercado
+        </button>
+
         <div class="dashboard-grid">
             <div class="dashboard-box">
                 <div class="dashboard-label">Total Geral</div>
@@ -917,6 +967,16 @@
             <div class="products-list" id="todayProductsContainer"></div>
         </main>
     </div>
+    <div class="system-modal-overlay" id="economiaModal">
+    <div class="modal-header" style="max-width: 550px; width: 100%; margin: 0 auto 1.25rem auto;">
+        <h3>🛍️ Menores Preços por Supermercado</h3>
+        <i class="uil uil-times" style="font-size: 1.8rem; cursor: pointer; color: var(--text-muted);" onclick="closeEconomiaModal()"></i>
+    </div>
+    <main class="main-container" style="margin: 0 auto; width: 100%;" id="economiaContent">
+        <!-- O ranking dos supermercados será renderizado via JS -->
+    </main>
+</div>
+
     <script>
         let produtos = JSON.parse(localStorage.getItem('minha_lista_compras')) || [];
         let filtroMercadoAtivo = "Todos";
@@ -1060,7 +1120,7 @@
 
                 if (matchSearch && matchMercado && matchCat) {
                     // MULTIPLICAÇÃO DO PREÇO PELA QUANTIDADE OU QUILO DO PRODUTO
-                    const subtotal = (parseFloat(p.preco) || 0) * (parseFloat(p.qtdEstoque) || 0);
+                    const subtotal = (parseFloat(p.preco) || 0);
                     totalGeral += subtotal;
                     
                     totalItensFiltrados++;
@@ -1132,9 +1192,9 @@
             produtos.forEach((p, idx) => {
                 const status = p.checked ? "✅ [OK]" : "⬜ [ ]";
                 const mercadoStr = p.mercado ? ` _(${p.mercado})_` : "";
-                texto += `${status} *${p.qtdEstoque} ${p.unidade}* - ${p.nome}${mercadoStr} | Subtotal: ${formatBRL(p.preco * p.qtdEstoque)}\n`;
+                texto += `${status} *${p.qtdEstoque} ${p.unidade}* - ${p.nome}${mercadoStr} | Valor: ${formatBRL(parseFloat(p.preco) || 0)}\n`;
             });
-            const total = produtos.reduce((acc, p) => acc + (p.preco * p.qtdEstoque), 0);
+            const total = produtos.reduce((acc, p) => acc + (parseFloat(p.preco) || 0), 0);
             texto += `\n💰 *Total Estimado:* ${formatBRL(total)}`;
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`, '_blank');
         }
@@ -1196,10 +1256,11 @@
             if (sortVal === "alpha") {
                 produtosFiltrados.sort((a, b) => a.nome.localeCompare(b.nome));
             } else if (sortVal === "priceAsc") {
-                produtosFiltrados.sort((a, b) => (a.preco * a.qtdEstoque) - (b.preco * b.qtdEstoque));
-            } else if (sortVal === "priceDesc") {
-                produtosFiltrados.sort((a, b) => (b.preco * b.qtdEstoque) - (a.preco * a.qtdEstoque));
-            }
+    produtosFiltrados.sort((a, b) => a.preco - b.preco);
+} else if (sortVal === "priceDesc") {
+    produtosFiltrados.sort((a, b) => b.preco - a.preco);
+}
+
 
             if (produtosFiltrados.length === 0) {
                 container.innerHTML = `
@@ -1490,6 +1551,98 @@ const novoProduto = {
         }
 
         window.onload = renderProdutos;
+    
+    function openEconomiaModal() {
+    document.getElementById('economiaModal').classList.add('active');
+    renderEconomia();
+}
+
+function closeEconomiaModal() {
+    document.getElementById('economiaModal').classList.remove('active');
+}
+
+function renderEconomia() {
+    const container = document.getElementById('economiaContent');
+    
+    if (produtos.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <i class="uil uil-shopping-bag" style="font-size: 3rem;"></i>
+                <p style="margin-top: 0.5rem;">Nenhum produto cadastrado para comparar.</p>
+            </div>`;
+        return;
+    }
+
+    // 1. Mapear menor preço de cada produto
+    const menoresPrecos = {};
+    produtos.forEach(p => {
+        if (!p.nome || !p.mercado) return;
+        const chave = p.nome.trim().toLowerCase();
+        const preco = parseFloat(p.preco) || 0;
+        
+        if (!menoresPrecos[chave] || preco < menoresPrecos[chave].preco) {
+            menoresPrecos[chave] = {
+                nomeOriginal: p.nome,
+                mercado: p.mercado,
+                preco: preco,
+                qtd: p.qtdEstoque || 1,
+                unidade: p.unidade || 'Un',
+                foto: p.foto
+            };
+        }
+    });
+
+    // 2. Agrupar os itens mais baratos por supermercado
+    const mercadosAgrupados = {};
+    Object.values(menoresPrecos).forEach(item => {
+        if (!mercadosAgrupados[item.mercado]) {
+            mercadosAgrupados[item.mercado] = { produtos: [], total: 0 };
+        }
+        mercadosAgrupados[item.mercado].produtos.push(item);
+        mercadosAgrupados[item.mercado].total += (item.preco * item.qtd);
+    });
+
+    // 3. Ordenar supermercados por maior quantidade de itens vantajosos / menor total
+    const ranking = Object.keys(mercadosAgrupados)
+        .map(mercado => ({ mercado, ...mercadosAgrupados[mercado] }))
+        .sort((a, b) => b.produtos.length - a.produtos.length || a.total - b.total);
+
+    if (ranking.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <p>Cadastre produtos com nome do mercado para ver a comparação.</p>
+            </div>`;
+        return;
+    }
+
+    // 4. Renderizar o ranking no modal (1º lugar no topo, 2º em segundo lugar)
+    container.innerHTML = ranking.map((r, idx) => {
+        const isFirst = idx === 0;
+        const badgeText = isFirst ? "1º Lugar - Supermercado:" : `${idx + 1}º Lugar - Supermercado:`;
+        const badgeClass = isFirst ? "badge-first" : "badge-second";
+
+        const listaItens = r.produtos.map(p => `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding: 0.4rem 0; border-bottom: 1px dashed var(--border);">
+                <span>${p.nomeOriginal} (${p.qtd} ${p.unidade})</span>
+                <strong style="color: #059669;">${formatBRL(p.preco * p.qtd)}</strong>
+            </div>
+        `).join('');
+
+        return `
+            <div class="ranking-card">
+                <span class="ranking-badge ${badgeClass}">${badgeText}</span>
+                <h3 style="font-size: 1.2rem; color: var(--text-main); margin-bottom: 0.5rem;">
+                    <i class="uil uil-store"></i> ${r.mercado}
+                </h3>
+                <div style="margin-bottom: 0.75rem;">${listaItens}</div>
+                <div style="text-align: right; font-weight: 700; font-size: 1rem; color: var(--text-main);">
+                    Subtotal nesse mercado: <span style="color: #059669;">${formatBRL(r.total)}</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
     </script>
 </body>
 </html>
