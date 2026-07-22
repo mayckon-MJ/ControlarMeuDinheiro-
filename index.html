@@ -1,3 +1,7 @@
+
+
+
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -1267,9 +1271,10 @@ animation: piscarNomeCartao 2.5s infinite ease-in-out;
 /* --- ESTILO DAS PASTAS INTERNAS --- */
 .item-pasta {
     display: flex;
+    width: 100%;
     align-items: center;
     gap: 12px;
-    padding: 12px 15px;
+    padding: 2px 5px;
     border-radius: 10px;
     font-weight: 600;
     font-size: 0.75rem;
@@ -1415,36 +1420,59 @@ animation: piscarNomeCartao 2.5s infinite ease-in-out;
     
 
     <!-- PASTA COM A COR ROSA -->
-    <div class="item-pasta pasta-1">
-        <a href="Poupanca.html" class="pasta-rosa" style="text-decoration: none;">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-            <path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/>
-        </svg>
-        <span>Teste: Pasta-1</span>
-        </a>
+   <a href="#" onclick="abrirModalHistorico(event)" class="pasta-rosa" style="color: #d9945b; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+        <div class="item-pasta pasta-1">       
+        <img src="Historico.png" alt="Histórico" style="width: 30px; height: auto;" />      
+        <span>Histórico</span>                       
+        </div>    
+   </a>
+        <!-- MODAL DE HISTÓRICO DE PAGAMENTOS -->
+    <div id="modal-historico-pagos" class="modal-overlay" onclick="fecharModalExterno(event, 'modal-historico-pagos')">
+        <div class="modal-content modal-grande">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <h2 style="font-size: 20px;">Histórico de Pagamentos</h2>
+                <button class="btn-fechar-modal" onclick="fecharModalHistorico()">&times;</button>
+            </div>
+            
+            <!-- Navegação de Mês (Navegador < Mês >) -->
+            <div style="display: flex; align-items: center; justify-content: center; gap: 15px; margin: 15px 0; background: #f1f5f9; padding: 10px; border-radius: 8px;">
+                <button onclick="mudarMesHistorico(-1)" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; font-weight: bold; color: var(--primary-color);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#1f67db">
+                    <path d="M19 3L5 12l14 9V3z"/>
+                    </svg>
+
+                </button>
+                <span id="label-mes-historico" style="font-weight: bold; font-size: 1.1rem; text-transform: capitalize; color: var(--text-color);"></span>
+                <button onclick="mudarMesHistorico(1)" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; font-weight: bold; color: var(--primary-color);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#1f67db">
+                    <path d="M5 3l14 9-14 9V3z"/>
+                    </svg>                   
+                </button>
+            </div>
+
+            <!-- Resumo do Total Pago no Mês Selecionado -->
+            <div style="text-align: center; margin-bottom: 15px; font-weight: bold; color: var(--success-color); font-size: 1.1rem;">
+                Total Pago no Mês: <span id="total-pago-mes-historico">R$ 0,00</span>
+            </div>
+
+            <!-- Lista Extrato do Mês Pago -->
+            <div id="lista-historico-pagos" class="lista-modal-geral"></div>
+        </div>
     </div>
 
-    <!-- PASTA COM ÍCONE DE RELÓGIO COM A COR AZUL -->
+
     <div class="item-pasta pasta-2">
-        <a href="Poupanca.html" class="pasta-relogio-azul" style="text-decoration: none;">     
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" fill="#0984e3" stroke="none"></path>
-            <circle cx="12" cy="13" r="3" stroke="#ffffff" fill="none"></circle>
-            <polyline points="12 11 12 13 13 14" stroke="#ffffff"></polyline>
-        </svg>
-        <span>Teste: Pasta-2</span>
-        </a>     
+        <a href="#" class="pasta-rosa" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+        <img src="#" alt="#" style="width: 30px; height: auto;" />      
+        <span>teste-2</span>
+        </a>         
     </div>
     
     <div class="item-pasta pasta-3">
-        <a href="Poupanca.html" class="pasta-relogio-azul" style="text-decoration: none;">     
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" fill="#78ad15" stroke="none"></path>
-            <circle cx="12" cy="13" r="3" stroke="#ffffff" fill="none"></circle>
-            <polyline points="12 11 12 13 13 14" stroke="#ffffff"></polyline>
-        </svg>
-        <span>Teste: Pasta-3</span>
-        </a>     
+        <a href="#" class="pasta-rosa" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+        <img src="#" alt="#" style="width: 30px; height: auto;" />      
+        <span>Teste-3</span>
+        </a>        
     </div>
     
     
@@ -1995,9 +2023,78 @@ function fecharAbaLateral() {
                 if(idModal === 'modal-detalhes-banco') fecharModalDetalhes();
                 if(idModal === 'modal-visualizacao-geral') fecharModalGeral(); 
                 if(idModal === 'modal-doacao') fecharModalDoacao(); 
+                if(idModal === 'modal-historico-pagos') fecharModalHistorico();
             }
         }
-        
+    
+                /* --- LÓGICA DO MODAL DE HISTÓRICO DE PAGOS --- */
+        let dataFiltroHistorico = new Date();
+
+        function abrirModalHistorico(e) {
+            if(e) e.preventDefault();
+            fecharAbaLateral(); // Fecha a aba lateral
+            dataFiltroHistorico = new Date(); // Reseta para a data atual
+            renderizarHistoricoMes();
+            document.getElementById('modal-historico-pagos').classList.add('active');
+        }
+
+        function fecharModalHistorico() {
+            document.getElementById('modal-historico-pagos').classList.remove('active');
+        }
+
+        function mudarMesHistorico(delta) {
+            dataFiltroHistorico.setMonth(dataFiltroHistorico.getMonth() + delta);
+            renderizarHistoricoMes();
+        }
+
+        function renderizarHistoricoMes() {
+            const ano = dataFiltroHistorico.getFullYear();
+            const mes = dataFiltroHistorico.getMonth();
+
+            // Formata o Nome do Mês e Ano (Ex: Mês Julho 2026)
+            const nomeMes = dataFiltroHistorico.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+            document.getElementById('label-mes-historico').textContent = `${nomeMes}`;
+
+            // Filtra contas pagas no mês e ano selecionados
+            const pagosDoMes = estado.lancamentos.filter(item => {
+                if (!item.pago || !item.vencimento) return false;
+                const dt = new Date(item.vencimento);
+                return dt.getFullYear() === ano && dt.getMonth() === mes;
+            });
+
+            const containerLista = document.getElementById('lista-historico-pagos');
+            containerLista.innerHTML = '';
+
+            let totalPago = 0;
+
+            if (pagosDoMes.length === 0) {
+                containerLista.innerHTML = '<div style="text-align:center; color:#94a3b8; padding:20px;">Nenhum pagamento registrado neste mês.</div>';
+            } else {
+                pagosDoMes.forEach(item => {
+                    totalPago += item.valor;
+                    const dataVenc = new Date(item.vencimento).toLocaleDateString('pt-BR');
+                    const valFormatado = item.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+                    containerLista.insertAdjacentHTML('beforeend', `
+                        <div class="linha-item-geral">
+                            <div class="info-item-geral">
+                                <img src="${item.imagem}" class="img-item-geral" onerror="this.src='https://via.placeholder.com/50?text=S/I'">
+                                <div class="txt-item-geral">
+                                    <h4>${item.descricao}</h4>
+                                    <p>Pago em/Vencimento: ${dataVenc}</p>
+                                </div>
+                            </div>
+                            <div class="valor-item-geral" style="color: var(--success-color);">
+                                ${valFormatado}
+                            </div>
+                        </div>
+                    `);
+                });
+            }
+
+            document.getElementById('total-pago-mes-historico').textContent = totalPago.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
         /* --- ALTERNAR ENTRE AS ABAS DENTRO DO MODAL --- */
         function alternarAbaModal(banco, aba) {
             estado.abaAtualModal = aba;
