@@ -471,13 +471,28 @@
       text-align: center;
     }
 
-    .view-content {
+       .view-content {
       font-size: 1.1rem;
       line-height: 1.6;
       color: #222;
       word-wrap: break-word;
       white-space: break-spaces;
     }
+
+    /* ADICIONE ESTA REGRA LOGO ABAIXO DE .view-content */
+    .view-content img {
+      max-width: 45px;
+      max-height: 45px;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+      display: inline-block;
+      vertical-align: middle;
+      margin: 0 4px;
+    }
+ 
 
   </style>
 </head>
