@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Anotações Minimalistas</title>
+  <title>Bloco de Nota</title>
   <style>
     /* RESET & VARIÁVEIS */
     * {
@@ -36,8 +37,7 @@
       padding: 24px 20px;
     }
 
-    .main-header {
-      display: flex;
+    .main-header {    
       justify-content: space-between;
       align-items: center;
       max-width: 900px;
@@ -45,6 +45,8 @@
     }
 
     .app-title {
+      text-align: center;
+      color: #7B2FF7;
       font-size: 1.8rem;
       font-weight: 700;
     }
@@ -52,7 +54,7 @@
     /* BOTÃO FAB SUPERIOR DIREITO */
     .fab-btn {
       position: fixed;
-      top: 20px;
+      top: 535px;
       right: 20px;
       width: 56px;
       height: 56px;
@@ -76,12 +78,98 @@
     }
 
     /* CONTROLES E PESQUISA */
+        /* CONTROLES E PESQUISA */
     .controls {
       max-width: 900px;
       margin: 0 auto 24px auto;
-      display: flex;
+      display: flex; /* Mudado de block para flex para alinhar os elementos corretamente */
+      flex-direction: column; /* Organiza a busca e a ordenação em linhas separadas */
       gap: 12px;
-      flex-wrap: wrap;
+    }
+
+    /* ... mantendo o restante do CSS da ordenação intacto ... */
+
+    .search-input {
+      width: 100%; /* Faz o campo ocupar 100% da largura disponível */
+      padding: 12px 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,0.08);
+      background: rgba(245, 238, 255, 0.4);
+      outline: none;
+      font-size: 0.95rem;
+      transition: border var(--transition);
+    }
+
+
+      /* CONTROLES DE ORDENAÇÃO CUSTOMIZADOS */
+    .sort-dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .btn-sort-trigger {
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,0.08);
+      background: rgba(245, 238, 255, 0.4);
+      outline: none;
+      font-size: 0.5rem;
+      color: #222;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: border var(--transition), background var(--transition);
+    }
+
+    .btn-sort-trigger:hover {
+      background: #FFF;
+      border-color: var(--primary-purple);
+    }
+
+    .sort-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      border: 1px solid rgba(0,0,0,0.06);
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 170px;
+      z-index: 150;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-8px);
+      transition: opacity var(--transition), transform var(--transition);
+    }
+
+    .sort-menu.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .sort-item {
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: none;
+      background: transparent;
+      text-align: left;
+      font-size: 0.9rem;
+      color: #333;
+      cursor: pointer;
+      transition: background var(--transition), color var(--transition);
+    }
+
+    .sort-item:hover, .sort-item.selected {
+      background: rgba(123, 47, 247, 0.1);
+      color: var(--primary-purple);
+      font-weight: 600;
     }
 
     .search-input, .sort-select {
@@ -107,9 +195,10 @@
     }
 
     .note-card {
+      position: relative;
       padding: 18px;
       border-radius: 20px;
-      min-height: 130px;
+      min-height: 100px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -119,7 +208,7 @@
       transition: transform var(--transition);
       user-select: none;
     }
-
+  
     .note-card:active { transform: scale(0.98); }
     .card-title { font-weight: 700; margin-bottom: 6px; font-size: 1.05rem; }
     .card-body { display: flex; gap: 10px; font-size: 0.88rem; color: #555; }
@@ -312,6 +401,84 @@
       box-shadow: 0 0 0 2px var(--primary-purple);
       transform: scale(1.1);
     }
+
+.note-title-input {
+  width: 100%;
+  max-width: 800px;
+  margin: 10px auto 0 auto;
+  display: block;
+  padding: 5px 8px;
+  border: 1px solid rgba(123, 47, 247, 0.2);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.8);
+  outline: none;
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-align: center;
+  color: #222;
+  transition: border var(--transition), box-shadow var(--transition);
+}
+
+.note-title-input:focus {
+  border-color: var(--primary-purple);
+  box-shadow: 0 0 8px rgba(123, 47, 247, 0.2);
+  background: #FFF;
+}
+
+    /* TELA CHEIA DE VISUALIZAÇÃO */
+    #view-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #FFFFFF;
+      z-index: 250;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition), background-color var(--transition);
+    }
+
+    #view-screen.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .view-header {
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .view-body {
+      flex: 1;
+      padding: 24px 20px;
+      max-width: 800px;
+      width: 100%;
+      margin: 0 auto;
+      overflow-y: auto;
+    }
+
+    .view-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .view-content {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: #222;
+      word-wrap: break-word;
+      white-space: break-spaces;
+    }
+
   </style>
 </head>
 <body>
@@ -320,21 +487,43 @@
   <main id="main-screen">
     <button class="fab-btn" id="btn-fab" title="Nova Anotação">+</button>
     <header class="main-header">
+      <img src="Bloco-Nota.png" alt="Descrição da imagem" style="display: block; margin: 0 auto; width: 40px; height: 40px; border-radius: 12px; object-fit: cover;">
       <h1 class="app-title">Anotações</h1>
+      
     </header>
-
     <div class="controls">
       <input type="text" id="search-input" class="search-input" placeholder="Pesquisar...">
-      <select id="sort-select" class="sort-select">
-        <option value="recent">Mais recentes</option>
-        <option value="oldest">Mais antigas</option>
-        <option value="az">A-Z</option>
-        <option value="za">Z-A</option>
-      </select>
+      
+      <div class="sort-dropdown">
+        <button type="button" class="btn-sort-trigger" id="btn-sort-trigger">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="12" x2="15" y2="12"></line>
+            <line x1="3" y1="18" x2="9" y2="18"></line>
+          </svg>
+          <span id="sort-label">Mais recentes</span>
+        </button>
+        <div class="sort-menu" id="sort-menu">
+          <button type="button" class="sort-item selected" data-value="recent">Mais recentes</button>
+          <button type="button" class="sort-item" data-value="oldest">Mais antigas</button>
+          <button type="button" class="sort-item" data-value="az">A-Z</button>
+          <button type="button" class="sort-item" data-value="za">Z-A</button>
+        </div>
+      </div>
     </div>
 
     <section id="notes-grid" class="notes-grid"></section>
   </main>
+  <!-- TELA CHEIA DE VISUALIZAÇÃO -->
+  <div id="view-screen">
+    <header class="view-header">
+      <button class="btn-tool" id="btn-view-back">← Voltar</button>
+    </header>
+    <div class="view-body">
+      <h2 id="view-title" class="view-title"></h2>
+      <div id="view-content" class="view-content"></div>
+    </div>
+  </div>
 
   <!-- TELA CHEIA DO EDITOR -->
   <div id="editor-screen">
@@ -358,6 +547,7 @@
       <button class="btn-tool btn-save" id="btn-save">Salvar</button>
     </header>
 
+    <input type="text" id="note-title-input" class="note-title-input" placeholder="Nome da anotação...">
     <!-- PALETA DE COR DE TEXTO -->
     <div id="text-color-bar" class="text-color-bar"></div>
 
@@ -479,6 +669,7 @@
     let blockAction = null; // 'add' ou 'remove'
     let savedRange = null;
     let pressTimer = null;
+    let currentSort = 'recent';
 
     // PALETA 30 CORES
     const palette30 = [
@@ -495,6 +686,10 @@
     const editor = document.getElementById('note-editor');
     const notesGrid = document.getElementById('notes-grid');
     const textColorBar = document.getElementById('text-color-bar');
+    const noteTitleInput = document.getElementById('note-title-input');
+    const viewScreen = document.getElementById('view-screen');
+    const viewTitle = document.getElementById('view-title');
+    const viewContent = document.getElementById('view-content');
 
     document.addEventListener('DOMContentLoaded', () => {
       initApp();
@@ -527,21 +722,38 @@
 
 
     // NAVEGAÇÃO E EDITOR
+    function openViewer(noteId, e) {
+      if (e) e.stopPropagation(); // Evita abrir o editor ao clicar no olho
+      const note = notes.find(n => n.id === noteId);
+      if (!note) return;
+
+      viewTitle.innerText = note.title;
+      viewContent.innerHTML = note.content;
+      viewScreen.style.backgroundColor = note.bgColor || '#FFFFFF';
+      viewScreen.classList.add('active');
+    }
+
+    function closeViewer() {
+      viewScreen.classList.remove('active');
+    }
+
     function openEditor(noteId = null) {
       currentNoteId = noteId;
       if (noteId) {
         const note = notes.find(n => n.id === noteId);
         editor.innerHTML = note.content;
+        noteTitleInput.value = note.title || ''; // Carrega o título salvo
         selectedBgColor = note.bgColor || '#F5EEFF';
       } else {
         editor.innerHTML = '';
+        noteTitleInput.value = ''; // Limpa o título para nova nota
         selectedBgColor = '#F5EEFF';
       }
       editorScreen.style.backgroundColor = selectedBgColor;
       editorScreen.classList.add('active');
       setTimeout(() => focusAtEnd(), 300);
     }
-
+    
     function closeEditor() {
       editorScreen.classList.remove('active');
       textColorBar.classList.remove('active');
@@ -564,16 +776,17 @@
       const plainText = editor.innerText.trim();
       if (!content.trim() && !plainText) { closeEditor(); return; }
 
+      const customTitle = noteTitleInput.value.trim();
       const words = plainText.split(/\s+/).filter(w => w.length > 0);
-      const title = words.slice(0, 6).join(' ') || 'Anotação';
+      const title = customTitle || words.slice(0, 6).join(' ') || 'Anotação';
 
       const tempDiv = document.createElement('div');
       tempDiv.innerHTML = content;
       const firstImg = tempDiv.querySelector('img');
       const thumb = firstImg ? firstImg.src : null;
 
-      const dateStr = new Date().toLocaleDateString('pt-BR');
-
+      const dateStr = `${new Date().toLocaleDateString('pt-BR')} <span style=" font-weight: 600;">${new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>`;
+      
       if (currentNoteId) {
         const idx = notes.findIndex(n => n.id === currentNoteId);
         if (idx !== -1) {
@@ -747,7 +960,7 @@ function executeBlockAction() {
     // RENDERIZAÇÃO DA LISTA
     function renderNotesList() {
       const query = document.getElementById('search-input').value.toLowerCase();
-      const sort = document.getElementById('sort-select').value;
+      const sort = currentSort;
 
       let filtered = notes.filter(n => n.title.toLowerCase().includes(query) || n.plainText.toLowerCase().includes(query));
 
@@ -760,7 +973,7 @@ function executeBlockAction() {
       });
 
       notesGrid.innerHTML = '';
-      filtered.forEach(note => {
+            filtered.forEach(note => {
         const card = document.createElement('article');
         card.className = 'note-card';
         card.style.backgroundColor = note.bgColor || '#F5EEFF';
@@ -769,6 +982,17 @@ function executeBlockAction() {
         setupLongPress(card, note.id);
 
         card.innerHTML = `
+          <div style="position: absolute; top: 40px; right: 14px; display: flex; gap: 8px; align-items: center; z-index: 10;">
+            <svg class="btn-eye" data-id="${note.id}" style="color: #7B2FF7; cursor: pointer;" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          </div>
+          <div style="position: absolute; top: 3px; right: 300px; display: flex; gap: 8px; align-items: center; z-index: 10;">        
+            <svg style="color: #7B2FF7; pointer-events: none;" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+            </svg>
+          </div>
           <div>
             <div class="card-title">${escapeHtml(note.title)}</div>
             <div class="card-body">
@@ -778,6 +1002,11 @@ function executeBlockAction() {
           </div>
           <div class="card-date">${note.date}</div>
         `;
+
+        // Evento de clique no botão do olho
+        const eyeBtn = card.querySelector('.btn-eye');
+        eyeBtn.addEventListener('click', (e) => openViewer(note.id, e));
+
         notesGrid.appendChild(card);
       });
     }
@@ -806,6 +1035,7 @@ function executeBlockAction() {
       document.getElementById('btn-fab').addEventListener('click', () => openEditor());
       document.getElementById('btn-back').addEventListener('click', closeEditor);
       document.getElementById('btn-save').addEventListener('click', saveNote);
+      document.getElementById('btn-view-back').addEventListener('click', closeViewer);
 
       document.getElementById('btn-text').addEventListener('click', () => {
         textColorBar.classList.toggle('active');
@@ -906,8 +1136,36 @@ function executeBlockAction() {
         
        
       document.getElementById('search-input').addEventListener('input', renderNotesList);
-      document.getElementById('sort-select').addEventListener('change', renderNotesList);
-    }
+      
+   // Lógica do menu customizado de ordenação
+      const sortTrigger = document.getElementById('btn-sort-trigger');
+      const sortMenu = document.getElementById('sort-menu');
+      const sortLabel = document.getElementById('sort-label');
+
+      sortTrigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        sortMenu.classList.toggle('active');
+      });
+
+      document.querySelectorAll('.sort-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+          document.querySelectorAll('.sort-item').forEach(i => i.classList.remove('selected'));
+          item.classList.add('selected');
+
+          currentSort = item.getAttribute('data-value');
+          sortLabel.innerText = item.innerText;
+          sortMenu.classList.remove('active');
+
+          renderNotesList();
+        });
+      });
+
+      // Fechar o menu se clicar fora dele
+      document.addEventListener('click', () => {
+        sortMenu.classList.remove('active');
+      });
+
+      }
   </script>
 </body>
 </html>
