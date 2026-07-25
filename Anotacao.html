@@ -747,8 +747,7 @@
       viewTitle.innerText = note.title;
       viewContent.innerHTML = note.content.replace(/<img /g, '<img class="inline-img" ');
       viewScreen.style.backgroundColor = note.bgColor || '#FFFFFF';
-      viewScreen.classList.add('active');
-    }
+      viewScreen.classList.add('active')
     }
 
     function closeViewer() {
