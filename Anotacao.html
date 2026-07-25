@@ -471,7 +471,7 @@
       text-align: center;
     }
 
-       .view-content {
+        .view-content {
       font-size: 1.1rem;
       line-height: 1.6;
       color: #222;
@@ -479,20 +479,22 @@
       white-space: break-spaces;
     }
 
-    /* ADICIONE ESTA REGRA LOGO ABAIXO DE .view-content */
+    /* ADICIONE ESTE BLOCO LOGO ABAIXO */
     .view-content img {
-      max-width: 45px;
-      max-height: 45px;
-      width: auto;
-      height: auto;
-      object-fit: contain;
-      border-radius: 8px;
+      max-width: 45px !important;
+      max-height: 45px !important;
+      width: auto !important;
+      height: auto !important;
+      object-fit: contain !important;
+      border-radius: 8px !important;
       box-shadow: 0 2px 6px rgba(0,0,0,0.12);
-      display: inline-block;
-      vertical-align: middle;
-      margin: 0 4px;
+      display: inline-block !important;
+      vertical-align: middle !important;
+      margin: 0 4px !important;
     }
- 
+
+
+    
 
   </style>
 </head>
@@ -743,9 +745,10 @@
       if (!note) return;
 
       viewTitle.innerText = note.title;
-      viewContent.innerHTML = note.content;
+      viewContent.innerHTML = note.content.replace(/<img /g, '<img class="inline-img" ');
       viewScreen.style.backgroundColor = note.bgColor || '#FFFFFF';
       viewScreen.classList.add('active');
+    }
     }
 
     function closeViewer() {
